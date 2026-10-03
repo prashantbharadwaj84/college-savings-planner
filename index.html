@@ -1,0 +1,2889 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#090d16] text-slate-100 select-none">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Savings Planner | Bharrys Financial Suite</title>
+    <!-- GoatCounter Analytics Tracker -->
+    <script 
+        data-goatcounter="https://bharrys.goatcounter.com/count" 
+        async 
+        src="//gc.zgo.at/count.js" 
+        id="goatcounter-script"
+        onload="window.goatcounterLoaded = true;"
+        onerror="window.goatcounterBlocked = true;">
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#090d16',
+                            card: '#111827',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                            cyan: '#38bdf8',
+                            indigo: '#818cf8',
+                            emerald: '#34d399',
+                            rose: '#f43f5e',
+                            amber: '#fbbf24'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        @media print {
+            header, button, #btn-share, #btn-bookmark, #btn-print, #btn-suite-hub, .no-print {
+                display: none !important;
+            }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .glass-panel, .glass-card {
+                background: #ffffff !important;
+                border: 1px solid #ccc !important;
+                color: #000000 !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-full flex flex-col font-sans antialiased bg-[#090d16] text-slate-100 select-none" oncontextmenu="return false;">
+
+    <!-- Header Navbar -->
+    <header class="relative z-10 border-b border-slate-800 bg-[#090d16]/80 backdrop-blur-md sticky top-0">
+        <div class="max-w-5xl mx-auto px-4 py-2.5 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="p-1.5 bg-slate-900 border border-slate-700/60 rounded-lg text-cyan-400">
+                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-extrabold text-white font-mono leading-none">BHARRYS <span class="text-cyan-400">FINANCIAL</span></h1>
+                    <p class="text-[10px] text-slate-400 mt-0.5">College Savings Planner</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 font-mono text-xs">
+                <!-- Summary-Only Buttons -->
+                <button type="button" id="btn-share" onclick="handleShare()" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-cyan-400 border border-slate-700/80 hover:bg-slate-800 transition hidden items-center gap-1.5 font-bold cursor-pointer" title="Share prefilled planner link">
+                    <i data-lucide="share-2" class="w-3.5 h-3.5"></i> <span id="btn-share-text">Share</span>
+                </button>
+                <button type="button" id="btn-bookmark" onclick="handleBookmark()" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-amber-400 border border-slate-700/80 hover:bg-slate-800 transition hidden items-center gap-1.5 font-bold cursor-pointer" title="Bookmark this summary page with prefilled plan">
+                    <i data-lucide="bookmark" class="w-3.5 h-3.5"></i> <span id="btn-bookmark-text">Bookmark</span>
+                </button>
+                <button type="button" id="btn-print" onclick="handlePrint()" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-emerald-400 border border-slate-700/80 hover:bg-slate-800 transition hidden items-center gap-1.5 font-bold cursor-pointer" title="Print plan summary report">
+                    <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print
+                </button>
+
+                <!-- Universal Button (Visible on all steps) -->
+                <a href="https://financialhub.bharrys.com/" id="btn-suite-hub" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-slate-200 border border-slate-700/80 hover:bg-slate-800 transition flex items-center gap-1.5 font-bold">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5 text-slate-300"></i> Suite Hub
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10 flex-1 max-w-5xl w-full mx-auto px-4 py-6 space-y-4">
+
+        <!-- SECTION 1: CHILD INTEREST ASSESSMENT WIZARD -->
+        <section id="section-student" class="glass-panel rounded-2xl p-6 space-y-6">
+            <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider font-bold">Step 1 — Career Interest</span>
+                    <h2 class="text-xl font-extrabold text-white">Student Details & Aspirations</h2>
+                    <p class="text-xs text-slate-400 mt-1">Tell us about yourself and select at least 3 colleges you're interested in!</p>
+                </div>
+                <div class="text-xs font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-800/50 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i> Interest Discovery
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <!-- CARD: Student Profile & College Preferences -->
+                <div class="glass-card p-4 rounded-xl space-y-4">
+                    <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono border-b border-slate-800 pb-2 flex items-center gap-2">
+                        <i data-lucide="user" class="w-4 h-4 text-cyan-400"></i> Student Profile & Target Colleges
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-300 mb-1">Student Name <span class="text-rose-400">*</span></label>
+                            <input type="text" id="student-name" placeholder="e.g. Alex Smith" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 transition select-text">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-300 mb-1">Birth Date <span class="text-rose-400">*</span></label>
+                            <input type="date" id="student-dob" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 transition select-text">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-300 mb-1">Home State <span class="text-rose-400">*</span></label>
+                            <select id="home-state" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 transition select-text">
+                                <option value="AL">Alabama (AL)</option>
+                                <option value="AK">Alaska (AK)</option>
+                                <option value="AZ">Arizona (AZ)</option>
+                                <option value="AR">Arkansas (AR)</option>
+                                <option value="CA">California (CA)</option>
+                                <option value="CO">Colorado (CO)</option>
+                                <option value="CT">Connecticut (CT)</option>
+                                <option value="DE">Delaware (DE)</option>
+                                <option value="FL">Florida (FL)</option>
+                                <option value="GA">Georgia (GA)</option>
+                                <option value="HI">Hawaii (HI)</option>
+                                <option value="ID">Idaho (ID)</option>
+                                <option value="IL">Illinois (IL)</option>
+                                <option value="IN">Indiana (IN)</option>
+                                <option value="IA">Iowa (IA)</option>
+                                <option value="KS">Kansas (KS)</option>
+                                <option value="KY">Kentucky (KY)</option>
+                                <option value="LA">Louisiana (LA)</option>
+                                <option value="ME">Maine (ME)</option>
+                                <option value="MD">Maryland (MD)</option>
+                                <option value="MA">Massachusetts (MA)</option>
+                                <option value="MI">Michigan (MI)</option>
+                                <option value="MN">Minnesota (MN)</option>
+                                <option value="MS">Mississippi (MS)</option>
+                                <option value="MO">Missouri (MO)</option>
+                                <option value="MT">Montana (MT)</option>
+                                <option value="NE">Nebraska (NE)</option>
+                                <option value="NV">Nevada (NV)</option>
+                                <option value="NH">New Hampshire (NH)</option>
+                                <option value="NJ">New Jersey (NJ)</option>
+                                <option value="NM">New Mexico (NM)</option>
+                                <option value="NY">New York (NY)</option>
+                                <option value="NC">North Carolina (NC)</option>
+                                <option value="ND">North Dakota (ND)</option>
+                                <option value="OH">Ohio (OH)</option>
+                                <option value="OK">Oklahoma (OK)</option>
+                                <option value="OR">Oregon (OR)</option>
+                                <option value="PA">Pennsylvania (PA)</option>
+                                <option value="RI">Rhode Island (RI)</option>
+                                <option value="SC">South Carolina (SC)</option>
+                                <option value="SD">South Dakota (SD)</option>
+                                <option value="TN">Tennessee (TN)</option>
+                                <option value="TX" selected>Texas (TX)</option>
+                                <option value="UT">Utah (UT)</option>
+                                <option value="VT">Vermont (VT)</option>
+                                <option value="VA">Virginia (VA)</option>
+                                <option value="WA">Washington (WA)</option>
+                                <option value="WV">West Virginia (WV)</option>
+                                <option value="WI">Wisconsin (WI)</option>
+                                <option value="WY">Wyoming (WY)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-800/80">
+                        <div class="flex items-center justify-between p-2.5 bg-slate-900/60 rounded-lg border border-slate-800">
+                            <div class="space-y-0.5">
+                                <label for="toggle-out-of-state" class="text-xs font-bold text-slate-200 cursor-pointer block">Top Out-of-State Colleges</label>
+                                <p class="text-[10px] text-slate-400">Include national top 100 non-Ivy colleges outside home state.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-2">
+                                <input type="checkbox" id="toggle-out-of-state" class="sr-only peer" checked>
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between p-2.5 bg-slate-900/60 rounded-lg border border-slate-800">
+                            <div class="space-y-0.5">
+                                <label for="toggle-ivy-league" class="text-xs font-bold text-amber-300 cursor-pointer flex items-center gap-1">
+                                    <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-400"></i> Include Ivy League
+                                </label>
+                                <p class="text-[10px] text-slate-400">Include Harvard, Yale, Princeton, Columbia, UPenn, Brown, Dartmouth, Cornell.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-2">
+                                <input type="checkbox" id="toggle-ivy-league" class="sr-only peer" checked>
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-slate-200 flex items-center gap-1">
+                                Select Aspirational Colleges <span class="text-rose-400">*</span>
+                                <span class="text-[10px] font-normal text-slate-400">(Select between 3 and 8)</span>
+                            </label>
+                            <span id="college-count" class="text-[10px] font-mono text-rose-400 bg-slate-900 px-2 py-0.5 rounded border border-rose-500/30">0 / 8 Selected (Min 3)</span>
+                        </div>
+                        
+                        <select id="college-dropdown" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-white outline-none focus:border-cyan-400 transition select-text">
+                            <option value="" disabled selected>-- Choose between 3 and 8 Colleges --</option>
+                        </select>
+
+                        <div id="selected-colleges-container" class="flex flex-wrap gap-1.5 pt-1 min-h-[32px]">
+                            <span class="text-[11px] text-slate-500 italic font-mono">No colleges selected yet. Please select at least 3 colleges.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Career Questions -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-200">1. What activity sounds most exciting to you on a weekend?</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs font-mono">
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q1" value="stem_tech" class="accent-cyan-400">
+                            <span>Building gadgets, coding games, or taking electronics apart</span>
+                        </label>
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q1" value="health_bio" class="accent-cyan-400">
+                            <span>Learning how the human body works or helping sick pets/people</span>
+                        </label>
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q1" value="law_gov" class="accent-cyan-400">
+                            <span>Debating issues, reading about history, or organizing student council</span>
+                        </label>
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q1" value="film_arts" class="accent-cyan-400">
+                            <span>Filming videos, acting in plays, or editing movies and audio</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-200">2. Which school subject or extracurricular do you enjoy most?</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs font-mono">
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q2" value="stem_tech" class="accent-cyan-400">
+                            <span>Math, Physics, or Computer Science</span>
+                        </label>
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q2" value="health_bio" class="accent-cyan-400">
+                            <span>Biology, Chemistry, or Life Sciences</span>
+                        </label>
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q2" value="law_gov" class="accent-cyan-400">
+                            <span>Speech & Debate, History, or Government</span>
+                        </label>
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q2" value="film_arts" class="accent-cyan-400">
+                            <span>Drama Club, Video Production, or Creative Writing</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-200">3. How do you like expressing yourself or solving problems?</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs font-mono">
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q3" value="stem_tech" class="accent-cyan-400">
+                            <span>Using logic, equations, and systematic engineering</span>
+                        </label>
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q3" value="health_bio" class="accent-cyan-400">
+                            <span>Observing, diagnosing symptoms, and medical care</span>
+                        </label>
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q3" value="law_gov" class="accent-cyan-400">
+                            <span>Formulating arguments, researching rules, and advocacy</span>
+                        </label>
+                        <label class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-cyan-500/50 cursor-pointer flex items-center gap-3 transition">
+                            <input type="radio" name="q3" value="film_arts" class="accent-cyan-400">
+                            <span>Performing on stage, telling stories, and visual direction</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-800 flex justify-end">
+                    <button type="button" id="btn-submit-step1" class="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold rounded-xl text-xs font-mono transition flex items-center gap-2">
+                        Next: Parent Summary <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PARENT SUMMARY & FINANCIAL STRATEGY -->
+        <section id="section-parent" class="glass-panel rounded-2xl p-6 space-y-6 hidden">
+            <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-wider font-bold">Step 2 — Parent Dashboard</span>
+                    <h2 class="text-xl font-extrabold text-white"><span id="parent-student-name">Student</span>'s Profile & Savings Strategy</h2>
+                    <p class="text-xs text-slate-400 mt-1">Review student preferences and configure family college funding parameters.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btn-back" class="text-xs font-mono text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Career Interest
+                    </button>
+                    <button type="button" onclick="transitionToStep3()" class="text-xs font-mono bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                        529 Planner <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs font-mono">
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Child Age</span>
+                    <p id="res-child-age" class="text-base font-extrabold text-cyan-400">-- Yrs Old</p>
+                </div>
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Current Grade</span>
+                    <select id="child-grade-select" class="w-full px-2 py-1 bg-slate-900 border border-cyan-500/40 rounded font-bold text-white outline-none focus:border-cyan-400 select-text">
+                        <option value="-2">Preschool / Toddler</option>
+                        <option value="-1">Pre-K</option>
+                        <option value="0">Kindergarten</option>
+                        <option value="1">1st Grade</option>
+                        <option value="2">2nd Grade</option>
+                        <option value="3">3rd Grade</option>
+                        <option value="4">4th Grade</option>
+                        <option value="5">5th Grade</option>
+                        <option value="6">6th Grade</option>
+                        <option value="7">7th Grade</option>
+                        <option value="8">8th Grade</option>
+                        <option value="9">9th Grade (Freshman)</option>
+                        <option value="10">10th Grade (Sophomore)</option>
+                        <option value="11">11th Grade (Junior)</option>
+                        <option value="12">12th Grade (Senior)</option>
+                    </select>
+                </div>
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Est. College Start Year</span>
+                    <p id="res-college-start-year" class="text-base font-extrabold text-emerald-400">2027</p>
+                </div>
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Primary Interest</span>
+                    <p id="res-primary-category" class="text-xs font-bold text-amber-300 truncate">--</p>
+                </div>
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Target Academic Degree</span>
+                    <select id="target-degree-select" class="w-full px-2 py-1 bg-slate-900 border border-indigo-500/40 rounded font-bold text-indigo-300 outline-none focus:border-indigo-400 select-text">
+                    </select>
+                </div>
+            </div>
+
+            <!-- CARD: Selected Colleges & Chosen Categories in 2 COLUMNS -->
+            <div class="glass-card p-3.5 rounded-xl space-y-2.5">
+                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono border-b border-slate-800/80 pb-1.5 flex items-center gap-1.5">
+                    <i data-lucide="layers" class="w-3.5 h-3.5 text-amber-400"></i> Selected College Categories & Institutions
+                </h3>
+                <div id="category-priority-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono"></div>
+            </div>
+
+            <div class="glass-card p-4 rounded-xl space-y-4 border-cyan-500/30 bg-slate-900/80">
+                <h3 class="text-xs font-bold text-white uppercase tracking-wider font-mono border-b border-slate-800 pb-2 flex items-center gap-2">
+                    <i data-lucide="wallet" class="w-4 h-4 text-emerald-400"></i> Family Financial & Savings Strategy
+                </h3>
+
+                <div class="p-3 bg-cyan-950/40 rounded-xl border border-cyan-500/30 flex items-center gap-2.5 text-xs font-mono text-cyan-200">
+                    <i data-lucide="sliders" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+                    <span><strong>Pro-Tip:</strong> You can fine-tune both the <strong>Target Coverage %</strong> and <strong>Monthly Contribution Capacity</strong> in full detail on the next page during growth projections!</span>
+                </div>
+
+                <div class="space-y-3 pb-3 border-b border-slate-800/80">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div class="space-y-0.5">
+                            <label class="text-xs font-bold text-white flex items-center gap-2 cursor-pointer">
+                                <i data-lucide="building-2" class="w-4 h-4 text-cyan-400"></i> Include <span id="lbl-cc-toggle-title">2+2 Community College Strategy</span>?
+                            </label>
+                            <p class="text-[11px] text-slate-300">Complete 2 years at local Community College then transfer to a 4-year university to reduce overall tuition costs.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                            <input type="checkbox" id="toggle-community-college" class="sr-only peer">
+                            <div class="w-10 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                        </label>
+                    </div>
+
+                    <div id="cc-boarding-options" class="hidden pt-3 border-t border-slate-800/60 pl-4 space-y-2.5">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-emerald-400">Off-Campus Boarding Allowance (Years 1 & 2)</span>
+                                <button type="button" id="btn-info-offcampus" class="text-slate-400 hover:text-cyan-400 transition" title="What is this?">
+                                    <i data-lucide="info" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-cc-offcampus" class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-cyan-400">Living with Parents Boarding Allowance (Years 1 & 2)</span>
+                                <button type="button" id="btn-info-parents" class="text-slate-400 hover:text-cyan-400 transition" title="What is this?">
+                                    <i data-lucide="info" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-cc-parents" class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-3 border-b border-slate-800/80 text-xs font-mono">
+                    <div class="space-y-1">
+                        <label class="block font-bold text-slate-200">Do you currently have a 529 College Savings Plan?</label>
+                        <select id="has-529-plan" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 transition select-text">
+                            <option value="no" selected>No, not yet</option>
+                            <option value="yes">Yes, currently active</option>
+                        </select>
+                    </div>
+                    <div id="529-balance-box" class="space-y-1 opacity-50 pointer-events-none">
+                        <label class="block font-bold text-slate-200">Current 529 Plan Balance ($)</label>
+                        <input type="number" id="current-529-balance" value="0" step="500" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-emerald-400 font-extrabold outline-none focus:border-cyan-400 transition select-text">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between">
+                            <label class="block font-bold text-slate-200">Target Coverage Percentage (% of total costs)</label>
+                            <span class="text-[10px] text-cyan-400 font-normal">(Customizable next page)</span>
+                        </div>
+                        <select id="finance-entire-college" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 transition select-text">
+                            <option value="100" selected>100% of costs</option>
+                            <option value="75">75% of costs</option>
+                            <option value="50">50% of costs</option>
+                            <option value="25">25% of costs</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between">
+                            <label class="block font-bold text-slate-200">Monthly Contribution Capacity ($/mo)</label>
+                            <span class="text-[10px] text-cyan-400 font-normal">(Customizable next page)</span>
+                        </div>
+                        <input type="number" id="monthly-savings-capacity" value="300" step="50" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-cyan-400 font-extrabold outline-none focus:border-cyan-400 transition select-text">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: ESTIMATED COLLEGE FEES & COVERAGE BREAKDOWN -->
+            <div class="glass-card p-4 rounded-xl space-y-4 border-slate-700">
+                <div class="border-b border-slate-800 pb-3 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+                            <i data-lucide="calculator" class="w-4 h-4 text-cyan-400"></i> Estimated Annual Expenses & 529 Eligibility
+                        </h3>
+                        <span id="expense-page-title" class="text-[10px] font-mono text-cyan-400 font-bold bg-cyan-950/60 border border-cyan-800/50 px-2.5 py-1 rounded-md">Category Explorer</span>
+                    </div>
+
+                    <div id="expense-page-tabs" class="flex flex-wrap gap-2 pt-1 border-t border-slate-800/60 font-mono text-xs">
+                    </div>
+
+                    <div class="p-2.5 bg-slate-900/90 rounded-lg border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono">
+                        <span class="text-slate-400 font-bold flex items-center gap-1">
+                            <i data-lucide="palette" class="w-3.5 h-3.5 text-cyan-400"></i> Affordability Color Key:
+                        </span>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="flex items-center gap-1.5 text-emerald-400 font-bold">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-500/50"></span> Well Within Affordability (&ge;100%)
+                            </span>
+                            <span class="flex items-center gap-1.5 text-amber-400 font-bold">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block shadow-sm shadow-amber-500/50"></span> Manageable (70% &ndash; 99%)
+                            </span>
+                            <span class="flex items-center gap-1.5 text-rose-400 font-bold">
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block shadow-sm shadow-rose-500/50"></span> Unaffordable (&lt;70%)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="expense-tab-content" class="space-y-4">
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-900/90 rounded-xl border border-cyan-500/30 flex items-center justify-end">
+                <button type="button" id="btn-next-stage" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-lg text-xs font-mono transition flex items-center gap-1.5">
+                    Next: 529 Planner <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION 3: 529 COLLEGE SAVINGS PLANNER -->
+        <section id="section-growth" class="glass-panel rounded-2xl p-6 space-y-6 hidden">
+            <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider font-bold">Step 3 — Interactive Projection</span>
+                    <h2 class="text-xl font-extrabold text-white">529 College Savings Planner</h2>
+                    <p class="text-xs text-slate-400 mt-1">Detailed month-by-month accumulation and drawdown timeline.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btn-back-to-step2" class="text-xs font-mono text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Parent Overview
+                    </button>
+                    <button type="button" onclick="transitionToStep4()" class="text-xs font-mono bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                        Summary <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-3 bg-amber-950/30 border border-amber-500/40 rounded-xl flex items-start gap-2.5 text-xs font-mono text-amber-200">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+                <div>
+                    <strong class="text-amber-300">Important Disclaimer:</strong> These estimations are computer-generated financial models intended solely for personal guidance and scenario planning. You should consult a certified financial advisor or tax professional to validate this strategy and solidify your official savings plan.
+                </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-xl space-y-4">
+                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono border-b border-slate-800 pb-2 flex items-center gap-2">
+                    <i data-lucide="settings-2" class="w-4 h-4 text-cyan-400"></i> Contribution Schedule & One-Time Lumpsums
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+                    <div class="space-y-1">
+                        <label class="block font-bold text-slate-200">Contribution Frequency</label>
+                        <select id="growth-cadence-type" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 transition select-text">
+                            <option value="monthly" selected>Monthly Contribution</option>
+                            <option value="weekly">Weekly Contribution</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label id="lbl-growth-amount" class="block font-bold text-slate-200">Contribution Amount ($)</label>
+                        <input type="number" id="growth-contribution-amount" value="300" step="any" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-emerald-400 font-bold outline-none focus:border-cyan-400 transition select-text">
+                    </div>
+
+                    <div id="growth-weekday-box" class="space-y-1 hidden">
+                        <label class="block font-bold text-slate-200">Day of the Week</label>
+                        <select id="growth-weekday-select" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 transition select-text">
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5" selected>Friday</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-800/80 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                            <i data-lucide="circle-dollar-sign" class="w-4 h-4 text-emerald-400"></i> Planned One-Time Lumpsums
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs font-mono">
+                        <input type="number" id="lumpsum-amount-input" placeholder="Amount ($)" class="px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 select-text">
+                        <select id="lumpsum-month-input" class="px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 select-text">
+                        </select>
+                        <select id="lumpsum-year-input" class="px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 select-text">
+                        </select>
+                        <button type="button" id="btn-add-lumpsum" class="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg transition flex items-center justify-center gap-1">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add Lumpsum
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-lg border border-slate-800 bg-slate-900/60 no-scrollbar">
+                        <table class="w-full text-left text-xs font-mono">
+                            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 text-[10px] uppercase">
+                                <tr>
+                                    <th class="py-1.5 px-3">Date</th>
+                                    <th class="py-1.5 px-3">Amount</th>
+                                    <th class="py-1.5 px-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lumpsum-table-body">
+                                <tr>
+                                    <td colspan="3" class="py-2 px-3 text-slate-500 italic text-center">No lumpsums added yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono flex items-center gap-1.5">
+                        <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i> Active Projection Strategy
+                    </span>
+                    <span id="growth-active-strategy-title" class="text-xs font-bold font-mono text-cyan-300">--</span>
+                </div>
+                <div id="growth-strategy-tabs" class="flex flex-wrap gap-2 font-mono text-xs">
+                </div>
+            </div>
+
+            <div id="growth-annual-tables-container" class="space-y-3">
+            </div>
+
+            <div class="p-4 bg-slate-900/90 rounded-xl border border-cyan-500/30 flex items-center justify-end">
+                <button type="button" id="btn-next-summary" onclick="transitionToStep4()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl text-xs font-mono transition flex items-center gap-2">
+                    Next: Summary <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION 4: FINAL PLANNER SUMMARY & PRINTABLE SCHEDULE -->
+        <section id="section-summary" class="glass-panel rounded-2xl p-6 space-y-6 hidden">
+            <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider font-bold">Step 4 — Final Plan Summary</span>
+                    <h2 class="text-xl font-extrabold text-white">Comprehensive 529 Funding & Printable Schedule</h2>
+                    <p class="text-xs text-slate-400 mt-1">Review your customized savings execution timeline and printable report.</p>
+                </div>
+                <button type="button" id="btn-back-to-step3" onclick="transitionToStep3FromSummary()" class="text-xs font-mono text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> 529 Growth Model
+                </button>
+            </div>
+
+            <div class="p-3 bg-amber-950/30 border border-amber-500/40 rounded-xl flex items-start gap-2.5 text-xs font-mono text-amber-200">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+                <div>
+                    <strong class="text-amber-300">Important Disclaimer:</strong> These estimations are computer-generated financial models intended solely for personal guidance and scenario planning. You should consult a certified financial advisor or tax professional to validate this strategy and solidify your official savings plan.
+                </div>
+            </div>
+
+            <!-- Executive Key Metrics Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 text-xs font-mono">
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Student Name</span>
+                    <p id="sum-student-name" class="text-sm font-extrabold text-white truncate">--</p>
+                </div>
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Primary Interest</span>
+                    <p id="sum-primary-interest" class="text-sm font-extrabold text-amber-300 truncate">--</p>
+                </div>
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Target Degree Path</span>
+                    <p id="sum-target-degree" class="text-xs font-extrabold text-indigo-300 truncate">--</p>
+                </div>
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">College Start Year</span>
+                    <p id="sum-college-year" class="text-sm font-extrabold text-cyan-400">--</p>
+                </div>
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Graduation Year</span>
+                    <p id="sum-grad-year" class="text-sm font-extrabold text-emerald-400">--</p>
+                </div>
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Target Strategy</span>
+                    <p id="sum-active-strategy" class="text-xs font-extrabold text-cyan-300 truncate">--</p>
+                </div>
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Degree Total Cost Est.</span>
+                    <p id="sum-4yr-grand-total" class="text-sm font-extrabold text-indigo-300">$0</p>
+                </div>
+                <div class="glass-card p-3 rounded-xl space-y-1">
+                    <span class="text-[10px] font-mono text-slate-400 uppercase">Projected Surplus/Deficit</span>
+                    <p id="sum-final-balance" class="text-sm font-extrabold text-emerald-400">$0</p>
+                </div>
+            </div>
+
+            <!-- Detailed Selected Colleges Categorized Breakdown Card -->
+            <div class="glass-card p-3.5 rounded-xl space-y-2.5">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider font-mono flex items-center gap-2">
+                        <i data-lucide="building-2" class="w-4 h-4 text-indigo-400"></i> Selected Aspirational Colleges
+                    </h3>
+                    <span id="sum-college-count-badge" class="text-[10px] font-mono text-indigo-300 bg-indigo-950/60 border border-indigo-800/50 px-2 py-0.5 rounded font-bold">0 Selected</span>
+                </div>
+                <div id="sum-selected-colleges-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+                    <div class="text-slate-500 italic text-xs font-mono col-span-2">No colleges selected yet.</div>
+                </div>
+            </div>
+
+            <!-- Full Printable Execution Schedule (COLLAPSIBLE BY YEAR WITH GLOBAL TOGGLE) -->
+            <div class="glass-card p-4 rounded-xl space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider font-mono flex items-center gap-2">
+                        <i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i> Full Month-by-Month Execution Schedule
+                    </h3>
+                    <button type="button" id="btn-toggle-all-summary" onclick="toggleAllSummaryScheduleYears()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded text-[11px] font-mono transition flex items-center gap-1 font-bold">
+                        <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5"></i> <span id="lbl-toggle-all-summary">Collapse All</span>
+                    </button>
+                </div>
+
+                <div id="summary-schedule-container" class="space-y-3">
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- IN-PAGE POPUP MODAL: BOARDING ALLOWANCE 529 EXPLANATION -->
+    <div id="modal-boarding" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="glass-panel border-cyan-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <button type="button" onclick="closeBoardingModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="flex items-center gap-2.5 text-cyan-400 font-mono font-bold border-b border-slate-800 pb-3">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <h3 class="text-base font-extrabold text-white">IRS 529 Rules: Off-Campus & Living at Home Allowances</h3>
+            </div>
+
+            <div class="space-y-3 text-xs font-mono text-slate-300 leading-relaxed">
+                <p>
+                    Under <strong>IRS Code Section 529(e)(3)(B)</strong>, students enrolled at least half-time at an eligible educational institution (including Community Colleges) can use 529 distributions tax-free for room and board expenses even if they do not live in official campus housing.
+                </p>
+
+                <div class="p-3 bg-emerald-950/30 border border-emerald-500/30 rounded-xl space-y-1">
+                    <p class="font-bold text-emerald-400">1. Off-Campus Apartment Allowance ($8,000/yr base)</p>
+                    <p class="text-[11px]">
+                        The tax-free 529 withdrawal amount for off-campus rent and <strong>food & groceries</strong> is capped at the official <em>"Room and Board Cost of Attendance (COA)"</em> standard set by the college's financial aid office for off-campus students.
+                    </p>
+                </div>
+
+                <div class="p-3 bg-cyan-950/30 border border-cyan-500/30 rounded-xl space-y-1">
+                    <p class="font-bold text-cyan-400">2. Living with Parents Boarding Allowance ($4,000/yr base)</p>
+                    <p class="text-[11px]">
+                        Even when living at home, the IRS permits students to withdraw tax-free 529 funds up to the institution's official COA room and board allowance for students living with parents (covering <strong>food, groceries, and housing costs</strong>). Parents can document reasonable housing/meal reimbursements provided to the student.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+                <button type="button" onclick="closeBoardingModal()" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-xs font-mono transition">
+                    Got it, thanks!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- IN-PAGE POPUP MODAL: QUALIFIED 529 COVERED EXPENSES -->
+    <div id="modal-qualified" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="glass-panel border-emerald-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <button type="button" onclick="closeQualifiedModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="flex items-center gap-2.5 text-emerald-400 font-mono font-bold border-b border-slate-800 pb-3">
+                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                <h3 class="text-base font-extrabold text-white">Qualified 529 Covered Expenses</h3>
+            </div>
+
+            <div class="space-y-3 text-xs font-mono text-slate-300 leading-relaxed">
+                <p>
+                    Under IRS guidelines, tax-free distributions from a 529 plan can be used to pay for <strong>Qualified Higher Education Expenses (QHEE)</strong> at eligible post-secondary institutions:
+                </p>
+
+                <ul class="space-y-2 list-disc list-inside text-[11px] text-slate-200">
+                    <li><strong class="text-emerald-300">Tuition & Mandatory Fees:</strong> Full cost of enrollment and required campus student fees.</li>
+                    <li><strong class="text-emerald-300">Room & Board:</strong> Campus dorms, meal plans, or off-campus housing/food up to the college's official COA limit.</li>
+                    <li><strong class="text-emerald-300">Books & Required Supplies:</strong> Textbooks, lab supplies, software, and tools required for coursework.</li>
+                    <li><strong class="text-emerald-300">Computers & Peripheral Equipment:</strong> Laptops, desktop hardware, internet access, and educational software used by the student.</li>
+                </ul>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+                <button type="button" onclick="closeQualifiedModal()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-xs font-mono transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- IN-PAGE POPUP MODAL: NON-QUALIFIED OUT-OF-POCKET EXPENSES -->
+    <div id="modal-nonqualified" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="glass-panel border-rose-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <button type="button" onclick="closeNonQualifiedModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="flex items-center gap-2.5 text-rose-400 font-mono font-bold border-b border-slate-800 pb-3">
+                <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                <h3 class="text-base font-extrabold text-white">Non-Qualified Personal Expenses</h3>
+            </div>
+
+            <div class="space-y-3 text-xs font-mono text-slate-300 leading-relaxed">
+                <p>
+                    Expenses that are <strong>NOT eligible</strong> for tax-free 529 withdrawals. Using 529 funds for these items will trigger ordinary income tax plus a <strong>10% IRS penalty</strong> on earnings:
+                </p>
+
+                <ul class="space-y-2 list-disc list-inside text-[11px] text-slate-200">
+                    <li><strong class="text-rose-300">Campus Travel & Transportation:</strong> Gas, parking passes, public transit, flights home, or vehicle upkeep.</li>
+                    <li><strong class="text-rose-300">Personal & Lifestyle Essentials:</strong> Clothing, laundry, phone bills, streaming subscriptions, and entertainment.</li>
+                    <li><strong class="text-rose-300">Health & Insurance:</strong> Health insurance policies, medical bills, and OTC medicines.</li>
+                    <li><strong class="text-rose-300">Application & Test Fees:</strong> SAT/ACT fees, college application fees, or graduation costs.</li>
+                </ul>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+                <button type="button" onclick="closeNonQualifiedModal()" class="px-4 py-2 bg-rose-500 hover:bg-rose-400 text-slate-950 font-bold rounded-lg text-xs font-mono transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global Right-Click Protection
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        const STORAGE_KEY_PARAMS = 'bharrys_college_planner_params_v3';
+
+        const collegeDatabase = [
+            // IVY LEAGUE (Private)
+            { name: "Harvard University", state: "MA", isIvy: true, type: "Private" },
+            { name: "Yale University", state: "CT", isIvy: true, type: "Private" },
+            { name: "Princeton University", state: "NJ", isIvy: true, type: "Private" },
+            { name: "Columbia University", state: "NY", isIvy: true, type: "Private" },
+            { name: "University of Pennsylvania", state: "PA", isIvy: true, type: "Private" },
+            { name: "Brown University", state: "RI", isIvy: true, type: "Private" },
+            { name: "Dartmouth College", state: "NH", isIvy: true, type: "Private" },
+            { name: "Cornell University", state: "NY", isIvy: true, type: "Private" },
+
+            // TEXAS (TX)
+            { name: "University of Texas at Austin", state: "TX", isIvy: false, type: "Public" },
+            { name: "Texas A&M University - College Station", state: "TX", isIvy: false, type: "Public" },
+            { name: "Rice University", state: "TX", isIvy: false, type: "Private" },
+            { name: "Southern Methodist University (SMU)", state: "TX", isIvy: false, type: "Private" },
+            { name: "University of Houston", state: "TX", isIvy: false, type: "Public" },
+            { name: "Texas Tech University", state: "TX", isIvy: false, type: "Public" },
+
+            // CALIFORNIA (CA)
+            { name: "Stanford University", state: "CA", isIvy: false, type: "Private" },
+            { name: "California Institute of Technology (Caltech)", state: "CA", isIvy: false, type: "Private" },
+            { name: "UC Berkeley", state: "CA", isIvy: false, type: "Public" },
+            { name: "UCLA", state: "CA", isIvy: false, type: "Public" },
+            { name: "UC San Diego", state: "CA", isIvy: false, type: "Public" },
+            { name: "USC (University of Southern California)", state: "CA", isIvy: false, type: "Private" },
+
+            // NEW JERSEY & NEW YORK
+            { name: "Rutgers University - New Brunswick", state: "NJ", isIvy: false, type: "Public" },
+            { name: "NJIT (New Jersey Institute of Technology)", state: "NJ", isIvy: false, type: "Public" },
+            { name: "Stevens Institute of Technology", state: "NJ", isIvy: false, type: "Private" },
+            { name: "New York University (NYU)", state: "NY", isIvy: false, type: "Private" },
+
+            // MASSACHUSETTS & OTHER REGIONS
+            { name: "MIT (Massachusetts Institute of Technology)", state: "MA", isIvy: false, type: "Private" },
+            { name: "Northeastern University", state: "MA", isIvy: false, type: "Private" },
+            { name: "Carnegie Mellon University", state: "PA", isIvy: false, type: "Private" },
+            { name: "University of Michigan - Ann Arbor", state: "MI", isIvy: false, type: "Public" },
+            { name: "Georgia Institute of Technology", state: "GA", isIvy: false, type: "Public" },
+            { name: "University of Washington", state: "WA", isIvy: false, type: "Public" }
+        ];
+
+        const degreeOptionsByInterest = {
+            stem_tech: [
+                { label: "4-Year Bachelor of Science (B.S. Engineering / Computer Science)", years: 4 },
+                { label: "5-Year Dual Bachelor's + Master's (B.S. + M.S. Tech)", years: 5 },
+                { label: "7-Year Ph.D. Track (B.S. + Ph.D. Research)", years: 7 }
+            ],
+            health_bio: [
+                { label: "4-Year Pre-Med / Biology B.S.", years: 4 },
+                { label: "6-Year BS + PharmD (Pharmacy Track)", years: 6 },
+                { label: "7-Year BS + M.D. Dual Degree (Pre-Med + Medical School)", years: 7 }
+            ],
+            law_gov: [
+                { label: "4-Year Bachelor of Arts (B.A. Political Science / History)", years: 4 },
+                { label: "6-Year Accelerated B.A. + J.D. (Law School Pathway)", years: 6 },
+                { label: "7-Year Dual B.A. + J.D. Law Degree", years: 7 }
+            ],
+            film_arts: [
+                { label: "4-Year Bachelor of Fine Arts (B.F.A. Digital Media / Acting)", years: 4 },
+                { label: "5-Year B.F.A. + M.F.A. Advanced Directing / Production", years: 5 }
+            ],
+            default: [
+                { label: "4-Year Bachelor's Degree (Standard B.A. / B.S.)", years: 4 },
+                { label: "5-Year Master's Dual Pathway", years: 5 },
+                { label: "6-Year Advanced Professional Track", years: 6 }
+            ]
+        };
+
+        const costPresets = {
+            ivy: {
+                title: "Ivy League",
+                tuition: 71000,
+                housing: 13600,
+                tech: 2400,
+                nonQualified: 9800,
+                desc: "High tuition rate offset by university institutional aid for eligible income thresholds."
+            },
+            private: {
+                title: "Private",
+                tuition: 50000,
+                housing: 13000,
+                tech: 2200,
+                nonQualified: 8800,
+                desc: "National average private institution non-profit tuition and mandatory fee benchmark."
+            },
+            in_state: {
+                title: "In-State Public",
+                tuition: 13000,
+                housing: 9000,
+                tech: 2000,
+                nonQualified: 8800,
+                desc: "Resident tuition rate for state flagship and public universities."
+            },
+            out_state: {
+                title: "Out-of-State Public",
+                tuition: 33000,
+                housing: 9000,
+                tech: 2100,
+                nonQualified: 8800,
+                desc: "Non-resident public university tuition rate."
+            },
+            community_2plus2: {
+                title: "2+2 Community College Strategy",
+                tuitionCC: 3800,
+                housingCC: 0,
+                techCC: 1500,
+                nonQualifiedCC: 5500,
+                tuitionUni: 13000,
+                housingUni: 9000,
+                techUni: 2000,
+                nonQualifiedUni: 8800,
+                desc: "2 Years at Local Community College followed by Transfer to University."
+            }
+        };
+
+        const categoryColorStyles = {
+            ivy: { badge: "bg-amber-950/60 border-amber-500/40 text-amber-300" },
+            private: { badge: "bg-purple-950/60 border-purple-500/40 text-purple-300" },
+            in_state: { badge: "bg-cyan-950/60 border-cyan-500/40 text-cyan-300" },
+            out_state: { badge: "bg-indigo-950/60 border-indigo-500/40 text-indigo-300" },
+            community_2plus2: { badge: "bg-emerald-950/60 border-emerald-500/40 text-emerald-300" }
+        };
+
+        const TUITION_INFLATION = 0.05;
+        const HOUSING_INFLATION = 0.05;
+        const GENERAL_INFLATION = 0.03;
+
+        const DAILY_RATE_ACCUMULATION = 0.00666667 / 100;
+        const DAILY_RATE_DRAWDOWN = 0.00416667 / 100;
+
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const weekdayPluralNames = {
+            1: "Mondays in the Month",
+            2: "Tuesdays in the Month",
+            3: "Wednesdays in the Month",
+            4: "Thursdays in the Month",
+            5: "Fridays in the Month"
+        };
+
+        let selectedColleges = [];
+        let activeTabCategory = '';
+        let currentStep = 1;
+
+        let plannedLumpsums = [];
+        let overridesMap = {};
+        let annualCollapsedState = {};
+        let summaryAnnualCollapsedState = {};
+
+        function getCommunityCollegeStrategyTitle() {
+            const totalDegreeYears = getTargetDegreeYears();
+            const universityYears = Math.max(1, totalDegreeYears - 2);
+            return `2+${universityYears} Community College Strategy`;
+        }
+
+        function getAppStateObject() {
+            return {
+                currentStep,
+                studentName: document.getElementById('student-name').value,
+                studentDob: document.getElementById('student-dob').value,
+                homeState: document.getElementById('home-state').value,
+                toggleOutOfState: document.getElementById('toggle-out-of-state').checked,
+                toggleIvyLeague: document.getElementById('toggle-ivy-league').checked,
+                selectedColleges,
+                q1: document.querySelector('input[name="q1"]:checked')?.value || '',
+                q2: document.querySelector('input[name="q2"]:checked')?.value || '',
+                q3: document.querySelector('input[name="q3"]:checked')?.value || '',
+                childGrade: document.getElementById('child-grade-select').value,
+                targetDegree: document.getElementById('target-degree-select')?.value || '',
+                toggleCommunityCollege: document.getElementById('toggle-community-college').checked,
+                toggleCCOffcampus: document.getElementById('toggle-cc-offcampus').checked,
+                toggleCCParents: document.getElementById('toggle-cc-parents').checked,
+                has529Plan: document.getElementById('has-529-plan').value,
+                current529Balance: document.getElementById('current-529-balance').value,
+                financeEntireCollege: document.getElementById('finance-entire-college').value,
+                monthlySavingsCapacity: document.getElementById('monthly-savings-capacity').value,
+                growthCadenceType: document.getElementById('growth-cadence-type')?.value || 'monthly',
+                growthContributionAmount: document.getElementById('growth-contribution-amount')?.value || 300,
+                growthWeekdaySelect: document.getElementById('growth-weekday-select')?.value || 5,
+                plannedLumpsums,
+                overridesMap,
+                annualCollapsedState,
+                summaryAnnualCollapsedState,
+                activeTabCategory
+            };
+        }
+
+        function saveAllState() {
+            const stateData = getAppStateObject();
+            try {
+                localStorage.setItem(STORAGE_KEY_PARAMS, JSON.stringify(stateData));
+            } catch (e) {
+                console.warn('Unable to save state to localStorage', e);
+            }
+        }
+
+        function applyStateToForm(s) {
+            if (!s) return;
+            if (s.studentName) document.getElementById('student-name').value = s.studentName;
+            if (s.studentDob) document.getElementById('student-dob').value = s.studentDob;
+            if (s.homeState) document.getElementById('home-state').value = s.homeState;
+            if (typeof s.toggleOutOfState === 'boolean') document.getElementById('toggle-out-of-state').checked = s.toggleOutOfState;
+            if (typeof s.toggleIvyLeague === 'boolean') document.getElementById('toggle-ivy-league').checked = s.toggleIvyLeague;
+            if (Array.isArray(s.selectedColleges)) selectedColleges = s.selectedColleges;
+
+            if (s.q1) {
+                const el = document.querySelector(`input[name="q1"][value="${s.q1}"]`);
+                if (el) el.checked = true;
+            }
+            if (s.q2) {
+                const el = document.querySelector(`input[name="q2"][value="${s.q2}"]`);
+                if (el) el.checked = true;
+            }
+            if (s.q3) {
+                const el = document.querySelector(`input[name="q3"][value="${s.q3}"]`);
+                if (el) el.checked = true;
+            }
+
+            populateTargetDegreeDropdown();
+            if (s.targetDegree) {
+                const degSelect = document.getElementById('target-degree-select');
+                if (degSelect) degSelect.value = s.targetDegree;
+            }
+
+            if (s.childGrade !== undefined) document.getElementById('child-grade-select').value = s.childGrade;
+            if (typeof s.toggleCommunityCollege === 'boolean') {
+                document.getElementById('toggle-community-college').checked = s.toggleCommunityCollege;
+                if (s.toggleCommunityCollege) {
+                    document.getElementById('cc-boarding-options').classList.remove('hidden');
+                }
+            }
+            if (typeof s.toggleCCOffcampus === 'boolean') document.getElementById('toggle-cc-offcampus').checked = s.toggleCCOffcampus;
+            if (typeof s.toggleCCParents === 'boolean') document.getElementById('toggle-cc-parents').checked = s.toggleCCParents;
+
+            if (s.has529Plan) {
+                document.getElementById('has-529-plan').value = s.has529Plan;
+                const balanceBox = document.getElementById('529-balance-box');
+                if (s.has529Plan === 'yes') balanceBox.classList.remove('opacity-50', 'pointer-events-none');
+            }
+            if (s.current529Balance !== undefined) document.getElementById('current-529-balance').value = s.current529Balance;
+            if (s.financeEntireCollege) document.getElementById('finance-entire-college').value = s.financeEntireCollege;
+            if (s.monthlySavingsCapacity !== undefined) document.getElementById('monthly-savings-capacity').value = s.monthlySavingsCapacity;
+            if (s.activeTabCategory) activeTabCategory = s.activeTabCategory;
+
+            if (s.growthCadenceType) document.getElementById('growth-cadence-type').value = s.growthCadenceType;
+            if (s.growthContributionAmount !== undefined) document.getElementById('growth-contribution-amount').value = s.growthContributionAmount;
+            if (s.growthWeekdaySelect !== undefined) document.getElementById('growth-weekday-select').value = s.growthWeekdaySelect;
+
+            if (Array.isArray(s.plannedLumpsums)) plannedLumpsums = s.plannedLumpsums;
+            if (s.overridesMap) overridesMap = s.overridesMap;
+            if (s.annualCollapsedState) annualCollapsedState = s.annualCollapsedState;
+            if (s.summaryAnnualCollapsedState) summaryAnnualCollapsedState = s.summaryAnnualCollapsedState;
+
+            if (s.currentStep) currentStep = s.currentStep;
+        }
+
+        function loadAllState() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const stateParam = urlParams.get('pdata');
+
+                if (stateParam) {
+                    const decoded = JSON.parse(decodeURIComponent(stateParam));
+                    applyStateToForm(decoded);
+                    if (urlParams.get('step') === 'summary') currentStep = 4;
+                    return;
+                }
+
+                const saved = localStorage.getItem(STORAGE_KEY_PARAMS);
+                if (saved) {
+                    applyStateToForm(JSON.parse(saved));
+                }
+            } catch (e) {
+                console.warn('Unable to load state', e);
+            }
+        }
+
+        function updateCCTitleLabels() {
+            const ccTitle = getCommunityCollegeStrategyTitle();
+            const lblToggle = document.getElementById('lbl-cc-toggle-title');
+            if (lblToggle) lblToggle.textContent = ccTitle;
+        }
+
+        function populateTargetDegreeDropdown() {
+            const counts = { stem_tech: 0, health_bio: 0, law_gov: 0, film_arts: 0 };
+            ['q1', 'q2', 'q3'].forEach(q => {
+                const val = document.querySelector(`input[name="${q}"]:checked`)?.value;
+                if (val && counts[val] !== undefined) counts[val]++;
+            });
+
+            let topCategory = 'default';
+            let maxVal = 0;
+            Object.keys(counts).forEach(key => {
+                if (counts[key] > maxVal) {
+                    maxVal = counts[key];
+                    topCategory = key;
+                }
+            });
+
+            const degreeSelect = document.getElementById('target-degree-select');
+            if (!degreeSelect) return;
+
+            const currentSelected = degreeSelect.value;
+            degreeSelect.options.length = 0;
+
+            const optionsList = degreeOptionsByInterest[topCategory] || degreeOptionsByInterest.default;
+            optionsList.forEach(opt => {
+                const o = new Option(opt.label, opt.years);
+                degreeSelect.add(o);
+            });
+
+            if (currentSelected && [...degreeSelect.options].some(o => o.value === currentSelected)) {
+                degreeSelect.value = currentSelected;
+            } else {
+                degreeSelect.selectedIndex = 0;
+            }
+
+            updateCCTitleLabels();
+        }
+
+        function getTargetDegreeYears() {
+            const degSelect = document.getElementById('target-degree-select');
+            return parseInt(degSelect?.value) || 4;
+        }
+
+        function renderCollegeDropdown() {
+            const homeState = document.getElementById('home-state').value;
+            const includeOutOfState = document.getElementById('toggle-out-of-state').checked;
+            const includeIvy = document.getElementById('toggle-ivy-league').checked;
+            const dropdown = document.getElementById('college-dropdown');
+
+            dropdown.options.length = 0;
+
+            const defaultOpt = new Option("-- Choose between 3 and 8 Colleges --", "");
+            defaultOpt.disabled = true;
+            defaultOpt.selected = true;
+            dropdown.add(defaultOpt);
+
+            const filtered = collegeDatabase.filter(c => {
+                if (c.isIvy) return includeIvy;
+                if (c.state === homeState) return true;
+                return includeOutOfState;
+            });
+
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+            filtered.forEach(c => {
+                if (!selectedColleges.includes(c.name)) {
+                    const label = `${c.name} (${c.state}) - ${c.isIvy ? 'Ivy League' : c.type}`;
+                    dropdown.add(new Option(label, c.name));
+                }
+            });
+        }
+
+        function updateSelectedCollegesUI() {
+            const container = document.getElementById('selected-colleges-container');
+            const countLabel = document.getElementById('college-count');
+            
+            const count = selectedColleges.length;
+            countLabel.textContent = `${count} / 8 Selected (Min 3)`;
+
+            if (count < 3) {
+                countLabel.className = 'text-[10px] font-mono text-rose-400 bg-slate-900 px-2 py-0.5 rounded border border-rose-500/30';
+            } else {
+                countLabel.className = 'text-[10px] font-mono text-emerald-400 bg-slate-900 px-2 py-0.5 rounded border border-emerald-500/30';
+            }
+
+            if (count === 0) {
+                container.innerHTML = '<span class="text-[11px] text-slate-500 italic font-mono">No colleges selected yet. Please select at least 3 colleges.</span>';
+                return;
+            }
+
+            container.innerHTML = '';
+            selectedColleges.forEach(col => {
+                const colData = collegeDatabase.find(c => c.name === col);
+                const isIvy = colData && colData.isIvy;
+                const stateCode = colData ? colData.state : '';
+                const chip = document.createElement('span');
+                chip.className = `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-[11px] font-mono ${
+                    isIvy ? 'bg-amber-950/40 text-amber-300 border-amber-500/40' : 'bg-slate-800 text-cyan-300 border-cyan-500/30'
+                }`;
+                chip.innerHTML = `
+                    <span>${col} ${stateCode ? '(' + stateCode + ')' : ''}${isIvy ? ' ★' : ''}</span>
+                    <button type="button" onclick="removeCollege('${col.replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-rose-400 font-bold ml-1">&times;</button>
+                `;
+                container.appendChild(chip);
+            });
+        }
+
+        function removeCollege(colName) {
+            selectedColleges = selectedColleges.filter(c => c !== colName);
+            saveAllState();
+            updateSelectedCollegesUI();
+            renderCollegeDropdown();
+            if (currentStep >= 2) {
+                renderParentCategoryList();
+                renderExpenseTabsAndContent();
+            }
+        }
+
+        function categorizeColleges(homeState) {
+            const categories = {
+                ivy: { key: "ivy", title: "Ivy League", list: [] },
+                private: { key: "private", title: "Private", list: [] },
+                in_state: { key: "in_state", title: "In-State Public", list: [] },
+                out_state: { key: "out_state", title: "Out-of-State Public", list: [] }
+            };
+
+            selectedColleges.forEach(colName => {
+                const item = collegeDatabase.find(c => c.name === colName);
+                if (!item) {
+                    categories.out_state.list.push({ name: colName, state: 'US' });
+                    return;
+                }
+
+                const collegeObj = { name: item.name, state: item.state };
+
+                if (item.isIvy) {
+                    categories.ivy.list.push(collegeObj);
+                } else if (item.type === 'Private') {
+                    categories.private.list.push(collegeObj);
+                } else if (item.state === homeState) {
+                    categories.in_state.list.push(collegeObj);
+                } else {
+                    categories.out_state.list.push(collegeObj);
+                }
+            });
+
+            return Object.values(categories).filter(cat => cat.list.length > 0);
+        }
+
+        function updateCollegeStartYearDOM() {
+            const studentDob = document.getElementById('student-dob').value;
+            if (studentDob) {
+                const { age, grade } = calculateAgeAndGrade(studentDob);
+                document.getElementById('res-child-age').textContent = `${age} Yrs Old`;
+
+                const savedGrade = document.getElementById('child-grade-select').value;
+                const finalGrade = (savedGrade !== undefined && savedGrade !== null && savedGrade !== '') ? parseInt(savedGrade) : grade;
+                const computedCollegeYear = new Date().getFullYear() + (13 - finalGrade);
+
+                document.getElementById('res-college-start-year').textContent = computedCollegeYear;
+            }
+        }
+
+        function computePrimaryInterest() {
+            const counts = { stem_tech: 0, health_bio: 0, law_gov: 0, film_arts: 0 };
+
+            ['q1', 'q2', 'q3'].forEach(q => {
+                const val = document.querySelector(`input[name="${q}"]:checked`)?.value;
+                if (val && counts[val] !== undefined) {
+                    counts[val]++;
+                }
+            });
+
+            let topCategory = null;
+            let maxVal = 0;
+
+            Object.keys(counts).forEach(key => {
+                if (counts[key] > maxVal) {
+                    maxVal = counts[key];
+                    topCategory = key;
+                }
+            });
+
+            if (!topCategory || maxVal === 0) {
+                return "Not Selected";
+            }
+
+            const labels = {
+                stem_tech: "STEM & Engineering",
+                health_bio: "Healthcare & Medicine",
+                law_gov: "Law & Government",
+                film_arts: "Arts & Digital Media"
+            };
+
+            return labels[topCategory] || "General Academic";
+        }
+
+        function updatePrimaryInterestUI() {
+            const primaryInterestText = computePrimaryInterest();
+            const primaryEl = document.getElementById('res-primary-category');
+            if (primaryEl) {
+                primaryEl.textContent = primaryInterestText;
+            }
+            populateTargetDegreeDropdown();
+            return primaryInterestText;
+        }
+
+        function getCollegeStartYear() {
+            updateCollegeStartYearDOM();
+            const startYearText = document.getElementById('res-college-start-year').textContent;
+            return parseInt(startYearText) || 2027;
+        }
+
+        function calculateAnnualCovered529Costs(categoryKey, collegeStartYear) {
+            const preset = costPresets[categoryKey] || costPresets.in_state;
+            const baseYear = 2026;
+            const yearsUntilStart = Math.max(0, collegeStartYear - baseYear);
+
+            const isOffcampusOn = document.getElementById('toggle-cc-offcampus').checked;
+            const isParentsOn = document.getElementById('toggle-cc-parents').checked;
+            const totalDegreeYears = getTargetDegreeYears();
+
+            const annualCovered = {};
+
+            for (let yr = 1; yr <= totalDegreeYears; yr++) {
+                const actualYear = collegeStartYear + (yr - 1);
+                const yrOffset = yearsUntilStart + (yr - 1);
+
+                if (categoryKey === 'community_2plus2') {
+                    const isCC = yr <= 2;
+                    const baseT = isCC ? preset.tuitionCC : preset.tuitionUni;
+                    let baseH = isCC ? preset.housingCC : preset.housingUni;
+                    if (isCC) {
+                        if (isOffcampusOn) baseH = 8000;
+                        else if (isParentsOn) baseH = 4000;
+                    }
+                    const baseTech = isCC ? preset.techCC : preset.techUni;
+
+                    const adjT = Math.round(baseT * Math.pow(1 + TUITION_INFLATION, yrOffset));
+                    const adjH = Math.round(baseH * Math.pow(1 + HOUSING_INFLATION, yrOffset));
+                    const adjTech = Math.round(baseTech * Math.pow(1 + TUITION_INFLATION, yrOffset));
+
+                    annualCovered[actualYear] = adjT + adjH + adjTech;
+                } else {
+                    const adjT = Math.round(preset.tuition * Math.pow(1 + TUITION_INFLATION, yrOffset));
+                    const adjH = Math.round(preset.housing * Math.pow(1 + HOUSING_INFLATION, yrOffset));
+                    const adjTech = Math.round(preset.tech * Math.pow(1 + TUITION_INFLATION, yrOffset));
+
+                    annualCovered[actualYear] = adjT + adjH + adjTech;
+                }
+            }
+
+            return annualCovered;
+        }
+
+        function calculate4YearGrandTotalCost(categoryKey, collegeStartYear) {
+            const preset = costPresets[categoryKey] || costPresets.in_state;
+            const baseYear = 2026;
+            const yearsUntilStart = Math.max(0, collegeStartYear - baseYear);
+            let totalCostGrand = 0;
+
+            const isOffcampusOn = document.getElementById('toggle-cc-offcampus').checked;
+            const isParentsOn = document.getElementById('toggle-cc-parents').checked;
+            const totalDegreeYears = getTargetDegreeYears();
+
+            for (let yr = 1; yr <= totalDegreeYears; yr++) {
+                const yrOffset = yearsUntilStart + (yr - 1);
+                if (categoryKey === 'community_2plus2') {
+                    const isCC = yr <= 2;
+                    const baseT = isCC ? preset.tuitionCC : preset.tuitionUni;
+                    let baseH = isCC ? preset.housingCC : preset.housingUni;
+                    if (isCC) {
+                        if (isOffcampusOn) baseH = 8000;
+                        else if (isParentsOn) baseH = 4000;
+                    }
+                    const baseTech = isCC ? preset.techCC : preset.techUni;
+                    const baseNonQual = isCC ? preset.nonQualifiedCC : preset.nonQualifiedUni;
+
+                    totalCostGrand += (baseT * Math.pow(1 + TUITION_INFLATION, yrOffset) + baseH * Math.pow(1 + HOUSING_INFLATION, yrOffset) + baseTech * Math.pow(1 + TUITION_INFLATION, yrOffset) + baseNonQual * Math.pow(1 + GENERAL_INFLATION, yrOffset));
+                } else {
+                    totalCostGrand += (preset.tuition * Math.pow(1 + TUITION_INFLATION, yrOffset) + preset.housing * Math.pow(1 + HOUSING_INFLATION, yrOffset) + preset.tech * Math.pow(1 + TUITION_INFLATION, yrOffset) + preset.nonQualified * Math.pow(1 + GENERAL_INFLATION, yrOffset));
+                }
+            }
+            return Math.round(totalCostGrand);
+        }
+
+        function simulateCategoryCostAndAffordability(categoryKey, collegeStartYear) {
+            const targetCoveragePct = (parseFloat(document.getElementById('finance-entire-college').value) || 100) / 100;
+            const annualTuitionMap = calculateAnnualCovered529Costs(categoryKey, collegeStartYear);
+
+            const now = new Date();
+            const startYear = now.getFullYear();
+            const startMonth = now.getMonth();
+            const totalDegreeYears = getTargetDegreeYears();
+            const endYear = collegeStartYear + (totalDegreeYears - 1);
+
+            const cadenceType = document.getElementById('growth-cadence-type')?.value || 'monthly';
+            const baseContribution = parseFloat(document.getElementById('growth-contribution-amount')?.value) || 0;
+            const targetWeekday = parseInt(document.getElementById('growth-weekday-select')?.value) || 5;
+
+            const initialBalance = document.getElementById('has-529-plan').value === 'yes' ? (parseFloat(document.getElementById('current-529-balance').value) || 0) : 0;
+
+            let runningBalance = initialBalance;
+
+            for (let yr = startYear; yr <= endYear; yr++) {
+                let yrCoveredCost = annualTuitionMap[yr] || 0;
+                const mStart = (yr === startYear) ? startMonth : 0;
+
+                for (let m = mStart; m < 12; m++) {
+                    const keyKey = `${yr}-${m.toString().padStart(2, '0')}`;
+                    const customObj = overridesMap[keyKey] || {};
+
+                    let rowRate = customObj.contribution !== undefined ? customObj.contribution : baseContribution;
+                    rowRate = Math.round(rowRate * 100) / 100;
+
+                    let totalMonthlyFromCadence = rowRate;
+                    if (cadenceType === 'weekly') {
+                        const dayCount = countWeekdayInMonth(yr, m, targetWeekday);
+                        totalMonthlyFromCadence = Math.round((rowRate * dayCount) * 100) / 100;
+                    }
+
+                    const staticLumpsums = plannedLumpsums
+                        .filter(l => l.year === yr && l.month === m)
+                        .reduce((acc, curr) => acc + curr.amount, 0);
+
+                    let rowLumpsum = customObj.lumpsum !== undefined ? customObj.lumpsum : staticLumpsums;
+                    rowLumpsum = Math.round(rowLumpsum * 100) / 100;
+
+                    const totalMoContrib = totalMonthlyFromCadence + rowLumpsum;
+
+                    let withdrawal = 0;
+                    if (yr >= collegeStartYear) {
+                        if (m === 6 || m === 11) {
+                            withdrawal = yrCoveredCost / 2;
+                        }
+                    }
+
+                    const isDrawdownPeriod = (yr > collegeStartYear) || (yr === collegeStartYear && m >= 6);
+                    const growthRate = isDrawdownPeriod ? DAILY_RATE_DRAWDOWN : DAILY_RATE_ACCUMULATION;
+
+                    const daysInMonth = new Date(yr, m + 1, 0).getDate();
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        runningBalance *= (1 + growthRate);
+                    }
+
+                    runningBalance += totalMoContrib;
+                    runningBalance -= withdrawal;
+                }
+            }
+
+            const totalCostGrand = calculate4YearGrandTotalCost(categoryKey, collegeStartYear);
+            const targetRequiredFund = totalCostGrand * targetCoveragePct;
+            let status = 'unaffordable';
+            let buttonBgStyle = 'bg-rose-950/80 text-rose-200 border-rose-500/50 hover:bg-rose-900/80';
+            let activeStyle = 'ring-2 ring-rose-400 bg-rose-900 text-white font-extrabold shadow-lg shadow-rose-950/50';
+
+            if (runningBalance >= 0) {
+                status = 'well_within';
+                buttonBgStyle = 'bg-emerald-950/80 text-emerald-200 border-emerald-500/50 hover:bg-emerald-900/80';
+                activeStyle = 'ring-2 ring-emerald-400 bg-emerald-900 text-white font-extrabold shadow-lg shadow-emerald-950/50';
+            } else if (runningBalance >= -targetRequiredFund * 0.3) {
+                status = 'manageable';
+                buttonBgStyle = 'bg-amber-950/80 text-amber-200 border-amber-500/50 hover:bg-amber-900/80';
+                activeStyle = 'ring-2 ring-amber-400 bg-amber-900 text-white font-extrabold shadow-lg shadow-amber-950/50';
+            }
+
+            return { status, buttonBgStyle, activeStyle, projectedFund: runningBalance, targetRequiredFund };
+        }
+
+        function renderExpenseTabsAndContent() {
+            const homeState = document.getElementById('home-state').value;
+            const chosenCats = categorizeColleges(homeState);
+            const isCommunityCollegeSelected = document.getElementById('toggle-community-college').checked;
+
+            const ccTitle = getCommunityCollegeStrategyTitle();
+
+            const tabsContainer = document.getElementById('expense-page-tabs');
+            tabsContainer.innerHTML = '';
+
+            const availableTabs = [...chosenCats];
+            if (isCommunityCollegeSelected) {
+                availableTabs.push({ key: "community_2plus2", title: ccTitle });
+            }
+
+            if (availableTabs.length === 0) {
+                tabsContainer.innerHTML = '<span class="text-xs text-slate-500 italic">No college categories selected yet. Please select colleges in Step 1.</span>';
+                document.getElementById('expense-tab-content').innerHTML = '';
+                return;
+            }
+
+            if (!activeTabCategory || !availableTabs.some(t => t.key === activeTabCategory)) {
+                activeTabCategory = availableTabs[0].key;
+            }
+
+            const collegeStartYear = getCollegeStartYear();
+
+            availableTabs.forEach(tab => {
+                const aff = simulateCategoryCostAndAffordability(tab.key, collegeStartYear);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                const isActive = tab.key === activeTabCategory;
+
+                btn.className = `px-3.5 py-2 rounded-xl border text-xs font-mono transition flex items-center gap-2 cursor-pointer ${
+                    isActive ? aff.activeStyle : aff.buttonBgStyle
+                }`;
+
+                btn.innerHTML = `
+                    <span class="w-2 h-2 rounded-full ${
+                        aff.status === 'well_within' ? 'bg-emerald-400' : aff.status === 'manageable' ? 'bg-amber-400' : 'bg-rose-400'
+                    }"></span>
+                    <span>${tab.title}</span>
+                `;
+
+                btn.addEventListener('click', () => {
+                    activeTabCategory = tab.key;
+                    saveAllState();
+                    renderExpenseTabsAndContent();
+                });
+                tabsContainer.appendChild(btn);
+            });
+
+            const baseYear = 2026;
+            const yearsUntilStart = Math.max(0, collegeStartYear - baseYear);
+            const totalDegreeYears = getTargetDegreeYears();
+            const contentBox = document.getElementById('expense-tab-content');
+            
+            if (activeTabCategory === "community_2plus2") {
+                const preset = costPresets.community_2plus2;
+                document.getElementById('expense-page-title').textContent = ccTitle;
+
+                const isOffcampusOn = document.getElementById('toggle-cc-offcampus').checked;
+                const isParentsOn = document.getElementById('toggle-cc-parents').checked;
+
+                let tableRows = '';
+                let totalCoveredGrand = 0;
+                let totalNonQualifiedGrand = 0;
+                let totalGrandTotal = 0;
+
+                for (let yr = 1; yr <= totalDegreeYears; yr++) {
+                    const currentYr = collegeStartYear + (yr - 1);
+                    const yrOffset = yearsUntilStart + (yr - 1);
+                    const isCC = yr <= 2;
+                    let stageLabel = isCC ? `Year ${yr}: Community College` : `Year ${yr}: University Transfer`;
+
+                    const baseT = isCC ? preset.tuitionCC : preset.tuitionUni;
+                    let baseH = isCC ? preset.housingCC : preset.housingUni;
+                    if (isCC) {
+                        if (isOffcampusOn) { baseH = 8000; stageLabel += ' (Off-Campus)'; }
+                        else if (isParentsOn) { baseH = 4000; stageLabel += ' (Living at Home)'; }
+                    }
+
+                    const baseTech = isCC ? preset.techCC : preset.techUni;
+                    const baseNonQual = isCC ? preset.nonQualifiedCC : preset.nonQualifiedUni;
+
+                    const adjTuition = Math.round(baseT * Math.pow(1 + TUITION_INFLATION, yrOffset));
+                    const adjHousing = Math.round(baseH * Math.pow(1 + HOUSING_INFLATION, yrOffset));
+                    const adjTech = Math.round(baseTech * Math.pow(1 + TUITION_INFLATION, yrOffset));
+                    const coveredSubtotal = adjTuition + adjHousing + adjTech;
+
+                    const adjNonQualified = Math.round(baseNonQual * Math.pow(1 + GENERAL_INFLATION, yrOffset));
+                    const yrGrandTotal = coveredSubtotal + adjNonQualified;
+
+                    totalCoveredGrand += coveredSubtotal;
+                    totalNonQualifiedGrand += adjNonQualified;
+                    totalGrandTotal += yrGrandTotal;
+
+                    tableRows += `
+                        <tr class="border-b border-slate-800/80 hover:bg-slate-800/30 transition">
+                            <td class="py-2.5 px-3 font-bold text-slate-200">${currentYr} (${stageLabel})</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-emerald-400">$${adjTuition.toLocaleString()}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-emerald-400">${adjHousing > 0 ? '$' + adjHousing.toLocaleString() : '<span class="text-slate-500">$0 (Living Home)</span>'}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-emerald-400">$${adjTech.toLocaleString()}</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-extrabold text-emerald-300 bg-emerald-950/30 border-x border-emerald-500/20">$${coveredSubtotal.toLocaleString()}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-rose-400 bg-rose-950/20">$${adjNonQualified.toLocaleString()}</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-extrabold text-cyan-300">$${yrGrandTotal.toLocaleString()}</td>
+                        </tr>
+                    `;
+                }
+
+                contentBox.innerHTML = `
+                    <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-xs font-mono text-slate-300">
+                        <p class="text-cyan-300 font-bold mb-1">${ccTitle} Calculation Breakdown (${totalDegreeYears}-Year Target Degree Path)</p>
+                        <p>${preset.desc}</p>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/80">
+                        <table class="w-full text-left text-xs font-mono">
+                            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase text-[10px]">
+                                <tr>
+                                    <th class="py-2 px-3">Academic Year & Institution</th>
+                                    <th class="py-2 px-3 text-right text-emerald-400">Tuition & Fees</th>
+                                    <th class="py-2 px-3 text-right text-emerald-400">Housing & Dorm</th>
+                                    <th class="py-2 px-3 text-right text-emerald-400">Books & Tech</th>
+                                    <th class="py-2 px-3 text-right text-emerald-300 bg-emerald-950/50 border-x border-emerald-500/30">
+                                        <div class="inline-flex items-center gap-1">
+                                            <span>Subtotal (529 Covered Costs)</span>
+                                            <button type="button" onclick="openQualifiedModal()" class="text-slate-400 hover:text-emerald-400 transition" title="View 529 Covered Expenses">
+                                                <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                                            </button>
+                                        </div>
+                                    </th>
+                                    <th class="py-2 px-3 text-right text-rose-400 bg-rose-950/40">
+                                        <div class="inline-flex items-center gap-1">
+                                            <span>Non-Qualified Expenses</span>
+                                            <button type="button" onclick="openNonQualifiedModal()" class="text-slate-400 hover:text-rose-400 transition" title="View Non-Qualified Personal Expenses">
+                                                <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                                            </button>
+                                        </div>
+                                    </th>
+                                    <th class="py-2 px-3 text-right text-cyan-300">Degree Grand Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>${tableRows}</tbody>
+                            <tfoot class="bg-slate-950/90 border-t border-slate-700 font-bold">
+                                <tr>
+                                    <td class="py-2.5 px-3 text-slate-200" colspan="4">Total Estimated ${totalDegreeYears}-Year Cost (${ccTitle})</td>
+                                    <td class="py-2.5 px-3 text-right text-emerald-300 bg-emerald-950/50 border-x border-emerald-500/30 font-extrabold text-sm">$${totalCoveredGrand.toLocaleString()}</td>
+                                    <td class="py-2.5 px-3 text-right text-rose-400 bg-rose-950/40 font-extrabold text-sm">$${totalNonQualifiedGrand.toLocaleString()}</td>
+                                    <td class="py-2.5 px-3 text-right text-cyan-400 font-extrabold text-sm">$${totalGrandTotal.toLocaleString()}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                `;
+            } else {
+                const preset = costPresets[activeTabCategory] || costPresets.in_state;
+                document.getElementById('expense-page-title').textContent = preset.title;
+
+                let tableRows = '';
+                let totalCoveredGrand = 0;
+                let totalNonQualifiedGrand = 0;
+                let totalGrandTotal = 0;
+
+                for (let yr = 1; yr <= totalDegreeYears; yr++) {
+                    const currentYr = collegeStartYear + (yr - 1);
+                    const yrOffset = yearsUntilStart + (yr - 1);
+
+                    const adjTuition = Math.round(preset.tuition * Math.pow(1 + TUITION_INFLATION, yrOffset));
+                    const adjHousing = Math.round(preset.housing * Math.pow(1 + HOUSING_INFLATION, yrOffset));
+                    const adjTech = Math.round(preset.tech * Math.pow(1 + TUITION_INFLATION, yrOffset));
+                    const coveredSubtotal = adjTuition + adjHousing + adjTech;
+
+                    const adjNonQualified = Math.round(preset.nonQualified * Math.pow(1 + GENERAL_INFLATION, yrOffset));
+                    const yrGrandTotal = coveredSubtotal + adjNonQualified;
+
+                    totalCoveredGrand += coveredSubtotal;
+                    totalNonQualifiedGrand += adjNonQualified;
+                    totalGrandTotal += yrGrandTotal;
+
+                    tableRows += `
+                        <tr class="border-b border-slate-800/80 hover:bg-slate-800/30 transition">
+                            <td class="py-2.5 px-3 font-bold text-slate-200">${currentYr} (Year ${yr})</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-emerald-400">$${adjTuition.toLocaleString()}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-emerald-400">$${adjHousing.toLocaleString()}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-emerald-400">$${adjTech.toLocaleString()}</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-extrabold text-emerald-300 bg-emerald-950/30 border-x border-emerald-500/20">$${coveredSubtotal.toLocaleString()}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-rose-400 bg-rose-950/20">$${adjNonQualified.toLocaleString()}</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-extrabold text-cyan-300">$${yrGrandTotal.toLocaleString()}</td>
+                        </tr>
+                    `;
+                }
+
+                contentBox.innerHTML = `
+                    <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-xs font-mono text-slate-300">
+                        <p class="text-cyan-300 font-bold mb-1">${preset.title} Inflation-Adjusted Itemized Breakdown (${totalDegreeYears}-Year Degree Path)</p>
+                        <p>${preset.desc}</p>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/80">
+                        <table class="w-full text-left text-xs font-mono">
+                            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase text-[10px]">
+                                <tr>
+                                    <th class="py-2 px-3">Academic Year</th>
+                                    <th class="py-2 px-3 text-right text-emerald-400">Tuition & Fees</th>
+                                    <th class="py-2 px-3 text-right text-emerald-400">Housing & Dorm</th>
+                                    <th class="py-2 px-3 text-right text-emerald-400">Books & Tech</th>
+                                    <th class="py-2 px-3 text-right text-emerald-300 bg-emerald-950/50 border-x border-emerald-500/30">
+                                        <div class="inline-flex items-center gap-1">
+                                            <span>Subtotal (529 Covered Costs)</span>
+                                            <button type="button" onclick="openQualifiedModal()" class="text-slate-400 hover:text-emerald-400 transition" title="View 529 Covered Expenses">
+                                                <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                                            </button>
+                                        </div>
+                                    </th>
+                                    <th class="py-2 px-3 text-right text-rose-400 bg-rose-950/40">
+                                        <div class="inline-flex items-center gap-1">
+                                            <span>Non-Qualified Expenses</span>
+                                            <button type="button" onclick="openNonQualifiedModal()" class="text-slate-400 hover:text-rose-400 transition" title="View Non-Qualified Personal Expenses">
+                                                <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                                            </button>
+                                        </div>
+                                    </th>
+                                    <th class="py-2 px-3 text-right text-cyan-300">Degree Grand Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>${tableRows}</tbody>
+                            <tfoot class="bg-slate-950/90 border-t border-slate-700 font-bold">
+                                <tr>
+                                    <td class="py-2.5 px-3 text-slate-200" colspan="4">Total Estimated ${totalDegreeYears}-Year Cost</td>
+                                    <td class="py-2.5 px-3 text-right text-emerald-300 bg-emerald-950/50 border-x border-emerald-500/30 font-extrabold text-sm">$${totalCoveredGrand.toLocaleString()}</td>
+                                    <td class="py-2.5 px-3 text-right text-rose-400 bg-rose-950/40 font-extrabold text-sm">$${totalNonQualifiedGrand.toLocaleString()}</td>
+                                    <td class="py-2.5 px-3 text-right text-cyan-400 font-extrabold text-sm">$${totalGrandTotal.toLocaleString()}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                `;
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function calculateAgeAndGrade(dobString) {
+            if (!dobString) return { age: 0, grade: 12, collegeYear: 2027 };
+            const dob = new Date(dobString);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) { age--; }
+            if (age < 0) age = 0;
+
+            let estimatedGrade = age - 5;
+            if (estimatedGrade < -2) estimatedGrade = -2;
+            if (estimatedGrade > 12) estimatedGrade = 12;
+
+            const currentYear = today.getFullYear();
+            const collegeYear = currentYear + (13 - estimatedGrade);
+            return { age, grade: estimatedGrade, collegeYear };
+        }
+
+        function renderParentCategoryList() {
+            const homeState = document.getElementById('home-state').value;
+            const chosenCats = categorizeColleges(homeState);
+            const catContainer = document.getElementById('category-priority-list');
+            catContainer.innerHTML = '';
+
+            if (chosenCats.length === 0) {
+                catContainer.innerHTML = '<div class="text-slate-500 italic text-xs col-span-2">No college categories selected yet. Please select colleges in Step 1.</div>';
+                return;
+            }
+
+            chosenCats.forEach(cat => {
+                const styleObj = categoryColorStyles[cat.key] || categoryColorStyles.in_state;
+                const card = document.createElement('div');
+                card.className = 'px-3 py-2 bg-slate-900/90 rounded-lg border border-slate-800/80 space-y-1';
+                
+                const collegeLinesHTML = cat.list.map(item => `
+                    <div class="text-xs text-slate-300 font-mono font-bold flex items-center justify-between">
+                        <span>• ${item.name} (${item.state})</span>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-1">
+                        <span class="font-extrabold text-cyan-300 text-xs">${cat.title}</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded border font-bold ${styleObj.badge}">
+                            ${cat.list.length}
+                        </span>
+                    </div>
+                    <div class="space-y-0.5 pt-1">
+                        ${collegeLinesHTML}
+                    </div>
+                `;
+                catContainer.appendChild(card);
+            });
+        }
+
+        function countWeekdayInMonth(year, monthIndex, targetWeekday) {
+            let count = 0;
+            const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const d = new Date(year, monthIndex, day);
+                if (d.getDay() === targetWeekday) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        function populateLumpsumYearDropdown(startYear, endYear) {
+            const select = document.getElementById('lumpsum-year-input');
+            const currentSelectedYear = parseInt(select.value) || startYear;
+            select.options.length = 0;
+            for (let y = startYear; y <= endYear; y++) {
+                select.add(new Option(y, y));
+            }
+            if (currentSelectedYear >= startYear && currentSelectedYear <= endYear) {
+                select.value = currentSelectedYear;
+            } else {
+                select.value = startYear;
+            }
+            updateLumpsumMonthOptions();
+        }
+
+        function updateLumpsumMonthOptions() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+
+            const selectedYear = parseInt(document.getElementById('lumpsum-year-input').value) || currentYear;
+            const monthSelect = document.getElementById('lumpsum-month-input');
+            const currentSelectedMonth = parseInt(monthSelect.value);
+
+            monthSelect.options.length = 0;
+
+            const startM = (selectedYear === currentYear) ? currentMonth : 0;
+            for (let m = startM; m < 12; m++) {
+                monthSelect.add(new Option(monthNames[m], m));
+            }
+
+            if (currentSelectedMonth >= startM && currentSelectedMonth < 12) {
+                monthSelect.value = currentSelectedMonth;
+            } else {
+                monthSelect.value = startM;
+            }
+        }
+
+        function renderLumpsumTable() {
+            const tbody = document.getElementById('lumpsum-table-body');
+            tbody.innerHTML = '';
+
+            if (plannedLumpsums.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="py-2 px-3 text-slate-500 italic text-center">No lumpsums added yet.</td></tr>';
+                return;
+            }
+
+            plannedLumpsums.forEach((item) => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-800/60 hover:bg-slate-800/30';
+                tr.innerHTML = `
+                    <td class="py-1.5 px-3 font-bold text-slate-200">${monthNames[item.month]} ${item.year}</td>
+                    <td class="py-1.5 px-3 font-mono text-emerald-400 font-bold">$${item.amount.toLocaleString()}</td>
+                    <td class="py-1.5 px-3 text-right">
+                        <div class="flex items-center justify-end gap-1.5">
+                            <button type="button" onclick="repeatLumpsumNextYear(${item.id})" class="px-2 py-0.5 bg-slate-800 hover:bg-cyan-950 text-cyan-300 border border-slate-700 rounded text-[10px] font-mono transition" title="Repeat for Next Year">
+                                +1 Yr
+                            </button>
+                            <button type="button" onclick="removeLumpsum(${item.id})" class="text-slate-400 hover:text-rose-400 transition font-bold px-1">&times;</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function removeLumpsum(id) {
+            plannedLumpsums = plannedLumpsums.filter(l => l.id !== id);
+            saveAllState();
+            renderLumpsumTable();
+            renderGrowthProjectionsUI();
+        }
+
+        function repeatLumpsumNextYear(id) {
+            const found = plannedLumpsums.find(l => l.id === id);
+            if (!found) return;
+            const newLumpsum = {
+                id: Date.now() + Math.random(),
+                month: found.month,
+                year: found.year + 1,
+                amount: found.amount
+            };
+            plannedLumpsums.push(newLumpsum);
+            saveAllState();
+            renderLumpsumTable();
+            renderGrowthProjectionsUI();
+        }
+
+        function renderGrowthProjectionsUI() {
+            const homeState = document.getElementById('home-state').value;
+            const chosenCats = categorizeColleges(homeState);
+            const isCommunityCollegeSelected = document.getElementById('toggle-community-college').checked;
+
+            const ccTitle = getCommunityCollegeStrategyTitle();
+
+            const availableTabs = [...chosenCats];
+            if (isCommunityCollegeSelected) {
+                availableTabs.push({ key: "community_2plus2", title: ccTitle });
+            }
+
+            if (availableTabs.length === 0) return;
+
+            if (!activeTabCategory || !availableTabs.some(t => t.key === activeTabCategory)) {
+                activeTabCategory = availableTabs[0].key;
+            }
+
+            const collegeStartYear = getCollegeStartYear();
+            const strategyTabsContainer = document.getElementById('growth-strategy-tabs');
+            strategyTabsContainer.innerHTML = '';
+
+            availableTabs.forEach(tab => {
+                const aff = simulateCategoryCostAndAffordability(tab.key, collegeStartYear);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                const isActive = tab.key === activeTabCategory;
+
+                btn.className = `px-3.5 py-2 rounded-xl border text-xs font-mono transition flex items-center gap-2 cursor-pointer ${
+                    isActive ? aff.activeStyle : aff.buttonBgStyle
+                }`;
+
+                btn.innerHTML = `
+                    <span class="w-2 h-2 rounded-full ${
+                        aff.status === 'well_within' ? 'bg-emerald-400' : aff.status === 'manageable' ? 'bg-amber-400' : 'bg-rose-400'
+                    }"></span>
+                    <span>${tab.title}</span>
+                `;
+
+                btn.addEventListener('click', () => {
+                    activeTabCategory = tab.key;
+                    saveAllState();
+                    renderGrowthProjectionsUI();
+                });
+                strategyTabsContainer.appendChild(btn);
+            });
+
+            const activePreset = costPresets[activeTabCategory] || costPresets.in_state;
+            document.getElementById('growth-active-strategy-title').textContent = (activeTabCategory === 'community_2plus2') ? ccTitle : activePreset.title;
+
+            const annualTuitionMap = calculateAnnualCovered529Costs(activeTabCategory, collegeStartYear);
+
+            const now = new Date();
+            const startYear = now.getFullYear();
+            const startMonth = now.getMonth();
+            const totalDegreeYears = getTargetDegreeYears();
+            const endYear = collegeStartYear + (totalDegreeYears - 1);
+
+            populateLumpsumYearDropdown(startYear, endYear);
+
+            const cadenceType = document.getElementById('growth-cadence-type').value;
+            const baseContribution = parseFloat(document.getElementById('growth-contribution-amount').value) || 0;
+            const targetWeekday = parseInt(document.getElementById('growth-weekday-select').value) || 5;
+
+            const initialBalance = document.getElementById('has-529-plan').value === 'yes' ? (parseFloat(document.getElementById('current-529-balance').value) || 0) : 0;
+
+            let runningBalance = initialBalance;
+            let cumulativeContribution = initialBalance;
+
+            const tablesContainer = document.getElementById('growth-annual-tables-container');
+            tablesContainer.innerHTML = '';
+
+            const dynamicWeekdayHeader = weekdayPluralNames[targetWeekday] || "Days in the Month";
+
+            for (let yr = startYear; yr <= endYear; yr++) {
+                const annualCard = document.createElement('div');
+                annualCard.className = 'glass-card rounded-xl border-slate-800 overflow-hidden';
+
+                let isExpanded = annualCollapsedState[yr];
+                if (isExpanded === undefined) {
+                    isExpanded = (yr === startYear || yr === collegeStartYear);
+                    annualCollapsedState[yr] = isExpanded;
+                }
+
+                annualCard.innerHTML = `
+                    <div class="p-3 bg-slate-900/90 border-b border-slate-800/80 flex items-center justify-between cursor-pointer" onclick="toggleAnnualCollapse('${yr}')">
+                        <div class="flex items-center gap-2 font-mono text-xs font-bold text-white">
+                            <i data-lucide="${yr >= collegeStartYear ? 'graduation-cap' : 'piggy-bank'}" class="w-4 h-4 ${yr >= collegeStartYear ? 'text-cyan-400' : 'text-emerald-400'}"></i>
+                            <span>Year ${yr} ${yr >= collegeStartYear ? `(Academic Year ${yr - collegeStartYear + 1})` : '(Savings Accumulation)'}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span id="header-bal-${yr}" class="text-xs font-mono text-cyan-300 font-extrabold">End Bal: $0</span>
+                            <i id="icon-collapse-${yr}" data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4 text-slate-400"></i>
+                        </div>
+                    </div>
+
+                    <div id="annual-content-${yr}" class="${isExpanded ? '' : 'hidden'} space-y-2 p-3">
+                        <div class="flex items-center justify-between p-2 bg-slate-950/60 rounded-lg border border-slate-800 text-xs font-mono">
+                            <span class="text-slate-400 font-bold flex items-center gap-1">
+                                <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-cyan-400"></i> Bulk Update ${yr} ${cadenceType === 'weekly' ? 'Weekly contribution' : 'Monthly contribution'}:
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <input type="number" step="any" id="bulk-rate-${yr}" placeholder="$${baseContribution}" class="w-24 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-right text-emerald-400 font-bold outline-none focus:border-cyan-400 select-text">
+                                <button type="button" onclick="applyBulkAnnualRate(${yr})" class="px-2.5 py-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded text-[11px] transition">
+                                    Apply All
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-lg border border-slate-800 bg-slate-900/40">
+                            <table class="w-full text-left text-xs font-mono">
+                                <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase text-[10px]">
+                                    <tr>
+                                        <th class="py-2 px-2.5">Month</th>
+                                        <th class="py-2 px-2.5 text-right">${cadenceType === 'weekly' ? 'Weekly contribution' : 'Monthly contribution'}</th>
+                                        ${cadenceType === 'weekly' ? `<th class="py-2 px-2.5 text-center">${dynamicWeekdayHeader}</th><th class="py-2 px-2.5 text-right text-emerald-300">Total Weekly Mo.</th>` : ''}
+                                        <th class="py-2 px-2.5 text-right text-cyan-300">Planned Lumpsum</th>
+                                        <th class="py-2 px-2.5 text-right text-emerald-400">Total Monthly Contrib.</th>
+                                        <th class="py-2 px-2.5 text-right text-slate-300">Cumulative Contrib.</th>
+                                        <th class="py-2 px-2.5 text-right text-rose-400">Tuition Withdrawal</th>
+                                        <th class="py-2 px-2.5 text-right text-cyan-300 font-bold">Projected Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-yr-${yr}"></tbody>
+                            </table>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1">
+                            <span>Month / Frequency</span>
+                            <span>Calculated Monthly Values &amp; Withdrawals</span>
+                        </div>
+                    </div>
+                `;
+
+                tablesContainer.appendChild(annualCard);
+
+                const tbody = document.getElementById(`tbody-yr-${yr}`);
+                let yrCoveredCost = annualTuitionMap[yr] || 0;
+
+                const mStart = (yr === startYear) ? startMonth : 0;
+
+                for (let m = mStart; m < 12; m++) {
+                    const keyKey = `${yr}-${m.toString().padStart(2, '0')}`;
+                    const customObj = overridesMap[keyKey] || {};
+
+                    let rowRate = customObj.contribution !== undefined ? customObj.contribution : baseContribution;
+                    rowRate = Math.round(rowRate * 100) / 100;
+
+                    let dayCount = 0;
+                    let totalMonthlyFromCadence = rowRate;
+
+                    if (cadenceType === 'weekly') {
+                        dayCount = countWeekdayInMonth(yr, m, targetWeekday);
+                        totalMonthlyFromCadence = Math.round((rowRate * dayCount) * 100) / 100;
+                    }
+
+                    const staticLumpsums = plannedLumpsums
+                        .filter(l => l.year === yr && l.month === m)
+                        .reduce((acc, curr) => acc + curr.amount, 0);
+
+                    let rowLumpsum = customObj.lumpsum !== undefined ? customObj.lumpsum : staticLumpsums;
+                    rowLumpsum = Math.round(rowLumpsum * 100) / 100;
+
+                    const totalMoContrib = totalMonthlyFromCadence + rowLumpsum;
+                    cumulativeContribution += totalMoContrib;
+
+                    let withdrawal = 0;
+                    if (yr >= collegeStartYear) {
+                        if (m === 6 || m === 11) {
+                            withdrawal = yrCoveredCost / 2;
+                        }
+                    }
+
+                    const isDrawdownPeriod = (yr > collegeStartYear) || (yr === collegeStartYear && m >= 6);
+                    const growthRate = isDrawdownPeriod ? DAILY_RATE_DRAWDOWN : DAILY_RATE_ACCUMULATION;
+
+                    const daysInMonth = new Date(yr, m + 1, 0).getDate();
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        runningBalance *= (1 + growthRate);
+                    }
+
+                    runningBalance += totalMoContrib;
+                    runningBalance -= withdrawal;
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'border-b border-slate-800/60 hover:bg-slate-800/30 transition';
+                    tr.innerHTML = `
+                        <td class="py-2 px-2.5 font-bold text-slate-200">${monthNames[m]} ${yr}</td>
+                        <td class="py-2 px-2.5 text-right">
+                            <input type="number" step="any" value="${rowRate}" onchange="updateCellOverride('${keyKey}', 'contribution', this.value)" class="w-20 px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-right font-bold text-white outline-none focus:border-cyan-400 select-text">
+                        </td>
+                        ${cadenceType === 'weekly' ? `<td class="py-2 px-2.5 text-center text-slate-400 font-bold">${dayCount}</td><td class="py-2 px-2.5 text-right font-mono text-emerald-300">$${totalMonthlyFromCadence.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>` : ''}
+                        <td class="py-2 px-2.5 text-right">
+                            <input type="number" step="any" value="${rowLumpsum}" onchange="updateCellOverride('${keyKey}', 'lumpsum', this.value)" class="w-20 px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-right font-bold text-cyan-300 outline-none focus:border-cyan-400 select-text">
+                        </td>
+                        <td class="py-2 px-2.5 text-right font-mono font-bold text-emerald-400">$${totalMoContrib.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td class="py-2 px-2.5 text-right font-mono text-slate-400">$${Math.round(cumulativeContribution).toLocaleString()}</td>
+                        <td class="py-2 px-2.5 text-right font-mono text-rose-400 font-bold">${withdrawal > 0 ? '-$' + Math.round(withdrawal).toLocaleString() : '$0'}</td>
+                        <td class="py-2 px-2.5 text-right font-mono font-extrabold ${runningBalance >= 0 ? 'text-cyan-300' : 'text-rose-400'}">$${Math.round(runningBalance).toLocaleString()}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+
+                document.getElementById(`header-bal-${yr}`).textContent = `End Bal: $${Math.round(runningBalance).toLocaleString()}`;
+            }
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function toggleAnnualCollapse(yr) {
+            const content = document.getElementById(`annual-content-${yr}`);
+            const icon = document.getElementById(`icon-collapse-${yr}`);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.setAttribute('data-lucide', 'chevron-up');
+                annualCollapsedState[yr] = true;
+            } else {
+                content.classList.add('hidden');
+                icon.setAttribute('data-lucide', 'chevron-down');
+                annualCollapsedState[yr] = false;
+            }
+            saveAllState();
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function toggleSummaryAnnualCollapse(yr) {
+            const content = document.getElementById(`summary-annual-content-${yr}`);
+            const icon = document.getElementById(`summary-icon-collapse-${yr}`);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.setAttribute('data-lucide', 'chevron-up');
+                summaryAnnualCollapsedState[yr] = true;
+            } else {
+                content.classList.add('hidden');
+                icon.setAttribute('data-lucide', 'chevron-down');
+                summaryAnnualCollapsedState[yr] = false;
+            }
+            saveAllState();
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function toggleAllSummaryScheduleYears() {
+            const collegeYear = getCollegeStartYear();
+            const now = new Date();
+            const startYear = now.getFullYear();
+            const totalDegreeYears = getTargetDegreeYears();
+            const endYear = collegeYear + (totalDegreeYears - 1);
+
+            const allCollapsed = Object.keys(summaryAnnualCollapsedState).length > 0 && 
+                Object.values(summaryAnnualCollapsedState).every(val => val === false);
+
+            const targetState = allCollapsed;
+
+            for (let yr = startYear; yr <= endYear; yr++) {
+                summaryAnnualCollapsedState[yr] = targetState;
+            }
+
+            saveAllState();
+            renderSummaryPrintableSchedule(collegeYear);
+
+            const btnText = document.getElementById('lbl-toggle-all-summary');
+            if (btnText) {
+                btnText.textContent = targetState ? "Collapse All" : "Expand All";
+            }
+        }
+
+        function applyBulkAnnualRate(yr) {
+            const val = parseFloat(document.getElementById(`bulk-rate-${yr}`).value);
+            if (isNaN(val)) return;
+
+            for (let m = 0; m < 12; m++) {
+                const keyKey = `${yr}-${m.toString().padStart(2, '0')}`;
+                if (!overridesMap[keyKey]) overridesMap[keyKey] = {};
+                overridesMap[keyKey].contribution = val;
+            }
+
+            annualCollapsedState[yr] = true;
+            saveAllState();
+            renderGrowthProjectionsUI();
+        }
+
+        function updateCellOverride(keyKey, field, valStr) {
+            const val = parseFloat(valStr);
+            if (isNaN(val)) return;
+
+            if (!overridesMap[keyKey]) overridesMap[keyKey] = {};
+            overridesMap[keyKey][field] = val;
+
+            saveAllState();
+            renderGrowthProjectionsUI();
+        }
+
+        function processStudentAnswers() {
+            const studentName = document.getElementById('student-name').value.trim();
+            const studentDob = document.getElementById('student-dob').value;
+
+            if (!studentName || !studentDob) {
+                alert('Please enter both Student Name and Birth Date.');
+                return;
+            }
+
+            if (selectedColleges.length < 3) {
+                alert(`Please select at least 3 colleges before proceeding. Currently selected: ${selectedColleges.length}.`);
+                return;
+            }
+
+            updateCollegeStartYearDOM();
+            updatePrimaryInterestUI();
+
+            document.getElementById('parent-student-name').textContent = studentName;
+
+            renderParentCategoryList();
+            renderExpenseTabsAndContent();
+
+            currentStep = 2;
+            saveAllState();
+
+            document.getElementById('section-student').classList.add('hidden');
+            document.getElementById('section-growth').classList.add('hidden');
+            document.getElementById('section-summary').classList.add('hidden');
+            document.getElementById('section-parent').classList.remove('hidden');
+
+            updateHeaderButtonsState();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function transitionToStep3() {
+            currentStep = 3;
+
+            const monthlyCapacity = parseFloat(document.getElementById('monthly-savings-capacity').value) || 300;
+            const cadenceType = document.getElementById('growth-cadence-type').value;
+
+            if (cadenceType === 'weekly') {
+                const computedWeekly = Math.floor((12 * monthlyCapacity) / 52);
+                document.getElementById('growth-contribution-amount').value = computedWeekly;
+            } else {
+                document.getElementById('growth-contribution-amount').value = monthlyCapacity;
+            }
+
+            saveAllState();
+            renderLumpsumTable();
+            renderGrowthProjectionsUI();
+
+            document.getElementById('section-student').classList.add('hidden');
+            document.getElementById('section-parent').classList.add('hidden');
+            document.getElementById('section-summary').classList.add('hidden');
+            document.getElementById('section-growth').classList.remove('hidden');
+
+            updateHeaderButtonsState();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function transitionToStep4() {
+            currentStep = 4;
+
+            const collegeYear = getCollegeStartYear();
+            const totalDegreeYears = getTargetDegreeYears();
+            const gradYear = collegeYear + totalDegreeYears;
+            const primaryInterestText = updatePrimaryInterestUI();
+
+            saveAllState();
+
+            const studentName = document.getElementById('student-name').value || 'Student';
+            
+            const homeState = document.getElementById('home-state').value;
+            const chosenCats = categorizeColleges(homeState);
+            const isCommunityCollegeSelected = document.getElementById('toggle-community-college').checked;
+            const ccTitle = getCommunityCollegeStrategyTitle();
+
+            const availableTabs = [...chosenCats];
+            if (isCommunityCollegeSelected) {
+                availableTabs.push({ key: "community_2plus2", title: ccTitle });
+            }
+            if (!activeTabCategory || !availableTabs.some(t => t.key === activeTabCategory)) {
+                if (availableTabs.length > 0) activeTabCategory = availableTabs[0].key;
+            }
+
+            const activePreset = costPresets[activeTabCategory] || costPresets.in_state;
+            const activeStrategyTitle = (activeTabCategory === 'community_2plus2') ? ccTitle : activePreset.title;
+
+            const grandTotalCost = calculate4YearGrandTotalCost(activeTabCategory, collegeYear);
+            const targetDegreeSelect = document.getElementById('target-degree-select');
+            const targetDegreeText = targetDegreeSelect.options[targetDegreeSelect.selectedIndex]?.text || `${totalDegreeYears}-Year Degree`;
+
+            document.getElementById('sum-student-name').textContent = studentName;
+            document.getElementById('sum-primary-interest').textContent = primaryInterestText;
+            document.getElementById('sum-target-degree').textContent = targetDegreeText;
+            document.getElementById('sum-college-year').textContent = collegeYear;
+            document.getElementById('sum-grad-year').textContent = gradYear;
+            document.getElementById('sum-active-strategy').textContent = activeStrategyTitle;
+            document.getElementById('sum-4yr-grand-total').textContent = `$${grandTotalCost.toLocaleString()}`;
+
+            const collegesListContainer = document.getElementById('sum-selected-colleges-list');
+            const collegeCountBadge = document.getElementById('sum-college-count-badge');
+            collegesListContainer.innerHTML = '';
+
+            collegeCountBadge.textContent = `${selectedColleges.length} Selected`;
+
+            if (chosenCats.length === 0) {
+                collegesListContainer.innerHTML = '<div class="text-slate-500 italic text-xs font-mono col-span-2">No colleges selected.</div>';
+            } else {
+                chosenCats.forEach(cat => {
+                    const aff = simulateCategoryCostAndAffordability(cat.key, collegeYear);
+                    let cardBorderClass = "border-slate-800 bg-slate-900/80";
+                    let titleColorClass = "text-cyan-300";
+                    let badgeClass = "bg-cyan-950/60 border-cyan-500/40 text-cyan-300";
+
+                    if (aff.status === 'well_within') {
+                        cardBorderClass = "border-emerald-500/40 bg-emerald-950/20";
+                        titleColorClass = "text-emerald-400";
+                        badgeClass = "bg-emerald-950/80 border-emerald-500/50 text-emerald-300";
+                    } else if (aff.status === 'manageable') {
+                        cardBorderClass = "border-amber-500/40 bg-amber-950/20";
+                        titleColorClass = "text-amber-400";
+                        badgeClass = "bg-amber-950/80 border-amber-500/50 text-amber-300";
+                    } else {
+                        cardBorderClass = "border-rose-500/40 bg-rose-950/20";
+                        titleColorClass = "text-rose-400";
+                        badgeClass = "bg-rose-950/80 border-rose-500/50 text-rose-300";
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = `p-2.5 rounded-lg border ${cardBorderClass} space-y-1.5`;
+
+                    const itemsListHTML = cat.list.map(item => `
+                        <div class="text-[11px] text-slate-200 font-mono font-bold flex items-center justify-between">
+                            <span>• ${item.name} (${item.state})</span>
+                        </div>
+                    `).join('');
+
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-1">
+                            <span class="font-extrabold ${titleColorClass} text-[11px] uppercase tracking-wider">${cat.title}</span>
+                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border font-bold ${badgeClass}">${cat.list.length}</span>
+                        </div>
+                        <div class="space-y-0.5 pt-0.5">
+                            ${itemsListHTML}
+                        </div>
+                    `;
+                    collegesListContainer.appendChild(card);
+                });
+            }
+
+            renderSummaryPrintableSchedule(collegeYear);
+
+            document.getElementById('section-student').classList.add('hidden');
+            document.getElementById('section-parent').classList.add('hidden');
+            document.getElementById('section-growth').classList.add('hidden');
+            document.getElementById('section-summary').classList.remove('hidden');
+
+            updateHeaderButtonsState();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function transitionToStep3FromSummary() {
+            currentStep = 3;
+            saveAllState();
+
+            document.getElementById('section-student').classList.add('hidden');
+            document.getElementById('section-parent').classList.add('hidden');
+            document.getElementById('section-summary').classList.add('hidden');
+            document.getElementById('section-growth').classList.remove('hidden');
+
+            updateHeaderButtonsState();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderSummaryPrintableSchedule(collegeStartYear) {
+            const annualTuitionMap = calculateAnnualCovered529Costs(activeTabCategory, collegeStartYear);
+            const now = new Date();
+            const startYear = now.getFullYear();
+            const startMonth = now.getMonth();
+            const totalDegreeYears = getTargetDegreeYears();
+            const endYear = collegeStartYear + (totalDegreeYears - 1);
+
+            const cadenceType = document.getElementById('growth-cadence-type').value;
+            const baseContribution = parseFloat(document.getElementById('growth-contribution-amount').value) || 0;
+            const targetWeekday = parseInt(document.getElementById('growth-weekday-select').value) || 5;
+
+            const initialBalance = document.getElementById('has-529-plan').value === 'yes' ? (parseFloat(document.getElementById('current-529-balance').value) || 0) : 0;
+
+            let runningBalance = initialBalance;
+            const scheduleContainer = document.getElementById('summary-schedule-container');
+            scheduleContainer.innerHTML = '';
+
+            for (let yr = startYear; yr <= endYear; yr++) {
+                let yrCoveredCost = annualTuitionMap[yr] || 0;
+                const mStart = (yr === startYear) ? startMonth : 0;
+
+                let yrTotalContrib = 0;
+                let yrTotalLumpsum = 0;
+                let yrTotalWithdrawal = 0;
+                let monthRowsHTML = '';
+
+                for (let m = mStart; m < 12; m++) {
+                    const keyKey = `${yr}-${m.toString().padStart(2, '0')}`;
+                    const customObj = overridesMap[keyKey] || {};
+
+                    let rowRate = customObj.contribution !== undefined ? customObj.contribution : baseContribution;
+                    rowRate = Math.round(rowRate * 100) / 100;
+
+                    let totalMonthlyFromCadence = rowRate;
+                    if (cadenceType === 'weekly') {
+                        const dayCount = countWeekdayInMonth(yr, m, targetWeekday);
+                        totalMonthlyFromCadence = Math.round((rowRate * dayCount) * 100) / 100;
+                    }
+
+                    const staticLumpsums = plannedLumpsums
+                        .filter(l => l.year === yr && l.month === m)
+                        .reduce((acc, curr) => acc + curr.amount, 0);
+
+                    let rowLumpsum = customObj.lumpsum !== undefined ? customObj.lumpsum : staticLumpsums;
+                    rowLumpsum = Math.round(rowLumpsum * 100) / 100;
+
+                    const totalMoContrib = totalMonthlyFromCadence + rowLumpsum;
+
+                    let withdrawal = 0;
+                    if (yr >= collegeStartYear) {
+                        if (m === 6 || m === 11) {
+                            withdrawal = yrCoveredCost / 2;
+                        }
+                    }
+
+                    const isDrawdownPeriod = (yr > collegeStartYear) || (yr === collegeStartYear && m >= 6);
+                    const growthRate = isDrawdownPeriod ? DAILY_RATE_DRAWDOWN : DAILY_RATE_ACCUMULATION;
+
+                    const daysInMonth = new Date(yr, m + 1, 0).getDate();
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        runningBalance *= (1 + growthRate);
+                    }
+
+                    runningBalance += totalMoContrib;
+                    runningBalance -= withdrawal;
+
+                    yrTotalContrib += totalMonthlyFromCadence;
+                    yrTotalLumpsum += rowLumpsum;
+                    yrTotalWithdrawal += withdrawal;
+
+                    const isCollege = yr >= collegeStartYear;
+                    const phaseLabel = isCollege ? `Academic Year ${yr - collegeStartYear + 1}` : 'Accumulation Phase';
+
+                    monthRowsHTML += `
+                        <tr class="border-b border-slate-800/80 hover:bg-slate-800/30 transition">
+                            <td class="py-2 px-3 font-bold text-slate-200">${monthNames[m]} ${yr}</td>
+                            <td class="py-2 px-3 text-slate-400 font-bold">${phaseLabel}</td>
+                            <td class="py-2 px-3 text-right font-mono text-emerald-400">$${Math.round(totalMonthlyFromCadence).toLocaleString()}</td>
+                            <td class="py-2 px-3 text-right font-mono text-cyan-300">$${Math.round(rowLumpsum).toLocaleString()}</td>
+                            <td class="py-2 px-3 text-right font-mono text-rose-400 font-bold">${withdrawal > 0 ? '-$' + Math.round(withdrawal).toLocaleString() : '$0'}</td>
+                            <td class="py-2 px-3 text-right font-mono font-extrabold ${runningBalance >= 0 ? 'text-cyan-300' : 'text-rose-400'}">$${Math.round(runningBalance).toLocaleString()}</td>
+                        </tr>
+                    `;
+                }
+
+                let isExpanded = summaryAnnualCollapsedState[yr];
+                if (isExpanded === undefined) {
+                    isExpanded = (yr === startYear || yr === collegeStartYear);
+                    summaryAnnualCollapsedState[yr] = isExpanded;
+                }
+
+                const yearCard = document.createElement('div');
+                yearCard.className = 'glass-card rounded-xl border-slate-800 overflow-hidden';
+                yearCard.innerHTML = `
+                    <div class="p-3 bg-slate-900/90 border-b border-slate-800/80 flex items-center justify-between cursor-pointer" onclick="toggleSummaryAnnualCollapse('${yr}')">
+                        <div class="flex items-center gap-2 font-mono text-xs font-bold text-white">
+                            <i data-lucide="${yr >= collegeStartYear ? 'graduation-cap' : 'piggy-bank'}" class="w-4 h-4 ${yr >= collegeStartYear ? 'text-cyan-400' : 'text-emerald-400'}"></i>
+                            <span>Year ${yr} ${yr >= collegeStartYear ? `(Academic Year ${yr - collegeStartYear + 1})` : '(Savings Accumulation)'}</span>
+                        </div>
+                        <div class="flex items-center gap-4 text-xs font-mono">
+                            <span class="text-slate-400 font-normal">Contrib: <strong class="text-emerald-400">$${Math.round(yrTotalContrib).toLocaleString()}</strong></span>
+                            <span class="text-slate-400 font-normal">Lumpsums: <strong class="text-cyan-300">$${Math.round(yrTotalLumpsum).toLocaleString()}</strong></span>
+                            <span class="text-slate-400 font-normal">Tuition: <strong class="text-rose-400">$${Math.round(yrTotalWithdrawal).toLocaleString()}</strong></span>
+                            <span class="text-cyan-300 font-extrabold ml-1">End Bal: $${Math.round(runningBalance).toLocaleString()}</span>
+                            <i id="summary-icon-collapse-${yr}" data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4 text-slate-400"></i>
+                        </div>
+                    </div>
+
+                    <div id="summary-annual-content-${yr}" class="${isExpanded ? '' : 'hidden'} overflow-x-auto">
+                        <table class="w-full text-left text-xs font-mono">
+                            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase text-[10px]">
+                                <tr>
+                                    <th class="py-2.5 px-3">Month</th>
+                                    <th class="py-2.5 px-3">Phase / Status</th>
+                                    <th class="py-2.5 px-3 text-right text-emerald-400">Monthly Contribution</th>
+                                    <th class="py-2.5 px-3 text-right text-cyan-300">Planned Lumpsum</th>
+                                    <th class="py-2.5 px-3 text-right text-rose-400">Tuition Withdrawal</th>
+                                    <th class="py-2.5 px-3 text-right text-cyan-400 font-bold">Projected Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>${monthRowsHTML}</tbody>
+                        </table>
+                    </div>
+                `;
+                scheduleContainer.appendChild(yearCard);
+            }
+
+            const btnText = document.getElementById('lbl-toggle-all-summary');
+            if (btnText) {
+                const anyExpanded = Object.values(summaryAnnualCollapsedState).some(v => v === true);
+                btnText.textContent = anyExpanded ? "Collapse All" : "Expand All";
+            }
+
+            const sumBalEl = document.getElementById('sum-final-balance');
+            sumBalEl.textContent = `$${Math.round(runningBalance).toLocaleString()}`;
+            if (runningBalance < 0) {
+                sumBalEl.className = 'text-sm font-extrabold text-rose-400';
+            } else {
+                sumBalEl.className = 'text-sm font-extrabold text-emerald-400';
+            }
+        }
+
+        function updateHeaderButtonsState() {
+            const btnShare = document.getElementById('btn-share');
+            const btnBookmark = document.getElementById('btn-bookmark');
+            const btnPrint = document.getElementById('btn-print');
+
+            if (currentStep === 4) {
+                btnShare.classList.remove('hidden');
+                btnShare.classList.add('flex');
+
+                btnBookmark.classList.remove('hidden');
+                btnBookmark.classList.add('flex');
+
+                btnPrint.classList.remove('hidden');
+                btnPrint.classList.add('flex');
+            } else {
+                btnShare.classList.add('hidden');
+                btnShare.classList.remove('flex');
+
+                btnBookmark.classList.add('hidden');
+                btnBookmark.classList.remove('flex');
+
+                btnPrint.classList.add('hidden');
+                btnPrint.classList.remove('flex');
+            }
+        }
+
+        function getFullShareUrl() {
+            saveAllState();
+            const stateObj = getAppStateObject();
+            const encodedState = encodeURIComponent(JSON.stringify(stateObj));
+
+            try {
+                let baseUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                if (!window.location.host || window.location.origin === "null") {
+                    baseUrl = window.location.href.split('?')[0].split('#')[0];
+                }
+                const urlObj = new URL(baseUrl);
+                urlObj.searchParams.set('step', 'summary');
+                urlObj.searchParams.set('pdata', encodedState);
+                return urlObj.toString();
+            } catch (urlErr) {
+                const sep = window.location.href.includes('?') ? '&' : '?';
+                return window.location.href.split('?')[0] + sep + 'step=summary&pdata=' + encodedState;
+            }
+        }
+
+        function handlePrint() {
+            if (currentStep !== 4) return;
+            window.print();
+        }
+
+        async function handleShare() {
+            if (currentStep !== 4) return;
+            
+            const fullShareUrl = getFullShareUrl();
+            const btnTextEl = document.getElementById('btn-share-text');
+            let copiedSuccessfully = false;
+
+            if (navigator.clipboard && window.isSecureContext) {
+                try {
+                    await navigator.clipboard.writeText(fullShareUrl);
+                    copiedSuccessfully = true;
+                } catch (err) {
+                    console.warn('Clipboard API error:', err);
+                }
+            }
+
+            if (!copiedSuccessfully) {
+                try {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = fullShareUrl;
+                    textArea.style.position = 'fixed';
+                    textArea.style.top = '0';
+                    textArea.style.left = '0';
+                    textArea.style.width = '2em';
+                    textArea.style.height = '2em';
+                    textArea.style.padding = '0';
+                    textArea.style.border = 'none';
+                    textArea.style.outline = 'none';
+                    textArea.style.boxShadow = 'none';
+                    textArea.style.background = 'transparent';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    copiedSuccessfully = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                } catch (fallbackErr) {
+                    console.warn('ExecCommand fallback error:', fallbackErr);
+                }
+            }
+
+            if (copiedSuccessfully) {
+                if (btnTextEl) {
+                    btnTextEl.textContent = 'Link copied!';
+                    setTimeout(() => {
+                        btnTextEl.textContent = 'Share';
+                    }, 2500);
+                }
+            } else {
+                prompt('Copy your custom planner share link below:', fullShareUrl);
+            }
+        }
+
+        function handleBookmark() {
+            if (currentStep !== 4) return;
+
+            const shareUrl = getFullShareUrl();
+            const studentName = document.getElementById('student-name').value.trim() || 'Student';
+            const bookmarkTitle = `College Savings Plan - ${studentName} | Bharrys Financial Suite`;
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            const keyShortcut = isMac ? 'Cmd + D' : 'Ctrl + D';
+
+            try {
+                window.history.replaceState(null, bookmarkTitle, shareUrl);
+            } catch (e) {
+                console.warn('Could not update history state:', e);
+            }
+
+            if (window.sidebar && window.sidebar.addPanel) {
+                window.sidebar.addPanel(bookmarkTitle, shareUrl, '');
+            } else if (window.external && ('AddFavorite' in window.external)) {
+                window.external.AddFavorite(shareUrl, bookmarkTitle);
+            } else {
+                const btnTextEl = document.getElementById('btn-bookmark-text');
+                if (btnTextEl) {
+                    btnTextEl.textContent = `Press ${keyShortcut}`;
+                    setTimeout(() => {
+                        btnTextEl.textContent = 'Bookmark';
+                    }, 3000);
+                }
+                alert(`To bookmark this summary page with your prefilled plan, press ${keyShortcut} or open your browser menu and select 'Bookmark page'.`);
+            }
+        }
+
+        function openBoardingModal() { document.getElementById('modal-boarding').classList.remove('hidden'); }
+        function closeBoardingModal() { document.getElementById('modal-boarding').classList.add('hidden'); }
+
+        function openQualifiedModal() { document.getElementById('modal-qualified').classList.remove('hidden'); }
+        function closeQualifiedModal() { document.getElementById('modal-qualified').classList.add('hidden'); }
+
+        function openNonQualifiedModal() { document.getElementById('modal-nonqualified').classList.remove('hidden'); }
+        function closeNonQualifiedModal() { document.getElementById('modal-nonqualified').classList.add('hidden'); }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) lucide.createIcons();
+
+            loadAllState();
+
+            updateCollegeStartYearDOM();
+            updatePrimaryInterestUI();
+
+            renderCollegeDropdown();
+            updateSelectedCollegesUI();
+
+            renderParentCategoryList();
+            renderExpenseTabsAndContent();
+
+            if (currentStep === 2) {
+                const studentName = document.getElementById('student-name').value;
+                const studentDob = document.getElementById('student-dob').value;
+                if (studentName && studentDob) {
+                    document.getElementById('parent-student-name').textContent = studentName;
+
+                    document.getElementById('section-student').classList.add('hidden');
+                    document.getElementById('section-parent').classList.remove('hidden');
+                }
+            } else if (currentStep === 3) {
+                renderLumpsumTable();
+                renderGrowthProjectionsUI();
+
+                document.getElementById('section-student').classList.add('hidden');
+                document.getElementById('section-parent').classList.add('hidden');
+                document.getElementById('section-growth').classList.remove('hidden');
+            } else if (currentStep === 4) {
+                renderLumpsumTable();
+                renderGrowthProjectionsUI();
+                transitionToStep4();
+            }
+
+            updateHeaderButtonsState();
+
+            const toggleCC = document.getElementById('toggle-community-college');
+            const ccBoardingBox = document.getElementById('cc-boarding-options');
+            const toggleOffcampus = document.getElementById('toggle-cc-offcampus');
+            const toggleCCParents = document.getElementById('toggle-cc-parents');
+
+            toggleCC.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    ccBoardingBox.classList.remove('hidden');
+                } else {
+                    ccBoardingBox.classList.add('hidden');
+                    toggleOffcampus.checked = false;
+                    toggleCCParents.checked = false;
+                }
+                saveAllState();
+                renderParentCategoryList();
+                renderExpenseTabsAndContent();
+            });
+
+            toggleOffcampus.addEventListener('change', (e) => {
+                if (e.target.checked) toggleCCParents.checked = false;
+                saveAllState();
+                if (currentStep === 2) renderExpenseTabsAndContent();
+            });
+
+            toggleCCParents.addEventListener('change', (e) => {
+                if (e.target.checked) toggleOffcampus.checked = false;
+                saveAllState();
+                if (currentStep === 2) renderExpenseTabsAndContent();
+            });
+
+            document.getElementById('btn-info-offcampus').addEventListener('click', openBoardingModal);
+            document.getElementById('btn-info-parents').addEventListener('click', openBoardingModal);
+
+            document.getElementById('target-degree-select').addEventListener('change', () => {
+                updateCCTitleLabels();
+                saveAllState();
+                if (currentStep === 2) {
+                    renderExpenseTabsAndContent();
+                }
+            });
+
+            document.getElementById('growth-cadence-type').addEventListener('change', (e) => {
+                const weekdayBox = document.getElementById('growth-weekday-box');
+                const lblAmount = document.getElementById('lbl-growth-amount');
+                const monthlyCapacity = parseFloat(document.getElementById('monthly-savings-capacity').value) || 300;
+
+                if (e.target.value === 'weekly') {
+                    weekdayBox.classList.remove('hidden');
+                    lblAmount.textContent = "Weekly Contribution ($)";
+                    const computedWeekly = Math.floor((12 * monthlyCapacity) / 52);
+                    document.getElementById('growth-contribution-amount').value = computedWeekly;
+                } else {
+                    weekdayBox.classList.add('hidden');
+                    lblAmount.textContent = "Monthly Contribution ($)";
+                    document.getElementById('growth-contribution-amount').value = monthlyCapacity;
+                }
+                saveAllState();
+                renderGrowthProjectionsUI();
+            });
+
+            document.getElementById('growth-contribution-amount').addEventListener('change', () => {
+                saveAllState();
+                renderGrowthProjectionsUI();
+            });
+
+            document.getElementById('growth-weekday-select').addEventListener('change', () => {
+                saveAllState();
+                renderGrowthProjectionsUI();
+            });
+
+            document.getElementById('lumpsum-year-input').addEventListener('change', () => {
+                updateLumpsumMonthOptions();
+            });
+
+            document.getElementById('btn-add-lumpsum').addEventListener('click', () => {
+                const amt = parseFloat(document.getElementById('lumpsum-amount-input').value);
+                const m = parseInt(document.getElementById('lumpsum-month-input').value);
+                const yr = parseInt(document.getElementById('lumpsum-year-input').value);
+
+                if (isNaN(amt) || amt <= 0) {
+                    alert('Please enter a valid lumpsum amount.');
+                    return;
+                }
+
+                plannedLumpsums.push({ id: Date.now(), month: m, year: yr, amount: amt });
+                document.getElementById('lumpsum-amount-input').value = '';
+
+                saveAllState();
+                renderLumpsumTable();
+                renderGrowthProjectionsUI();
+            });
+
+            const inputsToTrack = [
+                'student-name', 'student-dob', 'home-state', 'toggle-out-of-state', 'toggle-ivy-league',
+                'has-529-plan', 'current-529-balance', 'finance-entire-college', 'monthly-savings-capacity'
+            ];
+
+            inputsToTrack.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', () => {
+                        if (id === 'student-dob') {
+                            updateCollegeStartYearDOM();
+                        }
+                        saveAllState();
+                        renderParentCategoryList();
+                        renderExpenseTabsAndContent();
+                    });
+                }
+            });
+
+            ['q1', 'q2', 'q3'].forEach(q => {
+                document.querySelectorAll(`input[name="${q}"]`).forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        updatePrimaryInterestUI();
+                        saveAllState();
+                    });
+                });
+            });
+
+            document.getElementById('home-state').addEventListener('change', () => {
+                renderCollegeDropdown();
+                saveAllState();
+                renderParentCategoryList();
+                renderExpenseTabsAndContent();
+            });
+            document.getElementById('toggle-out-of-state').addEventListener('change', () => {
+                renderCollegeDropdown();
+                saveAllState();
+                renderParentCategoryList();
+                renderExpenseTabsAndContent();
+            });
+            document.getElementById('toggle-ivy-league').addEventListener('change', () => {
+                renderCollegeDropdown();
+                saveAllState();
+                renderParentCategoryList();
+                renderExpenseTabsAndContent();
+            });
+
+            document.getElementById('college-dropdown').addEventListener('change', (e) => {
+                const val = e.target.value;
+                if (val && selectedColleges.length < 8 && !selectedColleges.includes(val)) {
+                    selectedColleges.push(val);
+                    saveAllState();
+                    updateSelectedCollegesUI();
+                    renderCollegeDropdown();
+                    renderParentCategoryList();
+                    renderExpenseTabsAndContent();
+                }
+            });
+
+            document.getElementById('child-grade-select').addEventListener('change', (e) => {
+                const currentYear = new Date().getFullYear();
+                const gradeVal = parseInt(e.target.value);
+                const computedCollegeYear = currentYear + (13 - gradeVal);
+                document.getElementById('res-college-start-year').textContent = computedCollegeYear;
+                saveAllState();
+                renderParentCategoryList();
+                renderExpenseTabsAndContent();
+            });
+
+            const btnSubmit = document.getElementById('btn-submit-step1');
+            if (btnSubmit) {
+                btnSubmit.addEventListener('click', processStudentAnswers);
+            }
+
+            document.getElementById('btn-next-stage').addEventListener('click', transitionToStep3);
+
+            document.getElementById('has-529-plan').addEventListener('change', (e) => {
+                const balanceBox = document.getElementById('529-balance-box');
+                if (e.target.value === 'yes') {
+                    balanceBox.classList.remove('opacity-50', 'pointer-events-none');
+                } else {
+                    balanceBox.classList.add('opacity-50', 'pointer-events-none');
+                }
+                saveAllState();
+            });
+
+            document.getElementById('btn-back').addEventListener('click', () => {
+                currentStep = 1;
+                saveAllState();
+                document.getElementById('section-parent').classList.add('hidden');
+                document.getElementById('section-growth').classList.add('hidden');
+                document.getElementById('section-summary').classList.add('hidden');
+                document.getElementById('section-student').classList.remove('hidden');
+                updateHeaderButtonsState();
+            });
+
+            document.getElementById('btn-back-to-step2').addEventListener('click', () => {
+                currentStep = 2;
+                saveAllState();
+                document.getElementById('section-growth').classList.add('hidden');
+                document.getElementById('section-student').classList.add('hidden');
+                document.getElementById('section-summary').classList.add('hidden');
+                document.getElementById('section-parent').classList.remove('hidden');
+                updateHeaderButtonsState();
+            });
+        });
+    </script>
+</body>
+</html>
