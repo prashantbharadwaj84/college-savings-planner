@@ -116,7 +116,7 @@
                     <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print
                 </button>
 
-                <!-- Universal Button (Visible on all steps) -->
+                <!-- Universal Button -->
                 <a href="https://financialhub.bharrys.com/" id="btn-suite-hub" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-slate-200 border border-slate-700/80 hover:bg-slate-800 transition flex items-center gap-1.5 font-bold">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5 text-slate-300"></i> Suite Hub
                 </a>
@@ -386,8 +386,8 @@
                     <button type="button" id="btn-back" class="text-xs font-mono text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1">
                         <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Career Interest
                     </button>
-                    <button type="button" onclick="transitionToStep3()" class="text-xs font-mono bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
-                        529 Planner <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    <button type="button" onclick="confirmStrategyAndProceed()" class="text-xs font-mono bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                        Debt Strategy <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                     </button>
                 </div>
             </div>
@@ -447,7 +447,56 @@
 
                 <div class="p-3 bg-cyan-950/40 rounded-xl border border-cyan-500/30 flex items-center gap-2.5 text-xs font-mono text-cyan-200">
                     <i data-lucide="sliders" class="w-4 h-4 text-cyan-400 shrink-0"></i>
-                    <span><strong>Pro-Tip:</strong> You can fine-tune both the <strong>Target Coverage %</strong> and <strong>Monthly Contribution Capacity</strong> in full detail on the next page during growth projections!</span>
+                    <span><strong>Pro-Tip:</strong> You can fine-tune both the <strong>Target Coverage %</strong> and <strong>Monthly Contribution Capacity</strong> in full detail on the next pages during growth projections!</span>
+                </div>
+
+                <!-- Sibling College Configuration Section -->
+                <div class="p-3.5 bg-slate-950/70 rounded-xl border border-indigo-500/30 space-y-3 font-mono text-xs">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                        <div class="flex items-center gap-2 text-indigo-300 font-bold">
+                            <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i>
+                            <span>Sibling College Planning Allocation</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-has-siblings" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div>
+                        </label>
+                    </div>
+
+                    <div id="sibling-details-container" class="hidden space-y-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-1.5">
+                                    <label class="block font-bold text-slate-300 text-[11px]">How many siblings are attending college / school?</label>
+                                    <button type="button" onclick="openSiblingCountModal()" class="text-slate-400 hover:text-cyan-400 transition" title="What does this mean?">
+                                        <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                </div>
+                                <select id="sibling-count-select" class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white font-bold select-text">
+                                    <option value="1" selected>1 Sibling (2 Children total)</option>
+                                    <option value="2">2 Siblings (3 Children total)</option>
+                                    <option value="3">3 Siblings (4 Children total)</option>
+                                    <option value="4">4+ Siblings</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-1.5">
+                                    <label class="block font-bold text-slate-300 text-[11px]">Split Total Monthly Contribution Capacity Equally?</label>
+                                    <button type="button" onclick="openSplitInfoModal()" class="text-slate-400 hover:text-cyan-400 transition" title="How does equal split work?">
+                                        <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                </div>
+                                <select id="sibling-split-equal" class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white font-bold select-text">
+                                    <option value="yes" selected>Yes — Split equally among all children</option>
+                                    <option value="no">No — Standard allocation per child</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="sibling-list-cards" class="space-y-2 pt-1 border-t border-slate-800/80">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="space-y-3 pb-3 border-b border-slate-800/80">
@@ -509,10 +558,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
                     <div class="space-y-1">
-                        <div class="flex items-center justify-between">
-                            <label class="block font-bold text-slate-200">Target Coverage Percentage (% of total costs)</label>
-                            <span class="text-[10px] text-cyan-400 font-normal">(Customizable next page)</span>
-                        </div>
+                        <label class="block font-bold text-slate-200">Target Coverage Percentage (% of total costs)</label>
                         <select id="finance-entire-college" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 transition select-text">
                             <option value="100" selected>100% of costs</option>
                             <option value="75">75% of costs</option>
@@ -522,8 +568,8 @@
                     </div>
                     <div class="space-y-1">
                         <div class="flex items-center justify-between">
-                            <label class="block font-bold text-slate-200">Monthly Contribution Capacity ($/mo)</label>
-                            <span class="text-[10px] text-cyan-400 font-normal">(Customizable next page)</span>
+                            <label class="block font-bold text-slate-200">Total Family Savings Capacity ($/mo)</label>
+                            <span id="effective-split-notice" class="text-[10px] text-emerald-400 font-bold"></span>
                         </div>
                         <input type="number" id="monthly-savings-capacity" value="300" step="50" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-cyan-400 font-extrabold outline-none focus:border-cyan-400 transition select-text">
                     </div>
@@ -549,7 +595,7 @@
                         </span>
                         <div class="flex flex-wrap items-center gap-3">
                             <span class="flex items-center gap-1.5 text-emerald-400 font-bold">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-500/50"></span> Well Within Affordability (&ge;100%)
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block shadow-sm shadow-emerald-500/50"></span> Affordable (&ge;100%)
                             </span>
                             <span class="flex items-center gap-1.5 text-amber-400 font-bold">
                                 <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block shadow-sm shadow-amber-500/50"></span> Manageable (70% &ndash; 99%)
@@ -566,25 +612,131 @@
             </div>
 
             <div class="p-4 bg-slate-900/90 rounded-xl border border-cyan-500/30 flex items-center justify-end">
-                <button type="button" id="btn-next-stage" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-lg text-xs font-mono transition flex items-center gap-1.5">
+                <button type="button" id="btn-next-debt" onclick="confirmStrategyAndProceed()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-lg text-xs font-mono transition flex items-center gap-1.5">
+                    Next: Cash Flow Redirection <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION 3: DEBT PAYOFF & CASH FLOW REDIRECTION STRATEGY -->
+        <section id="section-debt" class="glass-panel rounded-2xl p-6 space-y-6 hidden">
+            <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider font-bold">Step 3 — Cash Flow Redirection</span>
+                    <h2 class="text-xl font-extrabold text-white">Debts & Sibling Graduation Cash-Flow Redirection</h2>
+                    <p class="text-xs text-slate-400 mt-1">Accelerate college funding by redirecting completed loan payments and graduating sibling expenses directly into 529 savings starting from the month after payoff.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="transitionToStep2FromDebt()" class="text-xs font-mono text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Parent Dashboard
+                    </button>
+                    <button type="button" onclick="transitionToStep4Growth()" class="text-xs font-mono bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                        529 Savings Planner <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sibling Graduation Cash Flow Redirection Card -->
+            <div id="sibling-redirection-card" class="glass-card p-4 rounded-xl space-y-3 border-indigo-500/30 hidden">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-wider font-mono flex items-center gap-2">
+                        <i data-lucide="graduation-cap" class="w-4 h-4 text-indigo-400"></i> Graduating Sibling Expense Redirection
+                    </h3>
+                    <span class="text-[10px] font-mono text-indigo-300 bg-indigo-950 px-2 py-0.5 rounded border border-indigo-500/30">Next Month Redirection</span>
+                </div>
+                <p class="text-[11px] font-mono text-slate-300">
+                    The following siblings are projected to graduate college before or during <strong id="lbl-target-student-name">Student</strong>'s start year. Redirection automatically begins in the month immediately following their graduation date. Specify what percentage of freed-up funds to redirect into <span class="text-cyan-300 font-bold" id="lbl-target-student-name-2">Student</span>'s 529 plan:
+                </p>
+                <div id="sibling-redirection-list" class="space-y-2 pt-1">
+                </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider font-mono flex items-center gap-2">
+                        <i data-lucide="credit-card" class="w-4 h-4 text-cyan-400"></i> Liabilities
+                    </h3>
+                    <div class="flex items-center gap-2 text-xs font-mono">
+                        <span class="text-slate-400">Do you have existing active debts?</span>
+                        <select id="has-debts-select" class="px-2.5 py-1 bg-slate-900 border border-slate-700 rounded-lg text-white font-bold select-text">
+                            <option value="no" selected>No, Debt-Free</option>
+                            <option value="yes">Yes, Active Loans</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-amber-950/40 border border-amber-500/40 rounded-xl space-y-1.5 text-xs font-mono text-amber-200">
+                    <div class="flex items-center gap-2 font-bold text-amber-300">
+                        <i data-lucide="alert-circle" class="w-4 h-4 text-amber-400 shrink-0"></i>
+                        <span>Auto Lease & Non-Guaranteed Asset Advisory Note</span>
+                    </div>
+                    <p class="text-[11px] leading-relaxed text-amber-100/90">
+                        If you are currently leasing a vehicle, it is <strong>not an intrinsic advantage</strong> to your 529 funding strategy unless the lease carries verified positive equity at turn-in. Even in positive-equity markets, that money is <strong>never guaranteed</strong>. We recommend relying strictly on predictable cash-flow payment redirections as loan payoffs complete.
+                    </p>
+                </div>
+
+                <div id="debt-items-wrapper" class="hidden space-y-5">
+                    <!-- PERSONAL LOANS SECTION -->
+                    <div class="p-3.5 bg-slate-900/80 rounded-xl border border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                            <span class="font-bold text-white text-xs font-mono flex items-center gap-1.5">
+                                <i data-lucide="user-check" class="w-4 h-4 text-cyan-400"></i> Personal Loans
+                            </span>
+                            <button type="button" onclick="addPersonalLoanItem()" class="px-2.5 py-1 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 rounded text-xs font-mono font-bold transition flex items-center gap-1">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Personal Loan
+                            </button>
+                        </div>
+                        <div id="personal-loans-list" class="space-y-2.5"></div>
+                    </div>
+
+                    <!-- CAR LOANS SECTION -->
+                    <div class="p-3.5 bg-slate-900/80 rounded-xl border border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                            <span class="font-bold text-white text-xs font-mono flex items-center gap-1.5">
+                                <i data-lucide="car" class="w-4 h-4 text-emerald-400"></i> Car Loans
+                            </span>
+                            <button type="button" onclick="addCarLoanItem()" class="px-2.5 py-1 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 rounded text-xs font-mono font-bold transition flex items-center gap-1">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Car Loan
+                            </button>
+                        </div>
+                        <div id="car-loans-list" class="space-y-2.5"></div>
+                    </div>
+
+                    <!-- HOME MORTGAGES SECTION -->
+                    <div class="p-3.5 bg-slate-900/80 rounded-xl border border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                            <span class="font-bold text-white text-xs font-mono flex items-center gap-1.5">
+                                <i data-lucide="home" class="w-4 h-4 text-indigo-400"></i> Home Mortgage Loans
+                            </span>
+                            <button type="button" onclick="addMortgageLoanItem()" class="px-2.5 py-1 bg-indigo-950 hover:bg-indigo-900 text-indigo-300 border border-indigo-500/40 rounded text-xs font-mono font-bold transition flex items-center gap-1">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Home Mortgage Loan
+                            </button>
+                        </div>
+                        <div id="mortgage-loans-list" class="space-y-2.5"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-900/90 rounded-xl border border-cyan-500/30 flex items-center justify-end">
+                <button type="button" onclick="transitionToStep4Growth()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl text-xs font-mono transition flex items-center gap-2">
                     Next: 529 Planner <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
             </div>
         </section>
 
-        <!-- SECTION 3: 529 COLLEGE SAVINGS PLANNER -->
+        <!-- SECTION 4: 529 COLLEGE SAVINGS PLANNER -->
         <section id="section-growth" class="glass-panel rounded-2xl p-6 space-y-6 hidden">
             <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                 <div>
-                    <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider font-bold">Step 3 — Interactive Projection</span>
+                    <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider font-bold">Step 4 — Interactive Projection</span>
                     <h2 class="text-xl font-extrabold text-white">529 College Savings Planner</h2>
-                    <p class="text-xs text-slate-400 mt-1">Detailed month-by-month accumulation and drawdown timeline.</p>
+                    <p class="text-xs text-slate-400 mt-1">Detailed month-by-month accumulation and drawdown timeline with sibling splits and debt redirection.</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button type="button" id="btn-back-to-step2" class="text-xs font-mono text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1">
-                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Parent Overview
+                    <button type="button" id="btn-back-to-step3-debt" onclick="transitionToStep3Debt()" class="text-xs font-mono text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Cash Flow Redirection
                     </button>
-                    <button type="button" onclick="transitionToStep4()" class="text-xs font-mono bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                    <button type="button" onclick="transitionToStep5Summary()" class="text-xs font-mono bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
                         Summary <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                     </button>
                 </div>
@@ -612,7 +764,7 @@
                     </div>
 
                     <div class="space-y-1">
-                        <label id="lbl-growth-amount" class="block font-bold text-slate-200">Contribution Amount ($)</label>
+                        <label id="lbl-growth-amount" class="block font-bold text-slate-200">Base Contribution Amount ($)</label>
                         <input type="number" id="growth-contribution-amount" value="300" step="any" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-emerald-400 font-bold outline-none focus:border-cyan-400 transition select-text">
                     </div>
 
@@ -646,13 +798,13 @@
                         </button>
                     </div>
 
-                    <div class="overflow-x-auto rounded-lg border border-slate-800 bg-slate-900/60 no-scrollbar">
+                    <div id="lumpsum-scroll-container" class="overflow-x-auto overflow-y-auto max-h-[148px] rounded-lg border border-slate-800 bg-slate-900/60">
                         <table class="w-full text-left text-xs font-mono">
-                            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 text-[10px] uppercase">
+                            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 text-[10px] uppercase sticky top-0 z-10">
                                 <tr>
-                                    <th class="py-1.5 px-3">Date</th>
-                                    <th class="py-1.5 px-3">Amount</th>
-                                    <th class="py-1.5 px-3 text-right">Actions</th>
+                                    <th class="py-1.5 px-3 bg-slate-950">Date</th>
+                                    <th class="py-1.5 px-3 bg-slate-950">Amount</th>
+                                    <th class="py-1.5 px-3 bg-slate-950 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="lumpsum-table-body">
@@ -670,7 +822,12 @@
                     <span class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono flex items-center gap-1.5">
                         <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i> Active Projection Strategy
                     </span>
-                    <span id="growth-active-strategy-title" class="text-xs font-bold font-mono text-cyan-300">--</span>
+                    <div class="flex items-center gap-3">
+                        <span id="growth-active-strategy-title" class="text-xs font-bold font-mono text-cyan-300">--</span>
+                        <button type="button" onclick="confirmResetStrategyTableRates()" class="px-2.5 py-1 bg-slate-800 hover:bg-rose-950 hover:text-rose-300 text-slate-300 border border-slate-700 hover:border-rose-500/40 rounded text-[11px] font-mono font-bold transition flex items-center gap-1 cursor-pointer" title="Reset all custom table overrides to base contribution values">
+                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reset Contrib.
+                        </button>
+                    </div>
                 </div>
                 <div id="growth-strategy-tabs" class="flex flex-wrap gap-2 font-mono text-xs">
                 </div>
@@ -680,22 +837,22 @@
             </div>
 
             <div class="p-4 bg-slate-900/90 rounded-xl border border-cyan-500/30 flex items-center justify-end">
-                <button type="button" id="btn-next-summary" onclick="transitionToStep4()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl text-xs font-mono transition flex items-center gap-2">
+                <button type="button" id="btn-next-summary" onclick="transitionToStep5Summary()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl text-xs font-mono transition flex items-center gap-2">
                     Next: Summary <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
             </div>
         </section>
 
-        <!-- SECTION 4: FINAL PLANNER SUMMARY & PRINTABLE SCHEDULE -->
+        <!-- SECTION 5: FINAL PLANNER SUMMARY & PRINTABLE SCHEDULE -->
         <section id="section-summary" class="glass-panel rounded-2xl p-6 space-y-6 hidden">
             <div class="border-b border-slate-800 pb-4 flex items-center justify-between">
                 <div>
-                    <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider font-bold">Step 4 — Final Plan Summary</span>
+                    <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider font-bold">Step 5 — Final Plan Summary</span>
                     <h2 class="text-xl font-extrabold text-white">Comprehensive 529 Funding & Printable Schedule</h2>
                     <p class="text-xs text-slate-400 mt-1">Review your customized savings execution timeline and printable report.</p>
                 </div>
-                <button type="button" id="btn-back-to-step3" onclick="transitionToStep3FromSummary()" class="text-xs font-mono text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> 529 Growth Model
+                <button type="button" id="btn-back-to-step4" onclick="transitionToStep4FromSummary()" class="text-xs font-mono text-slate-400 hover:text-white bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> 529 Planner
                 </button>
             </div>
 
@@ -742,20 +899,19 @@
                 </div>
             </div>
 
-            <!-- Detailed Selected Colleges Categorized Breakdown Card -->
             <div class="glass-card p-3.5 rounded-xl space-y-2.5">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-2">
                     <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider font-mono flex items-center gap-2">
                         <i data-lucide="building-2" class="w-4 h-4 text-indigo-400"></i> Selected Aspirational Colleges
                     </h3>
-                    <span id="sum-college-count-badge" class="text-[10px] font-mono text-indigo-300 bg-indigo-950/60 border border-indigo-800/50 px-2 py-0.5 rounded font-bold">0 Selected</span>
+                    <span id="sum-college-count-badge" class="text-[10px] font-mono text-indigo-300 bg-indigo-950/60 border border-indigo-800/50 px-2 py-0.5 rounded">0 Selected</span>
                 </div>
                 <div id="sum-selected-colleges-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
                     <div class="text-slate-500 italic text-xs font-mono col-span-2">No colleges selected yet.</div>
                 </div>
             </div>
 
-            <!-- Full Printable Execution Schedule (COLLAPSIBLE BY YEAR WITH GLOBAL TOGGLE) -->
+            <!-- Full Printable Execution Schedule -->
             <div class="glass-card p-4 rounded-xl space-y-3">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-2">
                     <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider font-mono flex items-center gap-2">
@@ -773,19 +929,190 @@
 
     </main>
 
-    <!-- IN-PAGE POPUP MODAL: BOARDING ALLOWANCE 529 EXPLANATION -->
-    <div id="modal-boarding" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <!-- IN-PAGE POPUP MODALS -->
+    <div id="modal-student-change" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden font-mono">
+        <div class="glass-panel border-amber-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <div class="flex items-center gap-2.5 text-amber-400 font-bold border-b border-slate-800 pb-3">
+                <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                <h3 class="text-base font-extrabold text-white">Student Name Change Detected</h3>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                <p>
+                    You are changing the Student Name. You can choose to preserve your current plan parameters or perform a full data reset.
+                </p>
+
+                <div class="p-3 bg-slate-900 border border-amber-500/30 rounded-xl space-y-2">
+                    <p class="font-bold text-amber-300">Option Details:</p>
+                    <ul class="space-y-1 list-disc list-inside text-[11px] text-slate-200">
+                        <li><strong>Preserve Data:</strong> Updates the student name while keeping all existing colleges, selections, and savings strategy data intact.</li>
+                        <li><strong>Confirm & Update:</strong> Updates the name and resets all student-specific selections, sibling configurations, and custom rate overrides.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-2 flex flex-col sm:flex-row items-center justify-end gap-2">
+                <button type="button" onclick="cancelStudentDetailsChange()" class="w-full sm:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg text-xs transition border border-slate-700">
+                    Preserve Data
+                </button>
+                <button type="button" onclick="confirmStudentDetailsChange()" class="w-full sm:w-auto px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-lg text-xs transition flex items-center justify-center gap-1.5">
+                    Confirm & Update
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-reset-confirm" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden font-mono">
+        <div class="glass-panel border-rose-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <div class="flex items-center gap-2.5 text-rose-400 font-bold border-b border-slate-800 pb-3">
+                <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                <h3 class="text-base font-extrabold text-white">Reset Table Rates Confirmation</h3>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                <p>
+                    Are you sure you want to reset all custom monthly/weekly cell overrides and lump sum adjustments in the projection table back to their default baseline contribution values?
+                </p>
+            </div>
+
+            <div class="pt-2 flex flex-col sm:flex-row items-center justify-end gap-2">
+                <button type="button" onclick="cancelResetStrategyTableRates()" class="w-full sm:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg text-xs transition border border-slate-700">
+                    Cancel
+                </button>
+                <button type="button" onclick="executeResetStrategyTableRates()" class="w-full sm:w-auto px-4 py-2 bg-rose-500 hover:bg-rose-400 text-slate-950 font-extrabold rounded-lg text-xs transition flex items-center justify-center gap-1.5">
+                    Reset Contrib.
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-strategy-confirm" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden font-mono">
+        <div class="glass-panel border-cyan-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <div class="flex items-center gap-2.5 text-cyan-400 font-bold border-b border-slate-800 pb-3">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                <h3 class="text-base font-extrabold text-white">Active 529 Target Strategy Confirmation</h3>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                <p>
+                    You are currently proceeding to <strong>Cash Flow Redirection</strong> with the following selected college savings strategy:
+                </p>
+
+                <div class="p-3.5 bg-slate-900 border border-cyan-500/30 rounded-xl space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] text-slate-400 uppercase font-bold">Strategy Name</span>
+                        <span id="confirm-strategy-title" class="font-bold text-cyan-300 text-sm">--</span>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-slate-800/80 pt-1.5">
+                        <span class="text-[11px] text-slate-400 uppercase font-bold">Target Coverage</span>
+                        <span id="confirm-strategy-coverage" class="font-bold text-emerald-400">100% of costs</span>
+                    </div>
+                    <div class="flex items-center justify-between border-t border-slate-800/80 pt-1.5">
+                        <span class="text-[11px] text-slate-400 uppercase font-bold">Est. 4-Year Total Cost</span>
+                        <span id="confirm-strategy-cost" class="font-extrabold text-indigo-300 text-sm">$0</span>
+                    </div>
+                </div>
+
+                <p class="text-[11px] text-slate-400 italic">
+                    Would you like to continue to Cash Flow Redirection with this strategy, or go back to change the strategy in Estimated Annual Expenses?
+                </p>
+            </div>
+
+            <div class="pt-2 flex flex-col sm:flex-row items-center justify-end gap-2">
+                <button type="button" onclick="cancelStrategyConfirmation()" class="w-full sm:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg text-xs transition border border-slate-700">
+                    Cancel / Change Strategy
+                </button>
+                <button type="button" onclick="proceedToStep3DebtConfirmed()" class="w-full sm:w-auto px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-lg text-xs transition flex items-center justify-center gap-1.5">
+                    Continue to Cash Flow <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-sibling-count" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden font-mono">
+        <div class="glass-panel border-indigo-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <button type="button" onclick="closeSiblingCountModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="flex items-center gap-2.5 text-indigo-400 border-b border-slate-800 pb-3">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                <h3 class="text-base font-extrabold text-white">Understanding Sibling College & School Count</h3>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                <p>
+                    This question identifies other children in your household who are either currently in school and planning for college, or actively attending college now.
+                </p>
+
+                <div class="p-3 bg-indigo-950/40 border border-indigo-500/30 rounded-xl space-y-2">
+                    <p class="font-bold text-indigo-300">Examples of Included Siblings:</p>
+                    <ul class="space-y-1.5 list-disc list-inside text-[11px] text-slate-200">
+                        <li><strong>Future College Student:</strong> A younger sibling currently in 5th grade who will need college funding in the future.</li>
+                        <li><strong>Active College Student:</strong> An older sibling who is currently a college junior graduating next year.</li>
+                    </ul>
+                </div>
+
+                <p class="text-[11px] text-slate-400 italic">
+                    Counting all siblings ensures your overall family savings capacity is fairly allocated across each child's individual timeline.
+                </p>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+                <button type="button" onclick="closeSiblingCountModal()" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-bold rounded-lg text-xs transition">
+                    Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-split-info" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden font-mono">
+        <div class="glass-panel border-cyan-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <button type="button" onclick="closeSplitInfoModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="flex items-center gap-2.5 text-cyan-400 border-b border-slate-800 pb-3">
+                <i data-lucide="split" class="w-5 h-5"></i>
+                <h3 class="text-base font-extrabold text-white">How Total Contribution Splitting Works</h3>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                <p>
+                    When set to <strong>Yes</strong>, your total monthly family savings capacity is evenly divided among all children.
+                </p>
+
+                <div class="p-3 bg-cyan-950/40 border border-cyan-500/30 rounded-xl space-y-1 text-[11px]">
+                    <p class="font-bold text-cyan-300">Example Split Calculation:</p>
+                    <p class="text-slate-200">If your total family savings capacity is <strong>$300/month</strong> and you have 2 siblings (3 children total), each child receives a baseline contribution of <strong>$100/month</strong>.</p>
+                </div>
+
+                <div class="p-3 bg-emerald-950/30 border border-emerald-500/30 rounded-xl space-y-1 text-[11px]">
+                    <p class="font-bold text-emerald-400">Flexibility Note:</p>
+                    <p class="text-slate-200">This baseline split is just an initial default. You can fully customize, override, or boost monthly contribution rates on a month-by-month basis in <strong>Step 4 (529 Planner)</strong>!</p>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+                <button type="button" onclick="closeSplitInfoModal()" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-xs transition">
+                    Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-boarding" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden font-mono">
         <div class="glass-panel border-cyan-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
             <button type="button" onclick="closeBoardingModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
             
-            <div class="flex items-center gap-2.5 text-cyan-400 font-mono font-bold border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2.5 text-cyan-400 font-bold border-b border-slate-800 pb-3">
                 <i data-lucide="home" class="w-5 h-5"></i>
                 <h3 class="text-base font-extrabold text-white">IRS 529 Rules: Off-Campus & Living at Home Allowances</h3>
             </div>
 
-            <div class="space-y-3 text-xs font-mono text-slate-300 leading-relaxed">
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
                 <p>
                     Under <strong>IRS Code Section 529(e)(3)(B)</strong>, students enrolled at least half-time at an eligible educational institution (including Community Colleges) can use 529 distributions tax-free for room and board expenses even if they do not live in official campus housing.
                 </p>
@@ -806,26 +1133,25 @@
             </div>
 
             <div class="pt-2 flex justify-end">
-                <button type="button" onclick="closeBoardingModal()" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-xs font-mono transition">
+                <button type="button" onclick="closeBoardingModal()" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-xs transition">
                     Got it, thanks!
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- IN-PAGE POPUP MODAL: QUALIFIED 529 COVERED EXPENSES -->
-    <div id="modal-qualified" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div id="modal-qualified" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden font-mono">
         <div class="glass-panel border-emerald-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
             <button type="button" onclick="closeQualifiedModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
             
-            <div class="flex items-center gap-2.5 text-emerald-400 font-mono font-bold border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2.5 text-emerald-400 font-bold border-b border-slate-800 pb-3">
                 <i data-lucide="check-circle-2" class="w-5 h-5"></i>
                 <h3 class="text-base font-extrabold text-white">Qualified 529 Covered Expenses</h3>
             </div>
 
-            <div class="space-y-3 text-xs font-mono text-slate-300 leading-relaxed">
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
                 <p>
                     Under IRS guidelines, tax-free distributions from a 529 plan can be used to pay for <strong>Qualified Higher Education Expenses (QHEE)</strong> at eligible post-secondary institutions:
                 </p>
@@ -839,26 +1165,25 @@
             </div>
 
             <div class="pt-2 flex justify-end">
-                <button type="button" onclick="closeQualifiedModal()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-xs font-mono transition">
+                <button type="button" onclick="closeQualifiedModal()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-xs transition">
                     Close
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- IN-PAGE POPUP MODAL: NON-QUALIFIED OUT-OF-POCKET EXPENSES -->
-    <div id="modal-nonqualified" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div id="modal-nonqualified" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden font-mono">
         <div class="glass-panel border-rose-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
             <button type="button" onclick="closeNonQualifiedModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
             
-            <div class="flex items-center gap-2.5 text-rose-400 font-mono font-bold border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2.5 text-rose-400 font-bold border-b border-slate-800 pb-3">
                 <i data-lucide="alert-triangle" class="w-5 h-5"></i>
                 <h3 class="text-base font-extrabold text-white">Non-Qualified Personal Expenses</h3>
             </div>
 
-            <div class="space-y-3 text-xs font-mono text-slate-300 leading-relaxed">
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
                 <p>
                     Expenses that are <strong>NOT eligible</strong> for tax-free 529 withdrawals. Using 529 funds for these items will trigger ordinary income tax plus a <strong>10% IRS penalty</strong> on earnings:
                 </p>
@@ -872,7 +1197,7 @@
             </div>
 
             <div class="pt-2 flex justify-end">
-                <button type="button" onclick="closeNonQualifiedModal()" class="px-4 py-2 bg-rose-500 hover:bg-rose-400 text-slate-950 font-bold rounded-lg text-xs font-mono transition">
+                <button type="button" onclick="closeNonQualifiedModal()" class="px-4 py-2 bg-rose-500 hover:bg-rose-400 text-slate-950 font-bold rounded-lg text-xs transition">
                     Close
                 </button>
             </div>
@@ -880,7 +1205,6 @@
     </div>
 
     <script>
-        // Global Right-Click Protection
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             return false;
@@ -889,7 +1213,6 @@
         const STORAGE_KEY_PARAMS = 'bharrys_college_planner_params_v3';
 
         const collegeDatabase = [
-            // IVY LEAGUE (Private)
             { name: "Harvard University", state: "MA", isIvy: true, type: "Private" },
             { name: "Yale University", state: "CT", isIvy: true, type: "Private" },
             { name: "Princeton University", state: "NJ", isIvy: true, type: "Private" },
@@ -899,7 +1222,6 @@
             { name: "Dartmouth College", state: "NH", isIvy: true, type: "Private" },
             { name: "Cornell University", state: "NY", isIvy: true, type: "Private" },
 
-            // TEXAS (TX)
             { name: "University of Texas at Austin", state: "TX", isIvy: false, type: "Public" },
             { name: "Texas A&M University - College Station", state: "TX", isIvy: false, type: "Public" },
             { name: "Rice University", state: "TX", isIvy: false, type: "Private" },
@@ -907,7 +1229,6 @@
             { name: "University of Houston", state: "TX", isIvy: false, type: "Public" },
             { name: "Texas Tech University", state: "TX", isIvy: false, type: "Public" },
 
-            // CALIFORNIA (CA)
             { name: "Stanford University", state: "CA", isIvy: false, type: "Private" },
             { name: "California Institute of Technology (Caltech)", state: "CA", isIvy: false, type: "Private" },
             { name: "UC Berkeley", state: "CA", isIvy: false, type: "Public" },
@@ -915,13 +1236,11 @@
             { name: "UC San Diego", state: "CA", isIvy: false, type: "Public" },
             { name: "USC (University of Southern California)", state: "CA", isIvy: false, type: "Private" },
 
-            // NEW JERSEY & NEW YORK
             { name: "Rutgers University - New Brunswick", state: "NJ", isIvy: false, type: "Public" },
             { name: "NJIT (New Jersey Institute of Technology)", state: "NJ", isIvy: false, type: "Public" },
             { name: "Stevens Institute of Technology", state: "NJ", isIvy: false, type: "Private" },
             { name: "New York University (NYU)", state: "NY", isIvy: false, type: "Private" },
 
-            // MASSACHUSETTS & OTHER REGIONS
             { name: "MIT (Massachusetts Institute of Technology)", state: "MA", isIvy: false, type: "Private" },
             { name: "Northeastern University", state: "MA", isIvy: false, type: "Private" },
             { name: "Carnegie Mellon University", state: "PA", isIvy: false, type: "Private" },
@@ -994,48 +1313,14 @@
         };
 
         const costPresets = {
-            ivy: {
-                title: "Ivy League",
-                tuition: 71000,
-                housing: 13600,
-                tech: 2400,
-                nonQualified: 9800,
-                desc: "High tuition rate offset by university institutional aid for eligible income thresholds."
-            },
-            private: {
-                title: "Private",
-                tuition: 50000,
-                housing: 13000,
-                tech: 2200,
-                nonQualified: 8800,
-                desc: "National average private institution non-profit tuition and mandatory fee benchmark."
-            },
-            in_state: {
-                title: "In-State Public",
-                tuition: 13000,
-                housing: 9000,
-                tech: 2000,
-                nonQualified: 8800,
-                desc: "Resident tuition rate for state flagship and public universities."
-            },
-            out_state: {
-                title: "Out-of-State Public",
-                tuition: 33000,
-                housing: 9000,
-                tech: 2100,
-                nonQualified: 8800,
-                desc: "Non-resident public university tuition rate."
-            },
+            ivy: { title: "Ivy League", tuition: 71000, housing: 13600, tech: 2400, nonQualified: 9800, desc: "High tuition rate offset by university institutional aid for eligible income thresholds." },
+            private: { title: "Private", tuition: 50000, housing: 13000, tech: 2200, nonQualified: 8800, desc: "National average private institution non-profit tuition and mandatory fee benchmark." },
+            in_state: { title: "In-State Public", tuition: 13000, housing: 9000, tech: 2000, nonQualified: 8800, desc: "Resident tuition rate for state flagship and public universities." },
+            out_state: { title: "Out-of-State Public", tuition: 33000, housing: 9000, tech: 2100, nonQualified: 8800, desc: "Non-resident public university tuition rate." },
             community_2plus2: {
                 title: "2+2 Community College Strategy",
-                tuitionCC: 3800,
-                housingCC: 0,
-                techCC: 1500,
-                nonQualifiedCC: 5500,
-                tuitionUni: 13000,
-                housingUni: 9000,
-                techUni: 2000,
-                nonQualifiedUni: 8800,
+                tuitionCC: 3800, housingCC: 0, techCC: 1500, nonQualifiedCC: 5500,
+                tuitionUni: 13000, housingUni: 9000, techUni: 2000, nonQualifiedUni: 8800,
                 desc: "2 Years at Local Community College followed by Transfer to University."
             }
         };
@@ -1052,16 +1337,16 @@
         const HOUSING_INFLATION = 0.05;
         const GENERAL_INFLATION = 0.03;
 
-        const DAILY_RATE_ACCUMULATION = 0.00666667 / 100;
-        const DAILY_RATE_DRAWDOWN = 0.00416667 / 100;
+        const ACCUMULATION_MULT = 1.00666667;
+        const DRAWDOWN_MULT = 1.00416667;
 
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const weekdayPluralNames = {
-            1: "Mondays in the Month",
-            2: "Tuesdays in the Month",
-            3: "Wednesdays in the Month",
-            4: "Thursdays in the Month",
-            5: "Fridays in the Month"
+        const weekdayNamesPlural = {
+            1: "Mondays in Month",
+            2: "Tuesdays in Month",
+            3: "Wednesdays in Month",
+            4: "Thursdays in Month",
+            5: "Fridays in Month"
         };
 
         let selectedColleges = [];
@@ -1072,11 +1357,436 @@
         let overridesMap = {};
         let annualCollapsedState = {};
         let summaryAnnualCollapsedState = {};
+        let siblingRedirectionMap = {};
+        let siblingRedirectionDates = {};
+
+        let personalLoansList = [];
+        let carLoansList = [];
+        let mortgageLoansList = [];
+
+        // Track Previous Student Details for Change Detection Modal
+        let previousStudentName = '';
+        let previousStudentDob = '';
+        let pendingStudentNameChange = false;
+
+        function toUpperCaseText(str) {
+            if (!str) return '';
+            return str.toUpperCase();
+        }
 
         function getCommunityCollegeStrategyTitle() {
             const totalDegreeYears = getTargetDegreeYears();
             const universityYears = Math.max(1, totalDegreeYears - 2);
             return `2+${universityYears} Community College Strategy`;
+        }
+
+        function openSiblingCountModal() { document.getElementById('modal-sibling-count').classList.remove('hidden'); }
+        function closeSiblingCountModal() { document.getElementById('modal-sibling-count').classList.add('hidden'); }
+
+        function openSplitInfoModal() { document.getElementById('modal-split-info').classList.remove('hidden'); }
+        function closeSplitInfoModal() { document.getElementById('modal-split-info').classList.add('hidden'); }
+
+        function getMonthOptionsHTML(selectedMonth = 4) {
+            let html = '';
+            for (let i = 0; i < 12; i++) {
+                html += `<option value="${i}" ${i === parseInt(selectedMonth) ? 'selected' : ''}>${monthNames[i]}</option>`;
+            }
+            return html;
+        }
+
+        // Dynamic Loan Redirection % Calculation based on active children remaining in school/college at payoff date
+        function calculateDynamicLoanRedirectionPct(payoffYear, payoffMonth) {
+            const sibData = getSiblingDataFromDOM();
+            if (!sibData.hasSiblings || !sibData.splitEqual) {
+                return 100;
+            }
+
+            // Target student start year & graduation year
+            const studentStartYear = getCollegeStartYear();
+            const studentDegreeYears = getTargetDegreeYears();
+            const studentGradYear = studentStartYear + studentDegreeYears;
+
+            let activeChildrenCount = 1; // Target student is always counted if still in school/college
+
+            // Check if target student has already graduated by loan payoff date
+            // Assuming target student graduates in May (month 4) of studentGradYear
+            if (payoffYear > studentGradYear || (payoffYear === studentGradYear && payoffMonth > 4)) {
+                // Target student has graduated. If target student graduated before payoff date, they shouldn't receive split.
+                activeChildrenCount = 0;
+            }
+
+            // Check each sibling
+            sibData.list.forEach(sib => {
+                // Sibling graduates at sib.gradYr in sib.gradMo
+                // If sibling graduates BEFORE the loan payoff date, they are excluded from the split.
+                const isGraduatedBeforePayoff = (sib.gradYr < payoffYear) || (sib.gradYr === payoffYear && sib.gradMo < payoffMonth);
+                if (!isGraduatedBeforePayoff) {
+                    activeChildrenCount++;
+                }
+            });
+
+            if (activeChildrenCount <= 0) return 100;
+            return Math.round(100 / activeChildrenCount);
+        }
+
+        // Inline double-click editable header helper for loans
+        function enableInlineTitleEdit(element, type, idx) {
+            const currentText = element.textContent.trim();
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentText;
+            input.className = "bg-slate-900 font-bold text-xs px-1 py-0.5 rounded border border-cyan-400 text-white outline-none select-text uppercase";
+            
+            element.replaceWith(input);
+            input.focus();
+            input.select();
+
+            function saveTitle() {
+                const newTitle = toUpperCaseText(input.value.trim()) || currentText;
+                if (type === 'personal') updatePersonalLoan(idx, 'title', newTitle);
+                else if (type === 'car') updateCarLoan(idx, 'title', newTitle);
+                else if (type === 'mortgage') updateMortgageLoan(idx, 'title', newTitle);
+                
+                if (type === 'personal') renderPersonalLoansUI();
+                else if (type === 'car') renderCarLoansUI();
+                else if (type === 'mortgage') renderMortgageLoansUI();
+            }
+
+            input.addEventListener('blur', saveTitle);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    saveTitle();
+                }
+            });
+        }
+
+        function renderPersonalLoansUI() {
+            const container = document.getElementById('personal-loans-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (personalLoansList.length === 0) {
+                container.innerHTML = '<p class="text-[11px] text-slate-500 italic font-mono">No personal loans added. Click "+ Add Personal Loan" to include one.</p>';
+                return;
+            }
+
+            personalLoansList.forEach((loan, idx) => {
+                // Auto-calculate dynamic redirection % if not explicitly locked or whenever payoff date changes
+                const dynamicPct = calculateDynamicLoanRedirectionPct(loan.year, loan.month);
+                if (loan.redirectPct === undefined || loan.autoManaged !== false) {
+                    loan.redirectPct = dynamicPct;
+                }
+
+                const card = document.createElement('div');
+                card.className = "p-2.5 bg-slate-950/80 rounded-lg border border-slate-800 space-y-2 text-xs font-mono";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                        <span ondblclick="enableInlineTitleEdit(this, 'personal', ${idx})" title="Double-click to edit loan name" class="font-bold text-cyan-300 text-xs cursor-pointer hover:text-cyan-200 transition uppercase">
+                            ${toUpperCaseText(loan.title) || 'PERSONAL LOAN ' + (idx + 1)}
+                        </span>
+                        <button type="button" onclick="removePersonalLoan(${idx})" class="text-slate-400 hover:text-rose-400 font-bold transition text-xs">&times; Remove</button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Payment ($/mo)</span>
+                            <input type="number" value="${loan.pmt}" onchange="updatePersonalLoan(${idx}, 'pmt', this.value)" class="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-white font-bold">
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Payoff Date</span>
+                            <div class="grid grid-cols-2 gap-1">
+                                <select onchange="updatePersonalLoan(${idx}, 'month', this.value)" class="px-1 py-1 bg-slate-900 border border-slate-700 rounded text-white font-bold select-text text-[11px]">
+                                    ${getMonthOptionsHTML(loan.month)}
+                                </select>
+                                <input type="number" value="${loan.year}" min="2026" max="2060" onchange="updatePersonalLoan(${idx}, 'year', this.value)" class="px-1 py-1 bg-slate-900 border border-slate-700 rounded text-white font-bold">
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">% Redirected to 529</span>
+                            <input type="number" value="${loan.redirectPct}" min="0" max="100" onchange="updatePersonalLoan(${idx}, 'redirectPct', this.value)" class="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-extrabold">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addPersonalLoanItem() {
+            const defaultYear = 2028;
+            const defaultMonth = 4;
+            personalLoansList.push({
+                id: Date.now(),
+                title: `PERSONAL LOAN ${personalLoansList.length + 1}`,
+                pmt: 250,
+                month: defaultMonth,
+                year: defaultYear,
+                redirectPct: calculateDynamicLoanRedirectionPct(defaultYear, defaultMonth),
+                autoManaged: true
+            });
+            renderPersonalLoansUI();
+            saveAllState();
+        }
+
+        function removePersonalLoan(idx) {
+            personalLoansList.splice(idx, 1);
+            renderPersonalLoansUI();
+            saveAllState();
+        }
+
+        function updatePersonalLoan(idx, key, val) {
+            if (!personalLoansList[idx]) return;
+            if (key === 'pmt' || key === 'month' || key === 'year') {
+                personalLoansList[idx][key] = parseFloat(val) || 0;
+                if (key === 'month' || key === 'year') {
+                    // Recalculate dynamic split percentage when payoff date changes
+                    personalLoansList[idx].redirectPct = calculateDynamicLoanRedirectionPct(personalLoansList[idx].year, personalLoansList[idx].month);
+                    personalLoansList[idx].autoManaged = true;
+                }
+            } else if (key === 'redirectPct') {
+                personalLoansList[idx][key] = parseFloat(val) || 0;
+                personalLoansList[idx].autoManaged = false; // User customized manually
+            } else if (key === 'title') {
+                personalLoansList[idx][key] = toUpperCaseText(val);
+            } else {
+                personalLoansList[idx][key] = val;
+            }
+            renderPersonalLoansUI();
+            saveAllState();
+        }
+
+        function renderCarLoansUI() {
+            const container = document.getElementById('car-loans-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (carLoansList.length === 0) {
+                container.innerHTML = '<p class="text-[11px] text-slate-500 italic font-mono">No car loans added. Click "+ Add Car Loan" to include one.</p>';
+                return;
+            }
+
+            carLoansList.forEach((loan, idx) => {
+                const dynamicPct = calculateDynamicLoanRedirectionPct(loan.year, loan.month);
+                if (loan.redirectPct === undefined || loan.autoManaged !== false) {
+                    loan.redirectPct = dynamicPct;
+                }
+
+                const card = document.createElement('div');
+                card.className = "p-2.5 bg-slate-950/80 rounded-lg border border-slate-800 space-y-2 text-xs font-mono";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                        <span ondblclick="enableInlineTitleEdit(this, 'car', ${idx})" title="Double-click to edit loan name" class="font-bold text-emerald-300 text-xs cursor-pointer hover:text-emerald-200 transition uppercase">
+                            ${toUpperCaseText(loan.title) || 'CAR LOAN ' + (idx + 1)}
+                        </span>
+                        <button type="button" onclick="removeCarLoan(${idx})" class="text-slate-400 hover:text-rose-400 font-bold transition text-xs">&times; Remove</button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Payment ($/mo)</span>
+                            <input type="number" value="${loan.pmt}" onchange="updateCarLoan(${idx}, 'pmt', this.value)" class="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-white font-bold">
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Payoff Date</span>
+                            <div class="grid grid-cols-2 gap-1">
+                                <select onchange="updateCarLoan(${idx}, 'month', this.value)" class="px-1 py-1 bg-slate-900 border border-slate-700 rounded text-white font-bold select-text text-[11px]">
+                                    ${getMonthOptionsHTML(loan.month)}
+                                </select>
+                                <input type="number" value="${loan.year}" min="2026" max="2060" onchange="updateCarLoan(${idx}, 'year', this.value)" class="px-1 py-1 bg-slate-900 border border-slate-700 rounded text-white font-bold">
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">% Redirected to 529</span>
+                            <input type="number" value="${loan.redirectPct}" min="0" max="100" onchange="updateCarLoan(${idx}, 'redirectPct', this.value)" class="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-extrabold">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addCarLoanItem() {
+            const defaultYear = 2029;
+            const defaultMonth = 4;
+            carLoansList.push({
+                id: Date.now(),
+                title: `CAR LOAN ${carLoansList.length + 1}`,
+                pmt: 450,
+                month: defaultMonth,
+                year: defaultYear,
+                redirectPct: calculateDynamicLoanRedirectionPct(defaultYear, defaultMonth),
+                autoManaged: true
+            });
+            renderCarLoansUI();
+            saveAllState();
+        }
+
+        function removeCarLoan(idx) {
+            carLoansList.splice(idx, 1);
+            renderCarLoansUI();
+            saveAllState();
+        }
+
+        function updateCarLoan(idx, key, val) {
+            if (!carLoansList[idx]) return;
+            if (key === 'pmt' || key === 'month' || key === 'year') {
+                carLoansList[idx][key] = parseFloat(val) || 0;
+                if (key === 'month' || key === 'year') {
+                    carLoansList[idx].redirectPct = calculateDynamicLoanRedirectionPct(carLoansList[idx].year, carLoansList[idx].month);
+                    carLoansList[idx].autoManaged = true;
+                }
+            } else if (key === 'redirectPct') {
+                carLoansList[idx][key] = parseFloat(val) || 0;
+                carLoansList[idx].autoManaged = false;
+            } else if (key === 'title') {
+                carLoansList[idx][key] = toUpperCaseText(val);
+            } else {
+                carLoansList[idx][key] = val;
+            }
+            renderCarLoansUI();
+            saveAllState();
+        }
+
+        function renderMortgageLoansUI() {
+            const container = document.getElementById('mortgage-loans-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (mortgageLoansList.length === 0) {
+                container.innerHTML = '<p class="text-[11px] text-slate-500 italic font-mono">No home mortgage loans added. Click "+ Add Home Mortgage Loan" to include one.</p>';
+                return;
+            }
+
+            mortgageLoansList.forEach((loan, idx) => {
+                const dynamicPct = calculateDynamicLoanRedirectionPct(loan.year, loan.month);
+                if (loan.redirectPct === undefined || loan.autoManaged !== false) {
+                    loan.redirectPct = dynamicPct;
+                }
+
+                const card = document.createElement('div');
+                card.className = "p-2.5 bg-slate-950/80 rounded-lg border border-slate-800 space-y-2 text-xs font-mono";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                        <span ondblclick="enableInlineTitleEdit(this, 'mortgage', ${idx})" title="Double-click to edit loan name" class="font-bold text-indigo-300 text-xs cursor-pointer hover:text-indigo-200 transition uppercase">
+                            ${toUpperCaseText(loan.title) || 'HOME MORTGAGE ' + (idx + 1)}
+                        </span>
+                        <button type="button" onclick="removeMortgageLoan(${idx})" class="text-slate-400 hover:text-rose-400 font-bold transition text-xs">&times; Remove</button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Payment ($/mo)</span>
+                            <input type="number" value="${loan.pmt}" onchange="updateMortgageLoan(${idx}, 'pmt', this.value)" class="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-white font-bold">
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Payoff Date</span>
+                            <div class="grid grid-cols-2 gap-1">
+                                <select onchange="updateMortgageLoan(${idx}, 'month', this.value)" class="px-1 py-1 bg-slate-900 border border-slate-700 rounded text-white font-bold select-text text-[11px]">
+                                    ${getMonthOptionsHTML(loan.month)}
+                                </select>
+                                <input type="number" value="${loan.year}" min="2026" max="2060" onchange="updateMortgageLoan(${idx}, 'year', this.value)" class="px-1 py-1 bg-slate-900 border border-slate-700 rounded text-white font-bold">
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">% Redirected to 529</span>
+                            <input type="number" value="${loan.redirectPct}" min="0" max="100" onchange="updateMortgageLoan(${idx}, 'redirectPct', this.value)" class="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-emerald-400 font-extrabold">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addMortgageLoanItem() {
+            const defaultYear = 2035;
+            const defaultMonth = 4;
+            mortgageLoansList.push({
+                id: Date.now(),
+                title: `HOME MORTGAGE ${mortgageLoansList.length + 1}`,
+                pmt: 1800,
+                month: defaultMonth,
+                year: defaultYear,
+                redirectPct: calculateDynamicLoanRedirectionPct(defaultYear, defaultMonth),
+                autoManaged: true
+            });
+            renderMortgageLoansUI();
+            saveAllState();
+        }
+
+        function removeMortgageLoan(idx) {
+            mortgageLoansList.splice(idx, 1);
+            renderMortgageLoansUI();
+            saveAllState();
+        }
+
+        function updateMortgageLoan(idx, key, val) {
+            if (!mortgageLoansList[idx]) return;
+            if (key === 'pmt' || key === 'month' || key === 'year') {
+                mortgageLoansList[idx][key] = parseFloat(val) || 0;
+                if (key === 'month' || key === 'year') {
+                    mortgageLoansList[idx].redirectPct = calculateDynamicLoanRedirectionPct(mortgageLoansList[idx].year, mortgageLoansList[idx].month);
+                    mortgageLoansList[idx].autoManaged = true;
+                }
+            } else if (key === 'redirectPct') {
+                mortgageLoansList[idx][key] = parseFloat(val) || 0;
+                mortgageLoansList[idx].autoManaged = false;
+            } else if (key === 'title') {
+                mortgageLoansList[idx][key] = toUpperCaseText(val);
+            } else {
+                mortgageLoansList[idx][key] = val;
+            }
+            renderMortgageLoansUI();
+            saveAllState();
+        }
+
+        // Reset Strategy Table Confirmation Modal Handlers
+        function confirmResetStrategyTableRates() {
+            document.getElementById('modal-reset-confirm').classList.remove('hidden');
+        }
+
+        function cancelResetStrategyTableRates() {
+            document.getElementById('modal-reset-confirm').classList.add('hidden');
+        }
+
+        function executeResetStrategyTableRates() {
+            overridesMap = {};
+            document.getElementById('modal-reset-confirm').classList.add('hidden');
+            saveAllState();
+            renderGrowthProjectionsUI();
+        }
+
+        function getSiblingDataFromDOM() {
+            const hasSiblings = document.getElementById('toggle-has-siblings')?.checked || false;
+            const count = parseInt(document.getElementById('sibling-count-select')?.value) || 1;
+            const splitEqual = (document.getElementById('sibling-split-equal')?.value === 'yes');
+
+            const list = [];
+            if (hasSiblings) {
+                for (let i = 1; i <= count; i++) {
+                    const name = document.getElementById(`sib-name-${i}`)?.value || `Sibling ${i}`;
+                    const gradMo = parseInt(document.getElementById(`sib-gradmo-${i}`)?.value) || 4;
+                    const gradYr = parseInt(document.getElementById(`sib-gradyr-${i}`)?.value) || 2030;
+                    const exp = parseFloat(document.getElementById(`sib-exp-${i}`)?.value) || 0;
+                    list.push({ id: i, name, gradMo, gradYr, exp });
+                }
+            }
+            return { hasSiblings, count, splitEqual, list };
+        }
+
+        function getDebtDataFromDOM() {
+            const hasDebts = (document.getElementById('has-debts-select')?.value === 'yes');
+            return {
+                hasDebts,
+                personalLoans: hasDebts ? personalLoansList : [],
+                carLoans: hasDebts ? carLoansList : [],
+                mortgageLoans: hasDebts ? mortgageLoansList : []
+            };
+        }
+
+        function getEffectiveChildMonthlyContribution() {
+            const rawCap = parseFloat(document.getElementById('monthly-savings-capacity')?.value) || 300;
+            const sibData = getSiblingDataFromDOM();
+            if (sibData.hasSiblings && sibData.splitEqual) {
+                const totalChildren = sibData.count + 1;
+                return Math.round(rawCap / totalChildren);
+            }
+            return rawCap;
         }
 
         function getAppStateObject() {
@@ -1099,6 +1809,10 @@
                 current529Balance: document.getElementById('current-529-balance').value,
                 financeEntireCollege: document.getElementById('finance-entire-college').value,
                 monthlySavingsCapacity: document.getElementById('monthly-savings-capacity').value,
+                siblingData: getSiblingDataFromDOM(),
+                siblingRedirectionMap,
+                siblingRedirectionDates,
+                debtData: getDebtDataFromDOM(),
                 growthCadenceType: document.getElementById('growth-cadence-type')?.value || 'monthly',
                 growthContributionAmount: document.getElementById('growth-contribution-amount')?.value || 300,
                 growthWeekdaySelect: document.getElementById('growth-weekday-select')?.value || 5,
@@ -1121,8 +1835,14 @@
 
         function applyStateToForm(s) {
             if (!s) return;
-            if (s.studentName) document.getElementById('student-name').value = s.studentName;
-            if (s.studentDob) document.getElementById('student-dob').value = s.studentDob;
+            if (s.studentName) {
+                document.getElementById('student-name').value = s.studentName;
+                previousStudentName = s.studentName;
+            }
+            if (s.studentDob) {
+                document.getElementById('student-dob').value = s.studentDob;
+                previousStudentDob = s.studentDob;
+            }
             if (s.homeState) document.getElementById('home-state').value = s.homeState;
             if (typeof s.toggleOutOfState === 'boolean') document.getElementById('toggle-out-of-state').checked = s.toggleOutOfState;
             if (typeof s.toggleIvyLeague === 'boolean') document.getElementById('toggle-ivy-league').checked = s.toggleIvyLeague;
@@ -1166,7 +1886,59 @@
             if (s.monthlySavingsCapacity !== undefined) document.getElementById('monthly-savings-capacity').value = s.monthlySavingsCapacity;
             if (s.activeTabCategory) activeTabCategory = s.activeTabCategory;
 
-            if (s.growthCadenceType) document.getElementById('growth-cadence-type').value = s.growthCadenceType;
+            if (s.siblingData) {
+                const chkSib = document.getElementById('toggle-has-siblings');
+                if (chkSib) chkSib.checked = s.siblingData.hasSiblings;
+                if (s.siblingData.hasSiblings) {
+                    document.getElementById('sibling-details-container').classList.remove('hidden');
+                    document.getElementById('sibling-count-select').value = s.siblingData.count || 1;
+                    document.getElementById('sibling-split-equal').value = s.siblingData.splitEqual ? 'yes' : 'no';
+                    renderSiblingInputs();
+                    if (Array.isArray(s.siblingData.list)) {
+                        s.siblingData.list.forEach((item, idx) => {
+                            const i = idx + 1;
+                            if (document.getElementById(`sib-name-${i}`)) document.getElementById(`sib-name-${i}`).value = item.name;
+                            if (document.getElementById(`sib-gradmo-${i}`)) document.getElementById(`sib-gradmo-${i}`).value = item.gradMo !== undefined ? item.gradMo : 4;
+                            if (document.getElementById(`sib-gradyr-${i}`)) document.getElementById(`sib-gradyr-${i}`).value = item.gradYr;
+                            if (document.getElementById(`sib-exp-${i}`)) document.getElementById(`sib-exp-${i}`).value = item.exp;
+                        });
+                    }
+                }
+            }
+
+            if (s.siblingRedirectionMap) siblingRedirectionMap = s.siblingRedirectionMap;
+            if (s.siblingRedirectionDates) siblingRedirectionDates = s.siblingRedirectionDates;
+
+            if (s.debtData) {
+                document.getElementById('has-debts-select').value = s.debtData.hasDebts ? 'yes' : 'no';
+                const debtWrap = document.getElementById('debt-items-wrapper');
+                if (s.debtData.hasDebts) {
+                    debtWrap.classList.remove('hidden');
+                } else {
+                    debtWrap.classList.add('hidden');
+                }
+
+                if (Array.isArray(s.debtData.personalLoans)) personalLoansList = s.debtData.personalLoans;
+                if (Array.isArray(s.debtData.carLoans)) carLoansList = s.debtData.carLoans;
+                if (Array.isArray(s.debtData.mortgageLoans)) mortgageLoansList = s.debtData.mortgageLoans;
+
+                renderPersonalLoansUI();
+                renderCarLoansUI();
+                renderMortgageLoansUI();
+            }
+
+            if (s.growthCadenceType) {
+                document.getElementById('growth-cadence-type').value = s.growthCadenceType;
+                const weekdayBox = document.getElementById('growth-weekday-box');
+                const lblAmount = document.getElementById('lbl-growth-amount');
+                if (s.growthCadenceType === 'weekly') {
+                    if (weekdayBox) weekdayBox.classList.remove('hidden');
+                    if (lblAmount) lblAmount.textContent = "Base Weekly Contribution ($)";
+                } else {
+                    if (weekdayBox) weekdayBox.classList.add('hidden');
+                    if (lblAmount) lblAmount.textContent = "Base Monthly Contribution ($)";
+                }
+            }
             if (s.growthContributionAmount !== undefined) document.getElementById('growth-contribution-amount').value = s.growthContributionAmount;
             if (s.growthWeekdaySelect !== undefined) document.getElementById('growth-weekday-select').value = s.growthWeekdaySelect;
 
@@ -1178,6 +1950,161 @@
             if (s.currentStep) currentStep = s.currentStep;
         }
 
+        function renderSiblingInputs() {
+            const count = parseInt(document.getElementById('sibling-count-select').value) || 1;
+            const container = document.getElementById('sibling-list-cards');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= count; i++) {
+                const card = document.createElement('div');
+                card.className = "p-2.5 bg-slate-900 border border-slate-800 rounded-lg grid grid-cols-1 md:grid-cols-4 gap-2.5 text-xs font-mono";
+                card.innerHTML = `
+                    <div>
+                        <span class="text-[10px] text-slate-400 font-bold block">Sibling ${i} Name</span>
+                        <input type="text" id="sib-name-${i}" placeholder="e.g. Jordan Smith" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-white outline-none focus:border-indigo-400 select-text">
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 font-bold block">Target Grad Month</span>
+                        <select id="sib-gradmo-${i}" onchange="saveAllState(); renderSiblingRedirectionUI();" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-white outline-none focus:border-indigo-400 select-text">
+                            ${getMonthOptionsHTML(4)}
+                        </select>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 font-bold block">Target Grad Year</span>
+                        <input type="number" id="sib-gradyr-${i}" value="${2027 + i}" min="2024" max="2045" onchange="saveAllState(); renderSiblingRedirectionUI();" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-white outline-none focus:border-indigo-400 select-text">
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 block font-bold">Monthly Contrib. ($/mo)</span>
+                        <input type="number" id="sib-exp-${i}" value="200" step="50" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-indigo-300 font-bold outline-none focus:border-indigo-400 select-text">
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+            updateSiblingNoticeUI();
+            renderSiblingRedirectionUI();
+            renderPersonalLoansUI();
+            renderCarLoansUI();
+            renderMortgageLoansUI();
+        }
+
+        function updateSiblingNoticeUI() {
+            const rawCap = parseFloat(document.getElementById('monthly-savings-capacity')?.value) || 300;
+            const sibData = getSiblingDataFromDOM();
+            const noticeEl = document.getElementById('effective-split-notice');
+
+            if (sibData.hasSiblings && sibData.splitEqual) {
+                const eff = getEffectiveChildMonthlyContribution();
+                const totalChildren = sibData.count + 1;
+                if (noticeEl) noticeEl.textContent = `(Split ${totalChildren}-ways = $${eff}/mo for ${document.getElementById('student-name')?.value || 'Student'})`;
+            } else {
+                if (noticeEl) noticeEl.textContent = '';
+            }
+        }
+
+        function isAfterPayoffDate(currentYr, currentMo, payoffYr, payoffMo) {
+            if (currentYr > payoffYr) return true;
+            if (currentYr === payoffYr && currentMo >= payoffMo) return true;
+            return false;
+        }
+
+        function renderSiblingRedirectionUI() {
+            const studentName = document.getElementById('student-name')?.value || 'Student';
+            const studentCollegeStartYear = getCollegeStartYear();
+            const sibData = getSiblingDataFromDOM();
+            
+            const card = document.getElementById('sibling-redirection-card');
+            const listContainer = document.getElementById('sibling-redirection-list');
+
+            const lbl1 = document.getElementById('lbl-target-student-name');
+            const lbl2 = document.getElementById('lbl-target-student-name-2');
+            if (lbl1) lbl1.textContent = studentName;
+            if (lbl2) lbl2.textContent = studentName;
+
+            if (!sibData.hasSiblings || sibData.list.length === 0) {
+                card.classList.add('hidden');
+                return;
+            }
+
+            const eligibleSiblings = sibData.list.filter(s => s.gradYr <= (studentCollegeStartYear + getTargetDegreeYears()));
+
+            if (eligibleSiblings.length === 0) {
+                card.classList.add('hidden');
+                return;
+            }
+
+            card.classList.remove('hidden');
+            listContainer.innerHTML = '';
+
+            eligibleSiblings.forEach(sib => {
+                const sibKey = `sib_${sib.id}`;
+                const savedPct = siblingRedirectionMap[sibKey] !== undefined ? siblingRedirectionMap[sibKey] : 100;
+
+                // Redirection Start Month/Year matches Target Grad Month and Target Grad Year from Step 2 exactly
+                const currentRedirMonth = (siblingRedirectionDates[sibKey] && siblingRedirectionDates[sibKey].month !== undefined) ? siblingRedirectionDates[sibKey].month : sib.gradMo;
+                const currentRedirYear = (siblingRedirectionDates[sibKey] && siblingRedirectionDates[sibKey].year !== undefined) ? siblingRedirectionDates[sibKey].year : sib.gradYr;
+
+                // Ensure dates sync with step 2 inputs if not overridden
+                const currentGradMoEl = document.getElementById(`sib-gradmo-${sib.id}`);
+                const currentGradYrEl = document.getElementById(`sib-gradyr-${sib.id}`);
+                const activeGradMo = currentGradMoEl ? parseInt(currentGradMoEl.value) : sib.gradMo;
+                const activeGradYr = currentGradYrEl ? parseInt(currentGradYrEl.value) : sib.gradYr;
+
+                const displayRedirMo = (siblingRedirectionDates[sibKey] && siblingRedirectionDates[sibKey].month !== undefined) ? siblingRedirectionDates[sibKey].month : activeGradMo;
+                const displayRedirYr = (siblingRedirectionDates[sibKey] && siblingRedirectionDates[sibKey].year !== undefined) ? siblingRedirectionDates[sibKey].year : activeGradYr;
+
+                const sibRow = document.createElement('div');
+                sibRow.className = "p-3 bg-slate-900/90 rounded-xl border border-indigo-500/30 grid grid-cols-1 md:grid-cols-4 gap-3 items-center font-mono text-xs";
+                sibRow.innerHTML = `
+                    <div class="space-y-0.5">
+                        <span class="font-extrabold text-white text-xs flex items-center gap-1">
+                            <i data-lucide="user-check" class="w-3.5 h-3.5 text-indigo-400"></i> ${sib.name}
+                        </span>
+                        <span class="text-[10px] text-slate-400 block">Graduation: <strong class="text-indigo-300">${monthNames[activeGradMo]} ${activeGradYr}</strong></span>
+                    </div>
+
+                    <div class="space-y-0.5">
+                        <span class="text-[10px] text-slate-400 block">Monthly Contrib.</span>
+                        <span class="font-bold text-emerald-400">$${sib.exp}/mo</span>
+                    </div>
+
+                    <div class="space-y-0.5">
+                        <span class="text-[10px] text-slate-400 block font-bold">Redirection Start Month</span>
+                        <div class="grid grid-cols-2 gap-1">
+                            <select onchange="updateSiblingRedirectionDate('${sibKey}', 'month', this.value)" class="px-1.5 py-1 bg-slate-950 border border-slate-700 rounded text-cyan-300 font-bold outline-none focus:border-cyan-400 select-text text-[11px]">
+                                ${getMonthOptionsHTML(displayRedirMo)}
+                            </select>
+                            <input type="number" value="${displayRedirYr}" min="2024" max="2050" onchange="updateSiblingRedirectionDate('${sibKey}', 'year', this.value)" class="px-1.5 py-1 bg-slate-950 border border-slate-700 rounded text-cyan-300 font-bold outline-none focus:border-cyan-400 select-text text-[11px]">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] text-slate-300 font-bold block mb-1">% Redirected to ${studentName}'s 529</label>
+                        <div class="flex items-center gap-1">
+                            <input type="number" id="sib-redirect-input-${sib.id}" value="${savedPct}" min="0" max="100" onchange="updateSiblingRedirectionPct('${sibKey}', this.value)" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-emerald-400 font-extrabold outline-none focus:border-cyan-400 select-text">
+                            <span class="text-slate-400 font-bold">%</span>
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(sibRow);
+            });
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function updateSiblingRedirectionPct(sibKey, pctVal) {
+            const val = Math.min(100, Math.max(0, parseFloat(pctVal) || 0));
+            siblingRedirectionMap[sibKey] = val;
+            saveAllState();
+        }
+
+        function updateSiblingRedirectionDate(sibKey, field, val) {
+            if (!siblingRedirectionDates[sibKey]) {
+                siblingRedirectionDates[sibKey] = {};
+            }
+            siblingRedirectionDates[sibKey][field] = parseInt(val) || 0;
+            saveAllState();
+        }
+
         function loadAllState() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -1186,7 +2113,7 @@
                 if (stateParam) {
                     const decoded = JSON.parse(decodeURIComponent(stateParam));
                     applyStateToForm(decoded);
-                    if (urlParams.get('step') === 'summary') currentStep = 4;
+                    if (urlParams.get('step') === 'summary') currentStep = 5;
                     return;
                 }
 
@@ -1499,6 +2426,56 @@
             return Math.round(totalCostGrand);
         }
 
+        function calculateDebtRedirectMonthlyBoostForMonth(yr, m) {
+            let boost = 0;
+
+            const debtData = getDebtDataFromDOM();
+            if (debtData.hasDebts) {
+                if (Array.isArray(debtData.personalLoans)) {
+                    debtData.personalLoans.forEach(loan => {
+                        if (isAfterPayoffDate(yr, m, loan.year, loan.month)) {
+                            boost += Math.round(loan.pmt * ((loan.redirectPct !== undefined ? loan.redirectPct : calculateDynamicLoanRedirectionPct(loan.year, loan.month)) / 100));
+                        }
+                    });
+                }
+                if (Array.isArray(debtData.carLoans)) {
+                    debtData.carLoans.forEach(loan => {
+                        if (isAfterPayoffDate(yr, m, loan.year, loan.month)) {
+                            boost += Math.round(loan.pmt * ((loan.redirectPct !== undefined ? loan.redirectPct : calculateDynamicLoanRedirectionPct(loan.year, loan.month)) / 100));
+                        }
+                    });
+                }
+                if (Array.isArray(debtData.mortgageLoans)) {
+                    debtData.mortgageLoans.forEach(loan => {
+                        if (isAfterPayoffDate(yr, m, loan.year, loan.month)) {
+                            boost += Math.round(loan.pmt * ((loan.redirectPct !== undefined ? loan.redirectPct : calculateDynamicLoanRedirectionPct(loan.year, loan.month)) / 100));
+                        }
+                    });
+                }
+            }
+
+            const sibData = getSiblingDataFromDOM();
+            if (sibData.hasSiblings && sibData.list.length > 0) {
+                sibData.list.forEach(sib => {
+                    const sibKey = `sib_${sib.id}`;
+                    const currentGradMoEl = document.getElementById(`sib-gradmo-${sib.id}`);
+                    const currentGradYrEl = document.getElementById(`sib-gradyr-${sib.id}`);
+                    const activeGradMo = currentGradMoEl ? parseInt(currentGradMoEl.value) : sib.gradMo;
+                    const activeGradYr = currentGradYrEl ? parseInt(currentGradYrEl.value) : sib.gradYr;
+
+                    const redirMo = (siblingRedirectionDates[sibKey] && siblingRedirectionDates[sibKey].month !== undefined) ? siblingRedirectionDates[sibKey].month : activeGradMo;
+                    const redirYr = (siblingRedirectionDates[sibKey] && siblingRedirectionDates[sibKey].year !== undefined) ? siblingRedirectionDates[sibKey].year : activeGradYr;
+
+                    if (isAfterPayoffDate(yr, m, redirYr, redirMo)) {
+                        const redirectPct = (siblingRedirectionMap[sibKey] !== undefined ? siblingRedirectionMap[sibKey] : 100) / 100;
+                        boost += Math.round(sib.exp * redirectPct);
+                    }
+                });
+            }
+
+            return boost;
+        }
+
         function simulateCategoryCostAndAffordability(categoryKey, collegeStartYear) {
             const targetCoveragePct = (parseFloat(document.getElementById('finance-entire-college').value) || 100) / 100;
             const annualTuitionMap = calculateAnnualCovered529Costs(categoryKey, collegeStartYear);
@@ -1512,9 +2489,9 @@
             const cadenceType = document.getElementById('growth-cadence-type')?.value || 'monthly';
             let baseContribution = 0;
             if (currentStep === 2) {
-                baseContribution = parseFloat(document.getElementById('monthly-savings-capacity')?.value) || 0;
+                baseContribution = getEffectiveChildMonthlyContribution();
             } else {
-                baseContribution = parseFloat(document.getElementById('growth-contribution-amount')?.value) || parseFloat(document.getElementById('monthly-savings-capacity')?.value) || 0;
+                baseContribution = parseFloat(document.getElementById('growth-contribution-amount')?.value) || getEffectiveChildMonthlyContribution();
             }
             const targetWeekday = parseInt(document.getElementById('growth-weekday-select')?.value) || 5;
 
@@ -1530,11 +2507,15 @@
                     const keyKey = `${yr}-${m.toString().padStart(2, '0')}`;
                     const customObj = overridesMap[keyKey] || {};
 
+                    const debtBoost = calculateDebtRedirectMonthlyBoostForMonth(yr, m);
+                    const defaultRedirection = Math.floor(cadenceType === 'weekly' ? ((12 * debtBoost) / 52) : debtBoost);
+                    const rowRedirection = customObj.redirection !== undefined ? customObj.redirection : defaultRedirection;
+
                     let rowRate = customObj.contribution !== undefined ? customObj.contribution : baseContribution;
                     rowRate = Math.round(rowRate * 100) / 100;
 
                     let totalMonthlyFromCadence = rowRate;
-                    if (cadenceType === 'weekly' && currentStep >= 3) {
+                    if (cadenceType === 'weekly' && currentStep >= 4) {
                         const dayCount = countWeekdayInMonth(yr, m, targetWeekday);
                         totalMonthlyFromCadence = Math.round((rowRate * dayCount) * 100) / 100;
                     }
@@ -1546,7 +2527,7 @@
                     let rowLumpsum = customObj.lumpsum !== undefined ? customObj.lumpsum : staticLumpsums;
                     rowLumpsum = Math.round(rowLumpsum * 100) / 100;
 
-                    const totalMoContrib = totalMonthlyFromCadence + rowLumpsum;
+                    const totalMoContrib = totalMonthlyFromCadence + rowRedirection + rowLumpsum;
 
                     let withdrawal = 0;
                     if (yr >= collegeStartYear) {
@@ -1555,16 +2536,8 @@
                         }
                     }
 
-                    const isDrawdownPeriod = (yr > collegeStartYear) || (yr === collegeStartYear && m >= 6);
-                    const growthRate = isDrawdownPeriod ? DAILY_RATE_DRAWDOWN : DAILY_RATE_ACCUMULATION;
-
-                    const daysInMonth = new Date(yr, m + 1, 0).getDate();
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        runningBalance *= (1 + growthRate);
-                    }
-
-                    runningBalance += totalMoContrib;
-                    runningBalance -= withdrawal;
+                    const mult = (yr < collegeStartYear) ? ACCUMULATION_MULT : DRAWDOWN_MULT;
+                    runningBalance = (runningBalance * mult) + totalMoContrib - withdrawal;
                 }
             }
 
@@ -1575,7 +2548,7 @@
             let activeStyle = 'ring-2 ring-rose-400 bg-rose-900 text-white font-extrabold shadow-lg shadow-rose-950/50';
 
             if (runningBalance >= 0) {
-                status = 'well_within';
+                status = 'affordable';
                 buttonBgStyle = 'bg-emerald-950/80 text-emerald-200 border-emerald-500/50 hover:bg-emerald-900/80';
                 activeStyle = 'ring-2 ring-emerald-400 bg-emerald-900 text-white font-extrabold shadow-lg shadow-emerald-950/50';
             } else if (runningBalance >= -targetRequiredFund * 0.3) {
@@ -1626,7 +2599,7 @@
 
                 btn.innerHTML = `
                     <span class="w-2 h-2 rounded-full ${
-                        aff.status === 'well_within' ? 'bg-emerald-400' : aff.status === 'manageable' ? 'bg-amber-400' : 'bg-rose-400'
+                        aff.status === 'affordable' ? 'bg-emerald-400' : aff.status === 'manageable' ? 'bg-amber-400' : 'bg-rose-400'
                     }"></span>
                     <span>${tab.title}</span>
                 `;
@@ -1935,7 +2908,7 @@
             }
         }
 
-        function renderLumpsumTable() {
+        function renderLumpsumTable(autoScroll = false) {
             const tbody = document.getElementById('lumpsum-table-body');
             tbody.innerHTML = '';
 
@@ -1944,15 +2917,21 @@
                 return;
             }
 
+            const collegeStartYear = getCollegeStartYear();
+            const totalDegreeYears = getTargetDegreeYears();
+            const endYear = collegeStartYear + (totalDegreeYears - 1);
+
             plannedLumpsums.forEach((item) => {
                 const tr = document.createElement('tr');
                 tr.className = 'border-b border-slate-800/60 hover:bg-slate-800/30';
+                const isMaxYear = item.year >= endYear;
+
                 tr.innerHTML = `
                     <td class="py-1.5 px-3 font-bold text-slate-200">${monthNames[item.month]} ${item.year}</td>
                     <td class="py-1.5 px-3 font-mono text-emerald-400 font-bold">$${item.amount.toLocaleString()}</td>
                     <td class="py-1.5 px-3 text-right">
                         <div class="flex items-center justify-end gap-1.5">
-                            <button type="button" onclick="repeatLumpsumNextYear(${item.id})" class="px-2 py-0.5 bg-slate-800 hover:bg-cyan-950 text-cyan-300 border border-slate-700 rounded text-[10px] font-mono transition" title="Repeat for Next Year">
+                            <button type="button" onclick="repeatLumpsumNextYear(${item.id})" class="px-2 py-0.5 bg-slate-800 hover:bg-cyan-950 text-cyan-300 border border-slate-700 rounded text-[10px] font-mono transition disabled:opacity-40 disabled:cursor-not-allowed" ${isMaxYear ? 'disabled title="Cannot repeat past graduation year"' : 'title="Repeat for Next Year"'}>
                                 +1 Yr
                             </button>
                             <button type="button" onclick="removeLumpsum(${item.id})" class="text-slate-400 hover:text-rose-400 transition font-bold px-1">&times;</button>
@@ -1961,6 +2940,13 @@
                 `;
                 tbody.appendChild(tr);
             });
+
+            if (autoScroll) {
+                const scrollContainer = document.getElementById('lumpsum-scroll-container');
+                if (scrollContainer) {
+                    scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' });
+                }
+            }
         }
 
         function removeLumpsum(id) {
@@ -1973,6 +2959,16 @@
         function repeatLumpsumNextYear(id) {
             const found = plannedLumpsums.find(l => l.id === id);
             if (!found) return;
+
+            const collegeStartYear = getCollegeStartYear();
+            const totalDegreeYears = getTargetDegreeYears();
+            const endYear = collegeStartYear + (totalDegreeYears - 1);
+
+            if (found.year >= endYear) {
+                alert(`Cannot repeat lumpsum past the graduating year (${endYear}).`);
+                return;
+            }
+
             const newLumpsum = {
                 id: Date.now() + Math.random(),
                 month: found.month,
@@ -1981,7 +2977,7 @@
             };
             plannedLumpsums.push(newLumpsum);
             saveAllState();
-            renderLumpsumTable();
+            renderLumpsumTable(true);
             renderGrowthProjectionsUI();
         }
 
@@ -2019,7 +3015,7 @@
 
                 btn.innerHTML = `
                     <span class="w-2 h-2 rounded-full ${
-                        aff.status === 'well_within' ? 'bg-emerald-400' : aff.status === 'manageable' ? 'bg-amber-400' : 'bg-rose-400'
+                        aff.status === 'affordable' ? 'bg-emerald-400' : aff.status === 'manageable' ? 'bg-amber-400' : 'bg-rose-400'
                     }"></span>
                     <span>${tab.title}</span>
                 `;
@@ -2046,8 +3042,9 @@
             populateLumpsumYearDropdown(startYear, endYear);
 
             const cadenceType = document.getElementById('growth-cadence-type').value;
-            const baseContribution = parseFloat(document.getElementById('growth-contribution-amount').value) || 0;
+            const baseContribution = parseFloat(document.getElementById('growth-contribution-amount').value) || getEffectiveChildMonthlyContribution();
             const targetWeekday = parseInt(document.getElementById('growth-weekday-select').value) || 5;
+            const weekdayHeaderLabel = weekdayNamesPlural[targetWeekday] || "Fridays in Month";
 
             const initialBalance = document.getElementById('has-529-plan').value === 'yes' ? (parseFloat(document.getElementById('current-529-balance').value) || 0) : 0;
 
@@ -2056,8 +3053,6 @@
 
             const tablesContainer = document.getElementById('growth-annual-tables-container');
             tablesContainer.innerHTML = '';
-
-            const dynamicWeekdayHeader = weekdayPluralNames[targetWeekday] || "Days in the Month";
 
             for (let yr = startYear; yr <= endYear; yr++) {
                 const annualCard = document.createElement('div');
@@ -2100,7 +3095,8 @@
                                     <tr>
                                         <th class="py-2 px-2.5">Month</th>
                                         <th class="py-2 px-2.5 text-right">${cadenceType === 'weekly' ? 'Weekly contribution' : 'Monthly contribution'}</th>
-                                        ${cadenceType === 'weekly' ? `<th class="py-2 px-2.5 text-center">${dynamicWeekdayHeader}</th><th class="py-2 px-2.5 text-right text-emerald-300">Total Weekly Mo.</th>` : ''}
+                                        <th class="py-2 px-2.5 text-right text-slate-300">Redirects</th>
+                                        <th class="py-2 px-2.5 text-center text-slate-400">${weekdayHeaderLabel}</th>
                                         <th class="py-2 px-2.5 text-right text-cyan-300">Planned Lumpsum</th>
                                         <th class="py-2 px-2.5 text-right text-emerald-400">Total Monthly Contrib.</th>
                                         <th class="py-2 px-2.5 text-right text-slate-300">Cumulative Contrib.</th>
@@ -2110,10 +3106,6 @@
                                 </thead>
                                 <tbody id="tbody-yr-${yr}"></tbody>
                             </table>
-                        </div>
-                        <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1">
-                            <span>Month / Frequency</span>
-                            <span>Calculated Monthly Values &amp; Withdrawals</span>
                         </div>
                     </div>
                 `;
@@ -2129,14 +3121,19 @@
                     const keyKey = `${yr}-${m.toString().padStart(2, '0')}`;
                     const customObj = overridesMap[keyKey] || {};
 
+                    const debtBoostMonthly = calculateDebtRedirectMonthlyBoostForMonth(yr, m);
+                    const defaultRedirection = Math.floor(cadenceType === 'weekly' ? ((12 * debtBoostMonthly) / 52) : debtBoostMonthly);
+
+                    let rowRedirection = customObj.redirection !== undefined ? customObj.redirection : defaultRedirection;
+                    rowRedirection = Math.floor(rowRedirection);
+
                     let rowRate = customObj.contribution !== undefined ? customObj.contribution : baseContribution;
                     rowRate = Math.round(rowRate * 100) / 100;
 
-                    let dayCount = 0;
                     let totalMonthlyFromCadence = rowRate;
+                    const dayCount = countWeekdayInMonth(yr, m, targetWeekday);
 
                     if (cadenceType === 'weekly') {
-                        dayCount = countWeekdayInMonth(yr, m, targetWeekday);
                         totalMonthlyFromCadence = Math.round((rowRate * dayCount) * 100) / 100;
                     }
 
@@ -2147,7 +3144,7 @@
                     let rowLumpsum = customObj.lumpsum !== undefined ? customObj.lumpsum : staticLumpsums;
                     rowLumpsum = Math.round(rowLumpsum * 100) / 100;
 
-                    const totalMoContrib = totalMonthlyFromCadence + rowLumpsum;
+                    const totalMoContrib = totalMonthlyFromCadence + rowRedirection + rowLumpsum;
                     cumulativeContribution += totalMoContrib;
 
                     let withdrawal = 0;
@@ -2157,25 +3154,22 @@
                         }
                     }
 
-                    const isDrawdownPeriod = (yr > collegeStartYear) || (yr === collegeStartYear && m >= 6);
-                    const growthRate = isDrawdownPeriod ? DAILY_RATE_DRAWDOWN : DAILY_RATE_ACCUMULATION;
-
-                    const daysInMonth = new Date(yr, m + 1, 0).getDate();
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        runningBalance *= (1 + growthRate);
-                    }
-
-                    runningBalance += totalMoContrib;
-                    runningBalance -= withdrawal;
+                    const mult = (yr < collegeStartYear) ? ACCUMULATION_MULT : DRAWDOWN_MULT;
+                    runningBalance = (runningBalance * mult) + totalMoContrib - withdrawal;
 
                     const tr = document.createElement('tr');
                     tr.className = 'border-b border-slate-800/60 hover:bg-slate-800/30 transition';
                     tr.innerHTML = `
-                        <td class="py-2 px-2.5 font-bold text-slate-200">${monthNames[m]} ${yr}</td>
+                        <td class="py-2 px-2.5 font-bold text-slate-200">
+                            ${monthNames[m]} ${yr}
+                        </td>
                         <td class="py-2 px-2.5 text-right">
                             <input type="number" step="any" value="${rowRate}" onchange="updateCellOverride('${keyKey}', 'contribution', this.value)" class="w-20 px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-right font-bold text-white outline-none focus:border-cyan-400 select-text">
                         </td>
-                        ${cadenceType === 'weekly' ? `<td class="py-2 px-2.5 text-center text-slate-400 font-bold">${dayCount}</td><td class="py-2 px-2.5 text-right font-mono text-emerald-300">$${totalMonthlyFromCadence.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>` : ''}
+                        <td class="py-2 px-2.5 text-right font-mono font-bold text-slate-200">
+                            <input type="number" step="1" value="${rowRedirection}" onchange="updateCellOverride('${keyKey}', 'redirection', this.value)" class="w-20 px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-right font-bold text-white outline-none focus:border-cyan-400 select-text">
+                        </td>
+                        <td class="py-2 px-2.5 text-center text-slate-400 font-bold">${dayCount}</td>
                         <td class="py-2 px-2.5 text-right">
                             <input type="number" step="any" value="${rowLumpsum}" onchange="updateCellOverride('${keyKey}', 'lumpsum', this.value)" class="w-20 px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-right font-bold text-cyan-300 outline-none focus:border-cyan-400 select-text">
                         </td>
@@ -2270,7 +3264,7 @@
             if (isNaN(val)) return;
 
             if (!overridesMap[keyKey]) overridesMap[keyKey] = {};
-            overridesMap[keyKey][field] = val;
+            overridesMap[keyKey][field] = field === 'redirection' ? Math.floor(val) : val;
 
             saveAllState();
             renderGrowthProjectionsUI();
@@ -2303,6 +3297,7 @@
 
             document.getElementById('section-student').classList.add('hidden');
             document.getElementById('section-growth').classList.add('hidden');
+            document.getElementById('section-debt').classList.add('hidden');
             document.getElementById('section-summary').classList.add('hidden');
             document.getElementById('section-parent').classList.remove('hidden');
 
@@ -2310,17 +3305,151 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function transitionToStep3() {
-            currentStep = 3;
+        function handleStudentDetailsInputBlur() {
+            const newName = document.getElementById('student-name').value.trim();
 
-            const monthlyCapacity = parseFloat(document.getElementById('monthly-savings-capacity').value) || 300;
+            if (previousStudentName && newName !== previousStudentName) {
+                pendingStudentNameChange = true;
+                document.getElementById('modal-student-change').classList.remove('hidden');
+            }
+        }
+
+        function cancelStudentDetailsChange() {
+            // "Preserve Data": Allow student name change without running any reset routine
+            const currentStudentName = document.getElementById('student-name').value.trim();
+            previousStudentName = currentStudentName;
+            pendingStudentNameChange = false;
+            document.getElementById('modal-student-change').classList.add('hidden');
+            saveAllState();
+        }
+
+        function confirmStudentDetailsChange() {
+            const currentStudentName = document.getElementById('student-name').value.trim();
+
+            // 1. Clear aspirational colleges selection
+            selectedColleges = [];
+            updateSelectedCollegesUI();
+            renderCollegeDropdown();
+
+            // 2. Clear career path radio questions
+            document.querySelectorAll('input[name="q1"], input[name="q2"]').forEach(radio => {
+                radio.checked = false;
+            });
+            updatePrimaryInterestUI();
+
+            // 3. Default current 529 plan answer to 'No, not yet' & clear balance
+            const select529 = document.getElementById('has-529-plan');
+            if (select529) select529.value = 'no';
+            const inputBalance = document.getElementById('current-529-balance');
+            if (inputBalance) inputBalance.value = 0;
+            const balanceBox = document.getElementById('529-balance-box');
+            if (balanceBox) balanceBox.classList.add('opacity-50', 'pointer-events-none');
+
+            // 4. Toggle off sibling allocation & clear sibling list
+            const chkSiblings = document.getElementById('toggle-has-siblings');
+            if (chkSiblings) chkSiblings.checked = false;
+            const sibContainer = document.getElementById('sibling-details-container');
+            if (sibContainer) sibContainer.classList.add('hidden');
+
+            // 5. Clear all planned one-time lumpsums and re-render lumpsum table
+            plannedLumpsums = [];
+            renderLumpsumTable();
+
+            // 6. Reset contribution overrides and baseline contribution in projection strategy
+            overridesMap = {};
+            const rawCap = parseFloat(document.getElementById('monthly-savings-capacity')?.value) || 300;
+            const growthContribInput = document.getElementById('growth-contribution-amount');
+            if (growthContribInput) growthContribInput.value = rawCap;
+
+            // Update internal trackers & hide modal
+            previousStudentName = currentStudentName;
+            pendingStudentNameChange = false;
+            document.getElementById('modal-student-change').classList.add('hidden');
+
+            // Refresh UI components and save state
+            renderParentCategoryList();
+            renderExpenseTabsAndContent();
+            renderGrowthProjectionsUI();
+            saveAllState();
+        }
+
+        function confirmStrategyAndProceed() {
+            const collegeStartYear = getCollegeStartYear();
+            const homeState = document.getElementById('home-state').value;
+            const chosenCats = categorizeColleges(homeState);
+            const isCommunityCollegeSelected = document.getElementById('toggle-community-college').checked;
+            const ccTitle = getCommunityCollegeStrategyTitle();
+
+            const availableTabs = [...chosenCats];
+            if (isCommunityCollegeSelected) {
+                availableTabs.push({ key: "community_2plus2", title: ccTitle });
+            }
+
+            if (!activeTabCategory || !availableTabs.some(t => t.key === activeTabCategory)) {
+                if (availableTabs.length > 0) activeTabCategory = availableTabs[0].key;
+            }
+
+            const activePreset = costPresets[activeTabCategory] || costPresets.in_state;
+            const strategyTitle = (activeTabCategory === 'community_2plus2') ? ccTitle : activePreset.title;
+            const coveragePct = document.getElementById('finance-entire-college').value || '100';
+            const totalCostGrand = calculate4YearGrandTotalCost(activeTabCategory, collegeStartYear);
+
+            document.getElementById('confirm-strategy-title').textContent = strategyTitle;
+            document.getElementById('confirm-strategy-coverage').textContent = `${coveragePct}% of costs`;
+            document.getElementById('confirm-strategy-cost').textContent = `$${totalCostGrand.toLocaleString()}`;
+
+            document.getElementById('modal-strategy-confirm').classList.remove('hidden');
+        }
+
+        function cancelStrategyConfirmation() {
+            document.getElementById('modal-strategy-confirm').classList.add('hidden');
+        }
+
+        function proceedToStep3DebtConfirmed() {
+            document.getElementById('modal-strategy-confirm').classList.add('hidden');
+            transitionToStep3Debt();
+        }
+
+        function transitionToStep3Debt() {
+            currentStep = 3;
+            renderSiblingRedirectionUI();
+            saveAllState();
+
+            document.getElementById('section-student').classList.add('hidden');
+            document.getElementById('section-parent').classList.add('hidden');
+            document.getElementById('section-growth').classList.add('hidden');
+            document.getElementById('section-summary').classList.add('hidden');
+            document.getElementById('section-debt').classList.remove('hidden');
+
+            updateHeaderButtonsState();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function transitionToStep2FromDebt() {
+            currentStep = 2;
+            saveAllState();
+
+            document.getElementById('section-student').classList.add('hidden');
+            document.getElementById('section-debt').classList.add('hidden');
+            document.getElementById('section-growth').classList.add('hidden');
+            document.getElementById('section-summary').classList.add('hidden');
+            document.getElementById('section-parent').classList.remove('hidden');
+
+            updateHeaderButtonsState();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function transitionToStep4Growth() {
+            currentStep = 4;
+
+            const effectiveMonthlyCapacity = getEffectiveChildMonthlyContribution();
             const cadenceType = document.getElementById('growth-cadence-type').value;
 
             if (cadenceType === 'weekly') {
-                const computedWeekly = Math.floor((12 * monthlyCapacity) / 52);
+                const computedWeekly = Math.floor((12 * effectiveMonthlyCapacity) / 52);
                 document.getElementById('growth-contribution-amount').value = computedWeekly;
             } else {
-                document.getElementById('growth-contribution-amount').value = monthlyCapacity;
+                document.getElementById('growth-contribution-amount').value = effectiveMonthlyCapacity;
             }
 
             saveAllState();
@@ -2329,6 +3458,7 @@
 
             document.getElementById('section-student').classList.add('hidden');
             document.getElementById('section-parent').classList.add('hidden');
+            document.getElementById('section-debt').classList.add('hidden');
             document.getElementById('section-summary').classList.add('hidden');
             document.getElementById('section-growth').classList.remove('hidden');
 
@@ -2336,8 +3466,8 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function transitionToStep4() {
-            currentStep = 4;
+        function transitionToStep5Summary() {
+            currentStep = 5;
 
             const collegeYear = getCollegeStartYear();
             const totalDegreeYears = getTargetDegreeYears();
@@ -2391,7 +3521,7 @@
                     let titleColorClass = "text-cyan-300";
                     let badgeClass = "bg-cyan-950/60 border-cyan-500/40 text-cyan-300";
 
-                    if (aff.status === 'well_within') {
+                    if (aff.status === 'affordable') {
                         cardBorderClass = "border-emerald-500/40 bg-emerald-950/20";
                         titleColorClass = "text-emerald-400";
                         badgeClass = "bg-emerald-950/80 border-emerald-500/50 text-emerald-300";
@@ -2431,6 +3561,7 @@
 
             document.getElementById('section-student').classList.add('hidden');
             document.getElementById('section-parent').classList.add('hidden');
+            document.getElementById('section-debt').classList.add('hidden');
             document.getElementById('section-growth').classList.add('hidden');
             document.getElementById('section-summary').classList.remove('hidden');
 
@@ -2439,12 +3570,13 @@
             if (window.lucide) lucide.createIcons();
         }
 
-        function transitionToStep3FromSummary() {
-            currentStep = 3;
+        function transitionToStep4FromSummary() {
+            currentStep = 4;
             saveAllState();
 
             document.getElementById('section-student').classList.add('hidden');
             document.getElementById('section-parent').classList.add('hidden');
+            document.getElementById('section-debt').classList.add('hidden');
             document.getElementById('section-summary').classList.add('hidden');
             document.getElementById('section-growth').classList.remove('hidden');
 
@@ -2461,7 +3593,7 @@
             const endYear = collegeStartYear + (totalDegreeYears - 1);
 
             const cadenceType = document.getElementById('growth-cadence-type').value;
-            const baseContribution = parseFloat(document.getElementById('growth-contribution-amount').value) || 0;
+            const baseContribution = parseFloat(document.getElementById('growth-contribution-amount').value) || getEffectiveChildMonthlyContribution();
             const targetWeekday = parseInt(document.getElementById('growth-weekday-select').value) || 5;
 
             const initialBalance = document.getElementById('has-529-plan').value === 'yes' ? (parseFloat(document.getElementById('current-529-balance').value) || 0) : 0;
@@ -2483,14 +3615,23 @@
                     const keyKey = `${yr}-${m.toString().padStart(2, '0')}`;
                     const customObj = overridesMap[keyKey] || {};
 
+                    const debtBoostMonthly = calculateDebtRedirectMonthlyBoostForMonth(yr, m);
+                    const defaultRedirection = Math.floor(cadenceType === 'weekly' ? ((12 * debtBoostMonthly) / 52) : debtBoostMonthly);
+
+                    let rowRedirection = customObj.redirection !== undefined ? customObj.redirection : defaultRedirection;
+                    rowRedirection = Math.floor(rowRedirection);
+
                     let rowRate = customObj.contribution !== undefined ? customObj.contribution : baseContribution;
                     rowRate = Math.round(rowRate * 100) / 100;
 
-                    let totalMonthlyFromCadence = rowRate;
+                    let totalCadenceVal = rowRate;
                     if (cadenceType === 'weekly') {
                         const dayCount = countWeekdayInMonth(yr, m, targetWeekday);
-                        totalMonthlyFromCadence = Math.round((rowRate * dayCount) * 100) / 100;
+                        totalCadenceVal = Math.round((rowRate * dayCount) * 100) / 100;
                     }
+
+                    // Combined Contribution + Redirects
+                    const combinedContribAndRedirects = totalCadenceVal + rowRedirection;
 
                     const staticLumpsums = plannedLumpsums
                         .filter(l => l.year === yr && l.month === m)
@@ -2499,7 +3640,7 @@
                     let rowLumpsum = customObj.lumpsum !== undefined ? customObj.lumpsum : staticLumpsums;
                     rowLumpsum = Math.round(rowLumpsum * 100) / 100;
 
-                    const totalMoContrib = totalMonthlyFromCadence + rowLumpsum;
+                    const totalMoContrib = combinedContribAndRedirects + rowLumpsum;
 
                     let withdrawal = 0;
                     if (yr >= collegeStartYear) {
@@ -2508,18 +3649,10 @@
                         }
                     }
 
-                    const isDrawdownPeriod = (yr > collegeStartYear) || (yr === collegeStartYear && m >= 6);
-                    const growthRate = isDrawdownPeriod ? DAILY_RATE_DRAWDOWN : DAILY_RATE_ACCUMULATION;
+                    const mult = (yr < collegeStartYear) ? ACCUMULATION_MULT : DRAWDOWN_MULT;
+                    runningBalance = (runningBalance * mult) + totalMoContrib - withdrawal;
 
-                    const daysInMonth = new Date(yr, m + 1, 0).getDate();
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        runningBalance *= (1 + growthRate);
-                    }
-
-                    runningBalance += totalMoContrib;
-                    runningBalance -= withdrawal;
-
-                    yrTotalContrib += totalMonthlyFromCadence;
+                    yrTotalContrib += combinedContribAndRedirects;
                     yrTotalLumpsum += rowLumpsum;
                     yrTotalWithdrawal += withdrawal;
 
@@ -2530,7 +3663,7 @@
                         <tr class="border-b border-slate-800/80 hover:bg-slate-800/30 transition">
                             <td class="py-2 px-3 font-bold text-slate-200">${monthNames[m]} ${yr}</td>
                             <td class="py-2 px-3 text-slate-400 font-bold">${phaseLabel}</td>
-                            <td class="py-2 px-3 text-right font-mono text-emerald-400">$${Math.round(totalMonthlyFromCadence).toLocaleString()}</td>
+                            <td class="py-2 px-3 text-right font-mono text-emerald-400 font-bold">$${Math.round(combinedContribAndRedirects).toLocaleString()}</td>
                             <td class="py-2 px-3 text-right font-mono text-cyan-300">$${Math.round(rowLumpsum).toLocaleString()}</td>
                             <td class="py-2 px-3 text-right font-mono text-rose-400 font-bold">${withdrawal > 0 ? '-$' + Math.round(withdrawal).toLocaleString() : '$0'}</td>
                             <td class="py-2 px-3 text-right font-mono font-extrabold ${runningBalance >= 0 ? 'text-cyan-300' : 'text-rose-400'}">$${Math.round(runningBalance).toLocaleString()}</td>
@@ -2567,7 +3700,7 @@
                                 <tr>
                                     <th class="py-2.5 px-3">Month</th>
                                     <th class="py-2.5 px-3">Phase / Status</th>
-                                    <th class="py-2.5 px-3 text-right text-emerald-400">Monthly Contribution</th>
+                                    <th class="py-2.5 px-3 text-right text-emerald-400">Contributions</th>
                                     <th class="py-2.5 px-3 text-right text-cyan-300">Planned Lumpsum</th>
                                     <th class="py-2.5 px-3 text-right text-rose-400">Tuition Withdrawal</th>
                                     <th class="py-2.5 px-3 text-right text-cyan-400 font-bold">Projected Balance</th>
@@ -2600,7 +3733,7 @@
             const btnBookmark = document.getElementById('btn-bookmark');
             const btnPrint = document.getElementById('btn-print');
 
-            if (currentStep === 4) {
+            if (currentStep === 5) {
                 btnShare.classList.remove('hidden');
                 btnShare.classList.add('flex');
 
@@ -2642,12 +3775,12 @@
         }
 
         function handlePrint() {
-            if (currentStep !== 4) return;
+            if (currentStep !== 5) return;
             window.print();
         }
 
         async function handleShare() {
-            if (currentStep !== 4) return;
+            if (currentStep !== 5) return;
             
             const fullShareUrl = getFullShareUrl();
             const btnTextEl = document.getElementById('btn-share-text');
@@ -2699,7 +3832,7 @@
         }
 
         function handleBookmark() {
-            if (currentStep !== 4) return;
+            if (currentStep !== 5) return;
 
             const shareUrl = getFullShareUrl();
             const studentName = document.getElementById('student-name').value.trim() || 'Student';
@@ -2762,19 +3895,72 @@
                     document.getElementById('section-parent').classList.remove('hidden');
                 }
             } else if (currentStep === 3) {
+                renderSiblingRedirectionUI();
+                document.getElementById('section-student').classList.add('hidden');
+                document.getElementById('section-parent').classList.add('hidden');
+                document.getElementById('section-debt').classList.remove('hidden');
+            } else if (currentStep === 4) {
                 renderLumpsumTable();
                 renderGrowthProjectionsUI();
 
                 document.getElementById('section-student').classList.add('hidden');
                 document.getElementById('section-parent').classList.add('hidden');
+                document.getElementById('section-debt').classList.add('hidden');
                 document.getElementById('section-growth').classList.remove('hidden');
-            } else if (currentStep === 4) {
+            } else if (currentStep === 5) {
                 renderLumpsumTable();
                 renderGrowthProjectionsUI();
-                transitionToStep4();
+                transitionToStep5Summary();
             }
 
             updateHeaderButtonsState();
+
+            // Track Student Name Changes
+            document.getElementById('student-name').addEventListener('change', handleStudentDetailsInputBlur);
+
+            // Sibling Event Listeners
+            document.getElementById('toggle-has-siblings').addEventListener('change', (e) => {
+                const container = document.getElementById('sibling-details-container');
+                if (e.target.checked) {
+                    container.classList.remove('hidden');
+                    renderSiblingInputs();
+                } else {
+                    container.classList.add('hidden');
+                }
+                updateSiblingNoticeUI();
+                renderSiblingRedirectionUI();
+                renderPersonalLoansUI();
+                renderCarLoansUI();
+                renderMortgageLoansUI();
+                saveAllState();
+            });
+
+            document.getElementById('sibling-count-select').addEventListener('change', () => {
+                renderSiblingInputs();
+                saveAllState();
+            });
+
+            document.getElementById('sibling-split-equal').addEventListener('change', () => {
+                updateSiblingNoticeUI();
+                renderPersonalLoansUI();
+                renderCarLoansUI();
+                renderMortgageLoansUI();
+                saveAllState();
+            });
+
+            // Debt Event Listeners
+            document.getElementById('has-debts-select').addEventListener('change', (e) => {
+                const wrapper = document.getElementById('debt-items-wrapper');
+                if (e.target.value === 'yes') {
+                    wrapper.classList.remove('hidden');
+                    if (personalLoansList.length === 0) addPersonalLoanItem();
+                    if (carLoansList.length === 0) addCarLoanItem();
+                    if (mortgageLoansList.length === 0) addMortgageLoanItem();
+                } else {
+                    wrapper.classList.add('hidden');
+                }
+                saveAllState();
+            });
 
             const toggleCC = document.getElementById('toggle-community-college');
             const ccBoardingBox = document.getElementById('cc-boarding-options');
@@ -2820,17 +4006,17 @@
             document.getElementById('growth-cadence-type').addEventListener('change', (e) => {
                 const weekdayBox = document.getElementById('growth-weekday-box');
                 const lblAmount = document.getElementById('lbl-growth-amount');
-                const monthlyCapacity = parseFloat(document.getElementById('monthly-savings-capacity').value) || 300;
+                const effectiveMonthlyCapacity = getEffectiveChildMonthlyContribution();
 
                 if (e.target.value === 'weekly') {
                     weekdayBox.classList.remove('hidden');
-                    lblAmount.textContent = "Weekly Contribution ($)";
-                    const computedWeekly = Math.floor((12 * monthlyCapacity) / 52);
+                    lblAmount.textContent = "Base Weekly Contribution ($)";
+                    const computedWeekly = Math.floor((12 * effectiveMonthlyCapacity) / 52);
                     document.getElementById('growth-contribution-amount').value = computedWeekly;
                 } else {
                     weekdayBox.classList.add('hidden');
-                    lblAmount.textContent = "Monthly Contribution ($)";
-                    document.getElementById('growth-contribution-amount').value = monthlyCapacity;
+                    lblAmount.textContent = "Base Monthly Contribution ($)";
+                    document.getElementById('growth-contribution-amount').value = effectiveMonthlyCapacity;
                 }
                 saveAllState();
                 renderGrowthProjectionsUI();
@@ -2864,7 +4050,7 @@
                 document.getElementById('lumpsum-amount-input').value = '';
 
                 saveAllState();
-                renderLumpsumTable();
+                renderLumpsumTable(true);
                 renderGrowthProjectionsUI();
             });
 
@@ -2880,6 +4066,11 @@
                         if (id === 'student-dob') {
                             updateCollegeStartYearDOM();
                         }
+                        updateSiblingNoticeUI();
+                        renderSiblingRedirectionUI();
+                        renderPersonalLoansUI();
+                        renderCarLoansUI();
+                        renderMortgageLoansUI();
                         saveAllState();
                         renderParentCategoryList();
                         renderExpenseTabsAndContent();
@@ -2892,6 +4083,7 @@
                 const el = document.getElementById(id);
                 if (el) {
                     el.addEventListener('input', () => {
+                        updateSiblingNoticeUI();
                         saveAllState();
                         renderParentCategoryList();
                         renderExpenseTabsAndContent();
@@ -2944,6 +4136,9 @@
                 const gradeVal = parseInt(e.target.value);
                 const computedCollegeYear = currentYear + (13 - gradeVal);
                 document.getElementById('res-college-start-year').textContent = computedCollegeYear;
+                renderPersonalLoansUI();
+                renderCarLoansUI();
+                renderMortgageLoansUI();
                 saveAllState();
                 renderParentCategoryList();
                 renderExpenseTabsAndContent();
@@ -2953,8 +4148,6 @@
             if (btnSubmit) {
                 btnSubmit.addEventListener('click', processStudentAnswers);
             }
-
-            document.getElementById('btn-next-stage').addEventListener('click', transitionToStep3);
 
             document.getElementById('has-529-plan').addEventListener('change', (e) => {
                 const balanceBox = document.getElementById('529-balance-box');
@@ -2971,19 +4164,10 @@
                 currentStep = 1;
                 saveAllState();
                 document.getElementById('section-parent').classList.add('hidden');
+                document.getElementById('section-debt').classList.add('hidden');
                 document.getElementById('section-growth').classList.add('hidden');
                 document.getElementById('section-summary').classList.add('hidden');
                 document.getElementById('section-student').classList.remove('hidden');
-                updateHeaderButtonsState();
-            });
-
-            document.getElementById('btn-back-to-step2').addEventListener('click', () => {
-                currentStep = 2;
-                saveAllState();
-                document.getElementById('section-growth').classList.add('hidden');
-                document.getElementById('section-student').classList.add('hidden');
-                document.getElementById('section-summary').classList.add('hidden');
-                document.getElementById('section-parent').classList.remove('hidden');
                 updateHeaderButtonsState();
             });
         });
