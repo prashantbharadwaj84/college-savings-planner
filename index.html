@@ -15,6 +15,8 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- SheetJS for XLSX Export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -74,7 +76,7 @@
             -moz-appearance: textfield;
         }
         @media print {
-            header, button, #btn-share, #btn-bookmark, #btn-print, #btn-suite-hub, .no-print {
+            header, button, #btn-share, #btn-bookmark, #btn-export-xlsx, #btn-print, #btn-suite-hub, .no-print {
                 display: none !important;
             }
             body {
@@ -106,13 +108,16 @@
             
             <div class="flex items-center gap-2 font-mono text-xs">
                 <!-- Summary-Only Buttons -->
+                <button type="button" id="btn-export-xlsx" onclick="handleExportXLSX()" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-emerald-400 border border-slate-700/80 hover:bg-slate-800 transition hidden items-center gap-1.5 font-bold cursor-pointer" title="Export Summary to Excel (.xlsx)">
+                    <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export to Excel
+                </button>
                 <button type="button" id="btn-share" onclick="handleShare()" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-cyan-400 border border-slate-700/80 hover:bg-slate-800 transition hidden items-center gap-1.5 font-bold cursor-pointer" title="Share prefilled planner link">
                     <i data-lucide="share-2" class="w-3.5 h-3.5"></i> <span id="btn-share-text">Share</span>
                 </button>
                 <button type="button" id="btn-bookmark" onclick="handleBookmark()" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-amber-400 border border-slate-700/80 hover:bg-slate-800 transition hidden items-center gap-1.5 font-bold cursor-pointer" title="Bookmark this summary page with prefilled plan">
                     <i data-lucide="bookmark" class="w-3.5 h-3.5"></i> <span id="btn-bookmark-text">Bookmark</span>
                 </button>
-                <button type="button" id="btn-print" onclick="handlePrint()" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-emerald-400 border border-slate-700/80 hover:bg-slate-800 transition hidden items-center gap-1.5 font-bold cursor-pointer" title="Print plan summary report">
+                <button type="button" id="btn-print" onclick="handlePrint()" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-slate-300 border border-slate-700/80 hover:bg-slate-800 transition hidden items-center gap-1.5 font-bold cursor-pointer" title="Print plan summary report">
                     <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print
                 </button>
 
@@ -1394,31 +1399,23 @@
             return html;
         }
 
-        // Dynamic Loan Redirection % Calculation based on active children remaining in school/college at payoff date
         function calculateDynamicLoanRedirectionPct(payoffYear, payoffMonth) {
             const sibData = getSiblingDataFromDOM();
             if (!sibData.hasSiblings || !sibData.splitEqual) {
                 return 100;
             }
 
-            // Target student start year & graduation year
             const studentStartYear = getCollegeStartYear();
             const studentDegreeYears = getTargetDegreeYears();
             const studentGradYear = studentStartYear + studentDegreeYears;
 
-            let activeChildrenCount = 1; // Target student is always counted if still in school/college
+            let activeChildrenCount = 1;
 
-            // Check if target student has already graduated by loan payoff date
-            // Assuming target student graduates in May (month 4) of studentGradYear
             if (payoffYear > studentGradYear || (payoffYear === studentGradYear && payoffMonth > 4)) {
-                // Target student has graduated. If target student graduated before payoff date, they shouldn't receive split.
                 activeChildrenCount = 0;
             }
 
-            // Check each sibling
             sibData.list.forEach(sib => {
-                // Sibling graduates at sib.gradYr in sib.gradMo
-                // If sibling graduates BEFORE the loan payoff date, they are excluded from the split.
                 const isGraduatedBeforePayoff = (sib.gradYr < payoffYear) || (sib.gradYr === payoffYear && sib.gradMo < payoffMonth);
                 if (!isGraduatedBeforePayoff) {
                     activeChildrenCount++;
@@ -1429,7 +1426,6 @@
             return Math.round(100 / activeChildrenCount);
         }
 
-        // Inline double-click editable header helper for loans
         function enableInlineTitleEdit(element, type, idx) {
             const currentText = element.textContent.trim();
             const input = document.createElement('input');
@@ -1471,7 +1467,6 @@
             }
 
             personalLoansList.forEach((loan, idx) => {
-                // Auto-calculate dynamic redirection % if not explicitly locked or whenever payoff date changes
                 const dynamicPct = calculateDynamicLoanRedirectionPct(loan.year, loan.month);
                 if (loan.redirectPct === undefined || loan.autoManaged !== false) {
                     loan.redirectPct = dynamicPct;
@@ -1537,13 +1532,12 @@
             if (key === 'pmt' || key === 'month' || key === 'year') {
                 personalLoansList[idx][key] = parseFloat(val) || 0;
                 if (key === 'month' || key === 'year') {
-                    // Recalculate dynamic split percentage when payoff date changes
                     personalLoansList[idx].redirectPct = calculateDynamicLoanRedirectionPct(personalLoansList[idx].year, personalLoansList[idx].month);
                     personalLoansList[idx].autoManaged = true;
                 }
             } else if (key === 'redirectPct') {
                 personalLoansList[idx][key] = parseFloat(val) || 0;
-                personalLoansList[idx].autoManaged = false; // User customized manually
+                personalLoansList[idx].autoManaged = false;
             } else if (key === 'title') {
                 personalLoansList[idx][key] = toUpperCaseText(val);
             } else {
@@ -1735,7 +1729,6 @@
             saveAllState();
         }
 
-        // Reset Strategy Table Confirmation Modal Handlers
         function confirmResetStrategyTableRates() {
             document.getElementById('modal-reset-confirm').classList.remove('hidden');
         }
@@ -1965,13 +1958,13 @@
                     </div>
                     <div>
                         <span class="text-[10px] text-slate-400 font-bold block">Target Grad Month</span>
-                        <select id="sib-gradmo-${i}" onchange="saveAllState(); renderSiblingRedirectionUI();" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-white outline-none focus:border-indigo-400 select-text">
+                        <select id="sib-gradmo-${i}" onchange="saveAllState(); syncSiblingRedirectionDatesFromStep2(${i}); renderSiblingRedirectionUI();" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-white outline-none focus:border-indigo-400 select-text">
                             ${getMonthOptionsHTML(4)}
                         </select>
                     </div>
                     <div>
                         <span class="text-[10px] text-slate-400 font-bold block">Target Grad Year</span>
-                        <input type="number" id="sib-gradyr-${i}" value="${2027 + i}" min="2024" max="2045" onchange="saveAllState(); renderSiblingRedirectionUI();" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-white outline-none focus:border-indigo-400 select-text">
+                        <input type="number" id="sib-gradyr-${i}" value="${2027 + i}" min="2024" max="2045" onchange="saveAllState(); syncSiblingRedirectionDatesFromStep2(${i}); renderSiblingRedirectionUI();" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-white outline-none focus:border-indigo-400 select-text">
                     </div>
                     <div>
                         <span class="text-[10px] text-slate-400 block font-bold">Monthly Contrib. ($/mo)</span>
@@ -1985,6 +1978,17 @@
             renderPersonalLoansUI();
             renderCarLoansUI();
             renderMortgageLoansUI();
+        }
+
+        function syncSiblingRedirectionDatesFromStep2(sibId) {
+            const sibKey = `sib_${sibId}`;
+            const gradMoEl = document.getElementById(`sib-gradmo-${sibId}`);
+            const gradYrEl = document.getElementById(`sib-gradyr-${sibId}`);
+            if (gradMoEl && gradYrEl) {
+                if (!siblingRedirectionDates[sibKey]) siblingRedirectionDates[sibKey] = {};
+                siblingRedirectionDates[sibKey].month = parseInt(gradMoEl.value);
+                siblingRedirectionDates[sibKey].year = parseInt(gradYrEl.value);
+            }
         }
 
         function updateSiblingNoticeUI() {
@@ -2039,16 +2043,12 @@
                 const sibKey = `sib_${sib.id}`;
                 const savedPct = siblingRedirectionMap[sibKey] !== undefined ? siblingRedirectionMap[sibKey] : 100;
 
-                // Redirection Start Month/Year matches Target Grad Month and Target Grad Year from Step 2 exactly
-                const currentRedirMonth = (siblingRedirectionDates[sibKey] && siblingRedirectionDates[sibKey].month !== undefined) ? siblingRedirectionDates[sibKey].month : sib.gradMo;
-                const currentRedirYear = (siblingRedirectionDates[sibKey] && siblingRedirectionDates[sibKey].year !== undefined) ? siblingRedirectionDates[sibKey].year : sib.gradYr;
-
-                // Ensure dates sync with step 2 inputs if not overridden
                 const currentGradMoEl = document.getElementById(`sib-gradmo-${sib.id}`);
                 const currentGradYrEl = document.getElementById(`sib-gradyr-${sib.id}`);
                 const activeGradMo = currentGradMoEl ? parseInt(currentGradMoEl.value) : sib.gradMo;
                 const activeGradYr = currentGradYrEl ? parseInt(currentGradYrEl.value) : sib.gradYr;
 
+                // Sync redirection start month/year to Step 2 Target Grad Month and Target Grad Year
                 const displayRedirMo = (siblingRedirectionDates[sibKey] && siblingRedirectionDates[sibKey].month !== undefined) ? siblingRedirectionDates[sibKey].month : activeGradMo;
                 const displayRedirYr = (siblingRedirectionDates[sibKey] && siblingRedirectionDates[sibKey].year !== undefined) ? siblingRedirectionDates[sibKey].year : activeGradYr;
 
@@ -3315,7 +3315,6 @@
         }
 
         function cancelStudentDetailsChange() {
-            // "Preserve Data": Allow student name change without running any reset routine
             const currentStudentName = document.getElementById('student-name').value.trim();
             previousStudentName = currentStudentName;
             pendingStudentNameChange = false;
@@ -3326,18 +3325,15 @@
         function confirmStudentDetailsChange() {
             const currentStudentName = document.getElementById('student-name').value.trim();
 
-            // 1. Clear aspirational colleges selection
             selectedColleges = [];
             updateSelectedCollegesUI();
             renderCollegeDropdown();
 
-            // 2. Clear career path radio questions
             document.querySelectorAll('input[name="q1"], input[name="q2"]').forEach(radio => {
                 radio.checked = false;
             });
             updatePrimaryInterestUI();
 
-            // 3. Default current 529 plan answer to 'No, not yet' & clear balance
             const select529 = document.getElementById('has-529-plan');
             if (select529) select529.value = 'no';
             const inputBalance = document.getElementById('current-529-balance');
@@ -3345,28 +3341,23 @@
             const balanceBox = document.getElementById('529-balance-box');
             if (balanceBox) balanceBox.classList.add('opacity-50', 'pointer-events-none');
 
-            // 4. Toggle off sibling allocation & clear sibling list
             const chkSiblings = document.getElementById('toggle-has-siblings');
             if (chkSiblings) chkSiblings.checked = false;
             const sibContainer = document.getElementById('sibling-details-container');
             if (sibContainer) sibContainer.classList.add('hidden');
 
-            // 5. Clear all planned one-time lumpsums and re-render lumpsum table
             plannedLumpsums = [];
             renderLumpsumTable();
 
-            // 6. Reset contribution overrides and baseline contribution in projection strategy
             overridesMap = {};
             const rawCap = parseFloat(document.getElementById('monthly-savings-capacity')?.value) || 300;
             const growthContribInput = document.getElementById('growth-contribution-amount');
             if (growthContribInput) growthContribInput.value = rawCap;
 
-            // Update internal trackers & hide modal
             previousStudentName = currentStudentName;
             pendingStudentNameChange = false;
             document.getElementById('modal-student-change').classList.add('hidden');
 
-            // Refresh UI components and save state
             renderParentCategoryList();
             renderExpenseTabsAndContent();
             renderGrowthProjectionsUI();
@@ -3630,7 +3621,6 @@
                         totalCadenceVal = Math.round((rowRate * dayCount) * 100) / 100;
                     }
 
-                    // Combined Contribution + Redirects
                     const combinedContribAndRedirects = totalCadenceVal + rowRedirection;
 
                     const staticLumpsums = plannedLumpsums
@@ -3729,11 +3719,15 @@
         }
 
         function updateHeaderButtonsState() {
+            const btnExportXLSX = document.getElementById('btn-export-xlsx');
             const btnShare = document.getElementById('btn-share');
             const btnBookmark = document.getElementById('btn-bookmark');
             const btnPrint = document.getElementById('btn-print');
 
             if (currentStep === 5) {
+                btnExportXLSX.classList.remove('hidden');
+                btnExportXLSX.classList.add('flex');
+
                 btnShare.classList.remove('hidden');
                 btnShare.classList.add('flex');
 
@@ -3743,6 +3737,9 @@
                 btnPrint.classList.remove('hidden');
                 btnPrint.classList.add('flex');
             } else {
+                btnExportXLSX.classList.add('hidden');
+                btnExportXLSX.classList.remove('flex');
+
                 btnShare.classList.add('hidden');
                 btnShare.classList.remove('flex');
 
@@ -3752,6 +3749,120 @@
                 btnPrint.classList.add('hidden');
                 btnPrint.classList.remove('flex');
             }
+        }
+
+        function handleExportXLSX() {
+            if (currentStep !== 5) return;
+
+            const collegeStartYear = getCollegeStartYear();
+            const annualTuitionMap = calculateAnnualCovered529Costs(activeTabCategory, collegeStartYear);
+            const now = new Date();
+            const startYear = now.getFullYear();
+            const startMonth = now.getMonth();
+            const totalDegreeYears = getTargetDegreeYears();
+            const endYear = collegeStartYear + (totalDegreeYears - 1);
+
+            const cadenceType = document.getElementById('growth-cadence-type').value;
+            const baseContribution = parseFloat(document.getElementById('growth-contribution-amount').value) || getEffectiveChildMonthlyContribution();
+            const targetWeekday = parseInt(document.getElementById('growth-weekday-select').value) || 5;
+
+            const initialBalance = document.getElementById('has-529-plan').value === 'yes' ? (parseFloat(document.getElementById('current-529-balance').value) || 0) : 0;
+
+            let runningBalance = initialBalance;
+            const dataRows = [];
+
+            const studentName = document.getElementById('student-name').value.trim() || 'Student';
+            const fullShareUrl = getFullShareUrl();
+
+            // Row 1: Header / Title
+            dataRows.push(["BHARRYS FINANCIAL — COLLEGE SAVINGS EXECUTION SCHEDULE"]);
+            // Row 2: Website URL
+            dataRows.push(["Website:", "https://financialhub.bharrys.com/"]);
+            // Row 3: Shared Plan Hyperlink
+            dataRows.push(["Interactive Plan:", "Click here to open in Browser"]);
+            // Row 4: Student Details
+            dataRows.push(["Student Name:", studentName]);
+            // Row 5: Strategy
+            dataRows.push(["Target Strategy:", document.getElementById('sum-active-strategy').textContent]);
+            // Row 6: Degree Total Cost
+            dataRows.push(["Degree Total Cost Est.:", document.getElementById('sum-4yr-grand-total').textContent]);
+            // Row 7: Blank
+            dataRows.push([]);
+            // Row 8: Data Table Headers
+            dataRows.push(["Month", "Phase / Status", "Contributions ($)", "Planned Lumpsum ($)", "Tuition Withdrawal ($)", "Projected Balance ($)"]);
+
+            for (let yr = startYear; yr <= endYear; yr++) {
+                let yrCoveredCost = annualTuitionMap[yr] || 0;
+                const mStart = (yr === startYear) ? startMonth : 0;
+
+                for (let m = mStart; m < 12; m++) {
+                    const keyKey = `${yr}-${m.toString().padStart(2, '0')}`;
+                    const customObj = overridesMap[keyKey] || {};
+
+                    const debtBoostMonthly = calculateDebtRedirectMonthlyBoostForMonth(yr, m);
+                    const defaultRedirection = Math.floor(cadenceType === 'weekly' ? ((12 * debtBoostMonthly) / 52) : debtBoostMonthly);
+
+                    let rowRedirection = customObj.redirection !== undefined ? customObj.redirection : defaultRedirection;
+                    rowRedirection = Math.floor(rowRedirection);
+
+                    let rowRate = customObj.contribution !== undefined ? customObj.contribution : baseContribution;
+                    rowRate = Math.round(rowRate * 100) / 100;
+
+                    let totalCadenceVal = rowRate;
+                    if (cadenceType === 'weekly') {
+                        const dayCount = countWeekdayInMonth(yr, m, targetWeekday);
+                        totalCadenceVal = Math.round((rowRate * dayCount) * 100) / 100;
+                    }
+
+                    const combinedContribAndRedirects = totalCadenceVal + rowRedirection;
+
+                    const staticLumpsums = plannedLumpsums
+                        .filter(l => l.year === yr && l.month === m)
+                        .reduce((acc, curr) => acc + curr.amount, 0);
+
+                    let rowLumpsum = customObj.lumpsum !== undefined ? customObj.lumpsum : staticLumpsums;
+                    rowLumpsum = Math.round(rowLumpsum * 100) / 100;
+
+                    const totalMoContrib = combinedContribAndRedirects + rowLumpsum;
+
+                    let withdrawal = 0;
+                    if (yr >= collegeStartYear) {
+                        if (m === 6 || m === 11) {
+                            withdrawal = yrCoveredCost / 2;
+                        }
+                    }
+
+                    const mult = (yr < collegeStartYear) ? ACCUMULATION_MULT : DRAWDOWN_MULT;
+                    runningBalance = (runningBalance * mult) + totalMoContrib - withdrawal;
+
+                    const isCollege = yr >= collegeStartYear;
+                    const phaseLabel = isCollege ? `Academic Year ${yr - collegeStartYear + 1}` : 'Accumulation Phase';
+
+                    dataRows.push([
+                        `${monthNames[m]} ${yr}`,
+                        phaseLabel,
+                        Math.round(combinedContribAndRedirects),
+                        Math.round(rowLumpsum),
+                        withdrawal > 0 ? -Math.round(withdrawal) : 0,
+                        Math.round(runningBalance)
+                    ]);
+                }
+            }
+
+            const worksheet = XLSX.utils.aoa_to_sheet(dataRows);
+
+            // Add Hyperlinks
+            worksheet['B2'].l = { Target: "https://financialhub.bharrys.com/", Tooltip: "Bharrys Financial Suite Hub" };
+            worksheet['B3'].l = { Target: fullShareUrl, Tooltip: "Click here to open in Browser" };
+
+            // Ensure all cells are unlocked and no protection is applied
+            delete worksheet['!protect'];
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Execution Schedule");
+
+            const sanitizeFilename = studentName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            XLSX.writeFile(workbook, `College_Savings_Plan_${sanitizeFilename}.xlsx`);
         }
 
         function getFullShareUrl() {
@@ -3915,10 +4026,8 @@
 
             updateHeaderButtonsState();
 
-            // Track Student Name Changes
             document.getElementById('student-name').addEventListener('change', handleStudentDetailsInputBlur);
 
-            // Sibling Event Listeners
             document.getElementById('toggle-has-siblings').addEventListener('change', (e) => {
                 const container = document.getElementById('sibling-details-container');
                 if (e.target.checked) {
@@ -3948,7 +4057,6 @@
                 saveAllState();
             });
 
-            // Debt Event Listeners
             document.getElementById('has-debts-select').addEventListener('change', (e) => {
                 const wrapper = document.getElementById('debt-items-wrapper');
                 if (e.target.value === 'yes') {
