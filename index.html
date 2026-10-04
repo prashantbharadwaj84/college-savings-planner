@@ -1143,7 +1143,10 @@
                 if (degSelect) degSelect.value = s.targetDegree;
             }
 
-            if (s.childGrade !== undefined) document.getElementById('child-grade-select').value = s.childGrade;
+            if (s.childGrade !== undefined && s.childGrade !== null && s.childGrade !== '') {
+                document.getElementById('child-grade-select').value = s.childGrade;
+            }
+
             if (typeof s.toggleCommunityCollege === 'boolean') {
                 document.getElementById('toggle-community-college').checked = s.toggleCommunityCollege;
                 if (s.toggleCommunityCollege) {
@@ -1356,10 +1359,12 @@
                 const { age, grade } = calculateAgeAndGrade(studentDob);
                 document.getElementById('res-child-age').textContent = `${age} Yrs Old`;
 
-                const savedGrade = document.getElementById('child-grade-select').value;
-                const finalGrade = (savedGrade !== undefined && savedGrade !== null && savedGrade !== '') ? parseInt(savedGrade) : grade;
-                const computedCollegeYear = new Date().getFullYear() + (13 - finalGrade);
+                const gradeSelect = document.getElementById('child-grade-select');
+                if (gradeSelect) {
+                    gradeSelect.value = grade;
+                }
 
+                const computedCollegeYear = new Date().getFullYear() + (13 - grade);
                 document.getElementById('res-college-start-year').textContent = computedCollegeYear;
             }
         }
@@ -1417,7 +1422,6 @@
         }
 
         function getCollegeStartYear() {
-            updateCollegeStartYearDOM();
             const startYearText = document.getElementById('res-college-start-year').textContent;
             return parseInt(startYearText) || 2027;
         }
@@ -1506,7 +1510,12 @@
             const endYear = collegeStartYear + (totalDegreeYears - 1);
 
             const cadenceType = document.getElementById('growth-cadence-type')?.value || 'monthly';
-            const baseContribution = parseFloat(document.getElementById('growth-contribution-amount')?.value) || 0;
+            let baseContribution = 0;
+            if (currentStep === 2) {
+                baseContribution = parseFloat(document.getElementById('monthly-savings-capacity')?.value) || 0;
+            } else {
+                baseContribution = parseFloat(document.getElementById('growth-contribution-amount')?.value) || parseFloat(document.getElementById('monthly-savings-capacity')?.value) || 0;
+            }
             const targetWeekday = parseInt(document.getElementById('growth-weekday-select')?.value) || 5;
 
             const initialBalance = document.getElementById('has-529-plan').value === 'yes' ? (parseFloat(document.getElementById('current-529-balance').value) || 0) : 0;
@@ -1525,7 +1534,7 @@
                     rowRate = Math.round(rowRate * 100) / 100;
 
                     let totalMonthlyFromCadence = rowRate;
-                    if (cadenceType === 'weekly') {
+                    if (cadenceType === 'weekly' && currentStep >= 3) {
                         const dayCount = countWeekdayInMonth(yr, m, targetWeekday);
                         totalMonthlyFromCadence = Math.round((rowRate * dayCount) * 100) / 100;
                     }
@@ -2827,7 +2836,7 @@
                 renderGrowthProjectionsUI();
             });
 
-            document.getElementById('growth-contribution-amount').addEventListener('change', () => {
+            document.getElementById('growth-contribution-amount').addEventListener('input', () => {
                 saveAllState();
                 renderGrowthProjectionsUI();
             });
@@ -2861,7 +2870,7 @@
 
             const inputsToTrack = [
                 'student-name', 'student-dob', 'home-state', 'toggle-out-of-state', 'toggle-ivy-league',
-                'has-529-plan', 'current-529-balance', 'finance-entire-college', 'monthly-savings-capacity'
+                'has-529-plan', 'finance-entire-college'
             ];
 
             inputsToTrack.forEach(id => {
@@ -2871,6 +2880,18 @@
                         if (id === 'student-dob') {
                             updateCollegeStartYearDOM();
                         }
+                        saveAllState();
+                        renderParentCategoryList();
+                        renderExpenseTabsAndContent();
+                    });
+                }
+            });
+
+            const liveInputs = ['monthly-savings-capacity', 'current-529-balance'];
+            liveInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', () => {
                         saveAllState();
                         renderParentCategoryList();
                         renderExpenseTabsAndContent();
@@ -2943,6 +2964,7 @@
                     balanceBox.classList.add('opacity-50', 'pointer-events-none');
                 }
                 saveAllState();
+                renderExpenseTabsAndContent();
             });
 
             document.getElementById('btn-back').addEventListener('click', () => {
