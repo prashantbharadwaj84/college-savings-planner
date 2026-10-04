@@ -2159,10 +2159,53 @@
             saveAllState();
         }
 
-        function loadAllState() {
+        // ---- Compact share-link helpers (deflate + base64url) ----
+        function bytesToBase64Url(bytes) {
+            let bin = '';
+            const chunk = 0x8000;
+            for (let i = 0; i < bytes.length; i += chunk) {
+                bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+            }
+            return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        function base64UrlToBytes(str) {
+            let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+            while (b64.length % 4) b64 += '=';
+            const bin = atob(b64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            return bytes;
+        }
+
+        async function streamToBytes(readable) {
+            return new Uint8Array(await new Response(readable).arrayBuffer());
+        }
+
+        async function compressStateToParam(jsonStr) {
+            const input = new Blob([new TextEncoder().encode(jsonStr)]).stream();
+            const out = await streamToBytes(input.pipeThrough(new CompressionStream('deflate-raw')));
+            return bytesToBase64Url(out);
+        }
+
+        async function decompressParamToState(param) {
+            const input = new Blob([base64UrlToBytes(param)]).stream();
+            const out = await streamToBytes(input.pipeThrough(new DecompressionStream('deflate-raw')));
+            return JSON.parse(new TextDecoder().decode(out));
+        }
+
+        async function loadAllState() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
+                const compressedParam = urlParams.get('pz');
                 const stateParam = urlParams.get('pdata');
+
+                if (compressedParam) {
+                    const decodedZ = await decompressParamToState(compressedParam);
+                    applyStateToForm(decodedZ);
+                    if (urlParams.get('step') === 'summary') currentStep = 5;
+                    return;
+                }
 
                 if (stateParam) {
                     const decoded = JSON.parse(decodeURIComponent(stateParam));
@@ -3813,7 +3856,7 @@
             }
         }
 
-        function handleExportXLSX() {
+        async function handleExportXLSX() {
             if (currentStep !== 5) return;
 
             const collegeStartYear = getCollegeStartYear();
@@ -3835,7 +3878,7 @@
             const dataRows = [];
 
             const studentName = document.getElementById('student-name').value.trim() || 'Student';
-            const fullShareUrl = getFullShareUrl();
+            const fullShareUrl = await getFullShareUrl();
 
             // Row 1: Header / Title
             dataRows.push(["BHARRYS FINANCIAL — COLLEGE SAVINGS EXECUTION SCHEDULE"]);
@@ -3953,7 +3996,13 @@
 
             // Add Hyperlinks
             worksheet['B2'].l = { Target: "https://financialhub.bharrys.com/", Tooltip: "Bharrys Financial Suite Hub" };
-            worksheet['B3'].l = { Target: fullShareUrl, Tooltip: "Click here to open in Browser" };
+            if (fullShareUrl.length <= 2000) {
+                worksheet['B3'].l = { Target: fullShareUrl, Tooltip: "Click here to open in Browser" };
+            } else {
+                // Excel hyperlinks cannot exceed ~2083 characters; fall back to the app home page.
+                worksheet['B3'].v = "Plan link too long for Excel - use the Share button in the app";
+                worksheet['B3'].l = { Target: "https://financialhub.bharrys.com/", Tooltip: "Bharrys Financial Suite Hub" };
+            }
 
             // Ensure all cells are unlocked and no protection is applied
             delete worksheet['!protect'];
@@ -3965,10 +4014,22 @@
             XLSX.writeFile(workbook, `College_Savings_Plan_${sanitizeFilename}.xlsx`);
         }
 
-        function getFullShareUrl() {
+        async function getFullShareUrl() {
             saveAllState();
             const stateObj = getAppStateObject();
-            const encodedState = encodeURIComponent(JSON.stringify(stateObj));
+            const jsonStr = JSON.stringify(stateObj);
+
+            // Prefer a compressed payload (about 10x shorter) to avoid "URI Too Long" errors.
+            let paramName = 'pdata';
+            let paramValue = encodeURIComponent(jsonStr); // legacy fallback for browsers without CompressionStream
+            if (typeof CompressionStream !== 'undefined') {
+                try {
+                    paramValue = await compressStateToParam(jsonStr);
+                    paramName = 'pz';
+                } catch (zErr) {
+                    console.warn('Compression failed, using uncompressed link', zErr);
+                }
+            }
 
             try {
                 let baseUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
@@ -3977,11 +4038,11 @@
                 }
                 const urlObj = new URL(baseUrl);
                 urlObj.searchParams.set('step', 'summary');
-                urlObj.searchParams.set('pdata', encodedState);
+                urlObj.searchParams.set(paramName, paramValue);
                 return urlObj.toString();
             } catch (urlErr) {
                 const sep = window.location.href.includes('?') ? '&' : '?';
-                return window.location.href.split('?')[0] + sep + 'step=summary&pdata=' + encodedState;
+                return window.location.href.split('?')[0] + sep + 'step=summary&' + paramName + '=' + paramValue;
             }
         }
 
@@ -3993,7 +4054,7 @@
         async function handleShare() {
             if (currentStep !== 5) return;
             
-            const fullShareUrl = getFullShareUrl();
+            const fullShareUrl = await getFullShareUrl();
             const btnTextEl = document.getElementById('btn-share-text');
             let copiedSuccessfully = false;
 
@@ -4042,10 +4103,10 @@
             }
         }
 
-        function handleBookmark() {
+        async function handleBookmark() {
             if (currentStep !== 5) return;
 
-            const shareUrl = getFullShareUrl();
+            const shareUrl = await getFullShareUrl();
             const studentName = document.getElementById('student-name').value.trim() || 'Student';
             const bookmarkTitle = `College Savings Plan - ${studentName} | Bharrys Financial Suite`;
             const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
@@ -4082,10 +4143,10 @@
         function openNonQualifiedModal() { document.getElementById('modal-nonqualified').classList.remove('hidden'); }
         function closeNonQualifiedModal() { document.getElementById('modal-nonqualified').classList.add('hidden'); }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             if (window.lucide) lucide.createIcons();
 
-            loadAllState();
+            await loadAllState();
 
             updateCollegeStartYearDOM();
             updatePrimaryInterestUI();
