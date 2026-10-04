@@ -868,39 +868,46 @@
                 </div>
             </div>
 
-            <!-- Executive Key Metrics Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 text-xs font-mono">
-                <div class="glass-card p-3 rounded-xl space-y-1">
-                    <span class="text-[10px] font-mono text-slate-400 uppercase">Student Name</span>
-                    <p id="sum-student-name" class="text-sm font-extrabold text-white truncate">--</p>
+            <!-- Executive Key Metrics Grid: 2 Balanced Rows of 4 Cards -->
+            <div class="space-y-3 text-xs font-mono">
+                <!-- Row 1: Student Profile & Timeline -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="glass-card p-3 rounded-xl space-y-1">
+                        <span class="text-[10px] font-mono text-slate-400 uppercase">Student Name</span>
+                        <p id="sum-student-name" class="text-sm font-extrabold text-white truncate">--</p>
+                    </div>
+                    <div class="glass-card p-3 rounded-xl space-y-1">
+                        <span class="text-[10px] font-mono text-slate-400 uppercase">Primary Interest</span>
+                        <p id="sum-primary-interest" class="text-sm font-extrabold text-amber-300 truncate">--</p>
+                    </div>
+                    <div class="glass-card p-3 rounded-xl space-y-1">
+                        <span class="text-[10px] font-mono text-slate-400 uppercase">Target Degree Path</span>
+                        <p id="sum-target-degree" class="text-xs font-extrabold text-indigo-300 truncate">--</p>
+                    </div>
+                    <div class="glass-card p-3 rounded-xl space-y-1">
+                        <span class="text-[10px] font-mono text-slate-400 uppercase">College Start / Grad</span>
+                        <p class="text-sm font-extrabold text-cyan-400"><span id="sum-college-year">--</span> &ndash; <span id="sum-grad-year" class="text-emerald-400">--</span></p>
+                    </div>
                 </div>
-                <div class="glass-card p-3 rounded-xl space-y-1">
-                    <span class="text-[10px] font-mono text-slate-400 uppercase">Primary Interest</span>
-                    <p id="sum-primary-interest" class="text-sm font-extrabold text-amber-300 truncate">--</p>
-                </div>
-                <div class="glass-card p-3 rounded-xl space-y-1">
-                    <span class="text-[10px] font-mono text-slate-400 uppercase">Target Degree Path</span>
-                    <p id="sum-target-degree" class="text-xs font-extrabold text-indigo-300 truncate">--</p>
-                </div>
-                <div class="glass-card p-3 rounded-xl space-y-1">
-                    <span class="text-[10px] font-mono text-slate-400 uppercase">College Start Year</span>
-                    <p id="sum-college-year" class="text-sm font-extrabold text-cyan-400">--</p>
-                </div>
-                <div class="glass-card p-3 rounded-xl space-y-1">
-                    <span class="text-[10px] font-mono text-slate-400 uppercase">Graduation Year</span>
-                    <p id="sum-grad-year" class="text-sm font-extrabold text-emerald-400">--</p>
-                </div>
-                <div class="glass-card p-3 rounded-xl space-y-1">
-                    <span class="text-[10px] font-mono text-slate-400 uppercase">Target Strategy</span>
-                    <p id="sum-active-strategy" class="text-xs font-extrabold text-cyan-300 truncate">--</p>
-                </div>
-                <div class="glass-card p-3 rounded-xl space-y-1">
-                    <span class="text-[10px] font-mono text-slate-400 uppercase">Degree Total Cost Est.</span>
-                    <p id="sum-4yr-grand-total" class="text-sm font-extrabold text-indigo-300">$0</p>
-                </div>
-                <div class="glass-card p-3 rounded-xl space-y-1">
-                    <span class="text-[10px] font-mono text-slate-400 uppercase">Projected Surplus/Deficit</span>
-                    <p id="sum-final-balance" class="text-sm font-extrabold text-emerald-400">$0</p>
+
+                <!-- Row 2: Strategy & Financial Outlook -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="glass-card p-3 rounded-xl space-y-1">
+                        <span class="text-[10px] font-mono text-slate-400 uppercase">Current 529 Balance</span>
+                        <p id="sum-current-529-bal" class="text-sm font-extrabold text-emerald-400">$0</p>
+                    </div>
+                    <div class="glass-card p-3 rounded-xl space-y-1">
+                        <span class="text-[10px] font-mono text-slate-400 uppercase">Target Strategy</span>
+                        <p id="sum-active-strategy" class="text-xs font-extrabold text-cyan-300 truncate">--</p>
+                    </div>
+                    <div class="glass-card p-3 rounded-xl space-y-1">
+                        <span class="text-[10px] font-mono text-slate-400 uppercase">Degree Total Cost Est.</span>
+                        <p id="sum-4yr-grand-total" class="text-sm font-extrabold text-indigo-300">$0</p>
+                    </div>
+                    <div class="glass-card p-3 rounded-xl space-y-1">
+                        <span class="text-[10px] font-mono text-slate-400 uppercase">Projected Surplus/Deficit</span>
+                        <p id="sum-final-balance" class="text-sm font-extrabold text-emerald-400">$0</p>
+                    </div>
                 </div>
             </div>
 
@@ -3489,11 +3496,15 @@
             const targetDegreeSelect = document.getElementById('target-degree-select');
             const targetDegreeText = targetDegreeSelect.options[targetDegreeSelect.selectedIndex]?.text || `${totalDegreeYears}-Year Degree`;
 
+            const has529 = document.getElementById('has-529-plan').value === 'yes';
+            const current529Bal = has529 ? (parseFloat(document.getElementById('current-529-balance').value) || 0) : 0;
+
             document.getElementById('sum-student-name').textContent = studentName;
             document.getElementById('sum-primary-interest').textContent = primaryInterestText;
             document.getElementById('sum-target-degree').textContent = targetDegreeText;
             document.getElementById('sum-college-year').textContent = collegeYear;
             document.getElementById('sum-grad-year').textContent = gradYear;
+            document.getElementById('sum-current-529-bal').textContent = `$${Math.round(current529Bal).toLocaleString()}`;
             document.getElementById('sum-active-strategy').textContent = activeStrategyTitle;
             document.getElementById('sum-4yr-grand-total').textContent = `$${grandTotalCost.toLocaleString()}`;
 
@@ -3766,7 +3777,8 @@
             const baseContribution = parseFloat(document.getElementById('growth-contribution-amount').value) || getEffectiveChildMonthlyContribution();
             const targetWeekday = parseInt(document.getElementById('growth-weekday-select').value) || 5;
 
-            const initialBalance = document.getElementById('has-529-plan').value === 'yes' ? (parseFloat(document.getElementById('current-529-balance').value) || 0) : 0;
+            const has529 = document.getElementById('has-529-plan').value === 'yes';
+            const initialBalance = has529 ? (parseFloat(document.getElementById('current-529-balance').value) || 0) : 0;
 
             let runningBalance = initialBalance;
             const dataRows = [];
@@ -3782,13 +3794,50 @@
             dataRows.push(["Interactive Plan:", "Click here to open in Browser"]);
             // Row 4: Student Details
             dataRows.push(["Student Name:", studentName]);
-            // Row 5: Strategy
+            // Row 5: Current 529 Balance
+            dataRows.push(["Current 529 Plan Balance:", `$${Math.round(initialBalance).toLocaleString()}`]);
+            // Row 6: Strategy
             dataRows.push(["Target Strategy:", document.getElementById('sum-active-strategy').textContent]);
-            // Row 6: Degree Total Cost
+            // Row 7: Degree Total Cost
             dataRows.push(["Degree Total Cost Est.:", document.getElementById('sum-4yr-grand-total').textContent]);
-            // Row 7: Blank
+
+            // Debts & Liabilities Summary Section in Export
+            const debtData = getDebtDataFromDOM();
             dataRows.push([]);
-            // Row 8: Data Table Headers
+            dataRows.push(["CASH FLOW REDIRECTION & DEBTS BREAKDOWN"]);
+            dataRows.push(["Liabilities Status:", debtData.hasDebts ? "Active Loans Configured" : "Debt-Free"]);
+
+            if (debtData.hasDebts) {
+                if (debtData.personalLoans.length > 0) {
+                    debtData.personalLoans.forEach(l => {
+                        dataRows.push(["Personal Loan:", `${l.title || 'Personal Loan'} — $${l.pmt}/mo (Payoff: ${monthNames[l.month]} ${l.year}) — ${l.redirectPct}% Redirected`]);
+                    });
+                }
+                if (debtData.carLoans.length > 0) {
+                    debtData.carLoans.forEach(l => {
+                        dataRows.push(["Car Loan:", `${l.title || 'Car Loan'} — $${l.pmt}/mo (Payoff: ${monthNames[l.month]} ${l.year}) — ${l.redirectPct}% Redirected`]);
+                    });
+                }
+                if (debtData.mortgageLoans.length > 0) {
+                    debtData.mortgageLoans.forEach(l => {
+                        dataRows.push(["Home Mortgage:", `${l.title || 'Mortgage'} — $${l.pmt}/mo (Payoff: ${monthNames[l.month]} ${l.year}) — ${l.redirectPct}% Redirected`]);
+                    });
+                }
+            }
+
+            const sibData = getSiblingDataFromDOM();
+            if (sibData.hasSiblings && sibData.list.length > 0) {
+                dataRows.push(["Sibling Allocations:", `${sibData.count} Sibling(s) Configured (${sibData.splitEqual ? 'Equal Split' : 'Standard Split'})`]);
+                sibData.list.forEach(sib => {
+                    const sibKey = `sib_${sib.id}`;
+                    const savedPct = siblingRedirectionMap[sibKey] !== undefined ? siblingRedirectionMap[sibKey] : 100;
+                    dataRows.push(["Graduating Sibling:", `${sib.name} — Grad: ${monthNames[sib.gradMo]} ${sib.gradYr} ($${sib.exp}/mo) — ${savedPct}% Redirected`]);
+                });
+            }
+
+            // Blank Row
+            dataRows.push([]);
+            // Data Table Headers
             dataRows.push(["Month", "Phase / Status", "Contributions ($)", "Planned Lumpsum ($)", "Tuition Withdrawal ($)", "Projected Balance ($)"]);
 
             for (let yr = startYear; yr <= endYear; yr++) {
