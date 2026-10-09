@@ -1400,14 +1400,14 @@
 
             <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
                 <p>
-                    You are changing the Child Name. You can choose to preserve your current plan parameters or perform a full data reset.
+                    You are changing the Child Name. Do you want to reset the contributions and lump sums you entered?
                 </p>
 
                 <div class="p-3 bg-slate-900 border border-amber-500/30 rounded-xl space-y-2">
                     <p class="font-bold text-amber-300">Option Details:</p>
                     <ul class="space-y-1 list-disc list-inside text-[11px] text-slate-200">
-                        <li><strong>Preserve Data:</strong> Updates the child name while keeping all existing selections and savings strategy data intact.</li>
-                        <li><strong>Confirm & Update:</strong> Updates the name and resets all child-specific selections, sibling configurations, and custom rate overrides.</li>
+                        <li><strong>Preserve Data:</strong> Updates the child name and keeps everything as it is.</li>
+                        <li><strong>Reset & Update:</strong> Updates the name and resets only the contributions and lump sums in both the Simple and Custom 529 plans. Everything else is kept.</li>
                     </ul>
                 </div>
             </div>
@@ -1417,7 +1417,7 @@
                     Preserve Data
                 </button>
                 <button type="button" onclick="confirmStudentDetailsChange()" class="w-full sm:w-auto px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-lg text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
-                    Confirm & Update
+                    Reset & Update
                 </button>
             </div>
         </div>
@@ -2635,7 +2635,7 @@
             return {
                 freq,
                 meta,
-                amount: parseFloat(document.getElementById('contrib-amount')?.value) || 0,
+                amount: (freq === 'weekly') ? Math.floor(parseFloat(document.getElementById('contrib-amount')?.value) || 0) : (parseFloat(document.getElementById('contrib-amount')?.value) || 0),
                 weekday: parseInt(document.getElementById('contrib-weekday')?.value) || 5,
                 month: parseInt(document.getElementById('contrib-month')?.value) || 1,
                 day1: parseInt(document.getElementById('contrib-day1')?.value) || 1,
@@ -2721,6 +2721,11 @@
             const weekdayEl = document.getElementById('growth-weekday-select');
             if (cadenceEl) cadenceEl.value = (plan.freq === 'weekly') ? 'weekly' : 'monthly';
             if (amountEl) amountEl.value = Math.round(monthlyEquivalent(plan.freq, plan.amount) * 100) / 100;
+            const cAmt = document.getElementById('contrib-amount');
+            if (cAmt) {
+                cAmt.step = plan.freq === 'weekly' ? '1' : 'any';
+                if (plan.freq === 'weekly' && cAmt.value !== '' && parseFloat(cAmt.value) !== Math.floor(parseFloat(cAmt.value))) cAmt.value = Math.floor(parseFloat(cAmt.value));
+            }
             if (weekdayEl) weekdayEl.value = plan.weekday;
             const sumEl = document.getElementById('planner-plan-summary');
             if (sumEl) sumEl.textContent = describeContributionPlan(plan);
@@ -2968,7 +2973,7 @@
                 freq,
                 lumpFreq,
                 continueDrawdown: simpleContinueDrawdown,
-                amount: Math.max(0, parseFloat(document.getElementById('simple-amount')?.value) || 0),
+                amount: (freq === 'weekly') ? Math.floor(Math.max(0, parseFloat(document.getElementById('simple-amount')?.value) || 0)) : Math.max(0, parseFloat(document.getElementById('simple-amount')?.value) || 0),
                 lump: Math.max(0, parseFloat(document.getElementById('simple-lump')?.value) || 0),
                 month: parseInt(document.getElementById('simple-month')?.value) || 1,
                 day1: parseInt(document.getElementById('simple-day1')?.value) || 1,
@@ -3027,11 +3032,9 @@
             simplePage7Sig = sig;
         }
 
-        // One-time lump sum is prefilled from the front loading value; a yearly lump sum starts empty
+        // The lump sum defaults to $0 until the person enters one
         function suggestSimpleLump() {
-            if (getSimpleInputs().lumpFreq !== 'one_time') return 0;
-            const p = getContributionPlan();
-            return (p.freq === 'front_loading' && p.amount > 0) ? p.amount : suggestContributionAmount('front_loading');
+            return 0;
         }
 
         function applySuggestedSimpleAmount(force) {
@@ -3191,6 +3194,12 @@
             const lbl = document.getElementById('lbl-simple-amount');
             if (lbl) lbl.textContent = ({ monthly: 'Contribution per month ($)', semi_monthly: 'Contribution twice a month ($)', biweekly: 'Contribution every two weeks ($)', weekly: 'Contribution per week ($)', yearly: 'Contribution per year ($)' })[getSimpleInputs().freq];
             applyYesNoStyle('sdraw', simpleContinueDrawdown);
+            const sAmt = document.getElementById('simple-amount');
+            if (sAmt) {
+                const wk = getSimpleInputs().freq === 'weekly';
+                sAmt.step = wk ? '1' : 'any';
+                if (wk && sAmt.value !== '' && parseFloat(sAmt.value) !== Math.floor(parseFloat(sAmt.value)) && document.activeElement !== sAmt) sAmt.value = Math.floor(parseFloat(sAmt.value));
+            }
             const noteEl = document.getElementById('simple-note');
             if (noteEl) noteEl.textContent = (simpleContinueDrawdown ? 'Contributions continue through the college years.' : 'Contributions stop when college starts.') + ' Money left is what remains after covered expenses.';
             {
@@ -5229,7 +5238,7 @@
                     const rowRedirection = customObj.redirection !== undefined ? customObj.redirection : defaultRedirection;
 
                     let rowRate = customObj.contribution !== undefined ? customObj.contribution : getScheduledBaseForMonth(yr, m, collegeStartYear, baseContribution);
-                    rowRate = Math.round(rowRate * 100) / 100;
+                    rowRate = (cadenceType === 'weekly') ? Math.floor(rowRate) : Math.round(rowRate * 100) / 100;
 
                     let totalMonthlyFromCadence = rowRate;
                     if (cadenceType === 'weekly' && currentStep >= 7) {
@@ -5972,7 +5981,7 @@
                     rowRedirection = Math.floor(rowRedirection);
 
                     let rowRate = customObj.contribution !== undefined ? customObj.contribution : getScheduledBaseForMonth(yr, m, collegeStartYear, baseContribution);
-                    rowRate = Math.round(rowRate * 100) / 100;
+                    rowRate = (cadenceType === 'weekly') ? Math.floor(rowRate) : Math.round(rowRate * 100) / 100;
 
                     let totalMonthlyFromCadence = rowRate;
                     const dayCount = countWeekdayInMonth(yr, m, targetWeekday);
@@ -6114,7 +6123,7 @@
             for (let m = 0; m < 12; m++) {
                 const keyKey = `${yr}-${m.toString().padStart(2, '0')}`;
                 if (!overridesMap[keyKey]) overridesMap[keyKey] = {};
-                overridesMap[keyKey].contribution = val;
+                overridesMap[keyKey].contribution = (document.getElementById('growth-cadence-type')?.value === 'weekly') ? Math.floor(val) : val;
             }
 
             annualCollapsedState[yr] = true;
@@ -6127,7 +6136,7 @@
             if (isNaN(val)) return;
 
             if (!overridesMap[keyKey]) overridesMap[keyKey] = {};
-            overridesMap[keyKey][field] = field === 'redirection' ? Math.floor(val) : val;
+            overridesMap[keyKey][field] = (field === 'redirection' || (field === 'contribution' && document.getElementById('growth-cadence-type')?.value === 'weekly')) ? Math.floor(val) : val;
 
             saveAllState();
             renderGrowthProjectionsUI();
@@ -6164,6 +6173,12 @@
             const newName = document.getElementById('student-name').value.trim();
 
             if (previousStudentName && newName !== previousStudentName) {
+                // Renaming the default "Child 1" to a real name never resets data; renames to "Child 2", "Child 3", etc. still prompt
+                if (previousStudentName.toLowerCase() === 'child 1' && !/^child\s*\d+$/i.test(newName)) {
+                    previousStudentName = newName;
+                    saveAllState();
+                    return;
+                }
                 document.getElementById('modal-student-change').classList.remove('hidden');
             }
         }
@@ -6178,29 +6193,37 @@
         function confirmStudentDetailsChange() {
             const currentStudentName = document.getElementById('student-name').value.trim();
 
-            setHas529Plan(false);
-            const inputBalance = document.getElementById('current-529-balance');
-            if (inputBalance) inputBalance.value = 0;
-
-            setHasRetirementAccount(false);
-
-            setSiblingHasSiblings(false);
-            siblingRowsList = [];
-
+            // Custom 529: clear per-month contribution and lump sum edits (redirects are kept) and planned lump sums
+            Object.keys(overridesMap).forEach(k => {
+                const o = overridesMap[k];
+                if (!o) return;
+                delete o.contribution;
+                delete o.lumpsum;
+                delete o.lumpsums;
+                if (Object.keys(o).length === 0) delete overridesMap[k];
+            });
             plannedLumpsums = [];
             renderLumpsumTable();
 
-            overridesMap = {};
-            fundingMap = {};
+            // Custom 529: contribution amount returns to the suggested value
+            contribUserChosen = false;
             contribAmountTouched = false;
-            applySuggestedContributionAmount(false);
+            applySuggestedContributionAmount(true);
             syncContributionPlanToEngine();
+
+            // Simple 529: contribution returns to the suggested value, lump sum returns to 0
+            simpleAmountTouched = false;
+            const simpleAmtEl = document.getElementById('simple-amount');
+            if (simpleAmtEl) simpleAmtEl.value = suggestSimpleAmount();
+            simpleLumpTouched = false;
+            const simpleLumpEl = document.getElementById('simple-lump');
+            if (simpleLumpEl) simpleLumpEl.value = 0;
 
             previousStudentName = currentStudentName;
             document.getElementById('modal-student-change').classList.add('hidden');
 
-            renderExpenseTabsAndContent();
             renderGrowthProjectionsUI();
+            if (currentStep === 11) renderSimplePage();
             saveAllState();
         }
 
@@ -6510,7 +6533,7 @@
                     rowRedirection = Math.floor(rowRedirection);
 
                     let rowRate = customObj.contribution !== undefined ? customObj.contribution : getScheduledBaseForMonth(yr, m, collegeStartYear, baseContribution);
-                    rowRate = Math.round(rowRate * 100) / 100;
+                    rowRate = (cadenceType === 'weekly') ? Math.floor(rowRate) : Math.round(rowRate * 100) / 100;
 
                     let totalCadenceVal = rowRate;
                     if (cadenceType === 'weekly') {
@@ -6548,11 +6571,16 @@
 
                     const isCollege = yr >= collegeStartYear;
                     const phaseLabel = isCollege ? `Academic Year ${yr - collegeStartYear + 1}` : 'Accumulation Phase';
+                    // Weekly plans: weekly contribution + redirect converted to weekly (monthly redirect x 12 / 52), floored
+                    const weeklyRedirect = Math.floor((12 * debtBoostMonthly) / 52);
+                    const weeklyRedirectUsed = customObj.redirection !== undefined ? rowRedirection : weeklyRedirect;
+                    const weeklyTotal = Math.floor(rowRate + weeklyRedirectUsed);
 
                     monthRowsHTML += `
                         <tr class="border-b border-slate-800/80 hover:bg-slate-800/30 transition">
                             <td class="py-2 px-3 font-bold text-slate-200">${monthNames[m]} ${yr}</td>
                             <td class="py-2 px-3 text-slate-400 font-bold">${phaseLabel}</td>
+                            ${cadenceType === 'weekly' ? `<td class="py-2 px-3 text-right font-mono text-emerald-300 font-bold">$${weeklyTotal.toLocaleString()}</td>` : ''}
                             <td class="py-2 px-3 text-right font-mono text-emerald-400 font-bold">$${Math.round(combinedContribAndRedirects).toLocaleString()}</td>
                             <td class="py-2 px-3 text-right font-mono text-cyan-300">$${Math.round(rowLumpsum).toLocaleString()}</td>
                             <td class="py-2 px-3 text-right font-mono text-rose-400 font-bold">${withdrawal > 0 ? '-$' + Math.round(withdrawal).toLocaleString() : '$0'}</td>
@@ -6592,6 +6620,7 @@
                                 <tr>
                                     <th class="py-2.5 px-3">Month</th>
                                     <th class="py-2.5 px-3">Phase / Status</th>
+                                    ${cadenceType === 'weekly' ? '<th class="py-2.5 px-3 text-right text-emerald-300" title="Weekly contribution plus redirect (monthly redirect x 12 / 52), rounded down">Weekly Contrib.</th>' : ''}
                                     <th class="py-2.5 px-3 text-right text-emerald-400">Contributions</th>
                                     <th class="py-2.5 px-3 text-right text-cyan-300">Planned Lumpsum</th>
                                     <th class="py-2.5 px-3 text-right text-rose-400">Tuition Withdrawal</th>
@@ -6793,7 +6822,7 @@
                     rowRedirection = Math.floor(rowRedirection);
 
                     let rowRate = customObj.contribution !== undefined ? customObj.contribution : getScheduledBaseForMonth(yr, m, collegeStartYear, baseContribution);
-                    rowRate = Math.round(rowRate * 100) / 100;
+                    rowRate = (cadenceType === 'weekly') ? Math.floor(rowRate) : Math.round(rowRate * 100) / 100;
 
                     let totalCadenceVal = rowRate;
                     if (cadenceType === 'weekly') {
@@ -7043,6 +7072,7 @@
             updateHeaderButtonsState();
             isRestoringState = false;
 
+            if (!previousStudentName) previousStudentName = document.getElementById('student-name').value.trim();
             document.getElementById('student-name').addEventListener('change', handleStudentDetailsInputBlur);
 
             document.getElementById('sibling-split-equal').addEventListener('change', () => {
