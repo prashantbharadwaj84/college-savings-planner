@@ -4483,6 +4483,7 @@
                 simpleLumpPrefillSource,
                 plannedLumpsums,
                 overridesMap,
+                redirectCadenceUnits: true,
                 fundingMap,
                 annualCollapsedState,
                 summaryAnnualCollapsedState,
@@ -4722,6 +4723,8 @@
 
             if (Array.isArray(s.plannedLumpsums)) plannedLumpsums = s.plannedLumpsums;
             if (s.overridesMap) overridesMap = s.overridesMap;
+            // Older saves stored redirect overrides in monthly units; drop them so they pick up the prefilled values
+            if (!s.redirectCadenceUnits) Object.keys(overridesMap).forEach(k => { if (overridesMap[k]) delete overridesMap[k].redirection; });
             fundingMap = (s.fundingMap && typeof s.fundingMap === 'object') ? s.fundingMap : {};
             if (s.annualCollapsedState) annualCollapsedState = s.annualCollapsedState;
             if (s.summaryAnnualCollapsedState) summaryAnnualCollapsedState = s.summaryAnnualCollapsedState;
@@ -5258,7 +5261,11 @@
                     let rowLumpsum = customObj.lumpsum !== undefined ? customObj.lumpsum : staticLumpsums;
                     rowLumpsum = Math.round(rowLumpsum * 100) / 100;
 
-                    const totalMoContrib = totalMonthlyFromCadence + rowRedirection + rowLumpsum;
+                    // Redirect is in the contribution frequency: weekly plans redirect a weekly amount on each contribution day
+                    const redirectMonthly = (cadenceType === 'weekly' && currentStep >= 7)
+                        ? rowRedirection * countWeekdayInMonth(yr, m, targetWeekday)
+                        : rowRedirection;
+                    const totalMoContrib = totalMonthlyFromCadence + redirectMonthly + rowLumpsum;
 
                     let withdrawal = 0;
                     if (yr >= collegeStartYear) {
@@ -5950,7 +5957,7 @@
                                     <tr>
                                         <th class="py-2 px-1.5">Month</th>
                                         <th class="py-2 px-1.5 text-right">${contributionShortLabel()}</th>
-                                        <th class="py-2 px-1.5 text-right text-slate-300">Redirects</th>
+                                        <th class="py-2 px-1.5 text-right text-slate-300" title="Freed-up loan and sibling payments, shown per contribution (per week for weekly plans)">${cadenceType === 'weekly' ? 'Weekly Redirect' : 'Redirects'}</th>
                                         <th class="py-2 px-1.5 text-center text-slate-400" title="${weekdayHeaderLabel}">${weekdayShortLabel}</th>
                                         <th class="py-2 px-1.5 text-right text-cyan-300">Lump Sum</th>
                                         <th class="py-2 px-1.5 text-right text-emerald-400">Total Contrib.</th>
@@ -6002,7 +6009,9 @@
                     let rowLumpsum = customObj.lumpsums !== undefined ? customObj.lumpsums : (customObj.lumpsum !== undefined ? customObj.lumpsum : staticLumpsums);
                     rowLumpsum = Math.round(rowLumpsum * 100) / 100;
 
-                    const totalMoContrib = totalMonthlyFromCadence + rowRedirection + rowLumpsum;
+                    // Redirect is in the contribution frequency: weekly plans redirect a weekly amount on each contribution day
+                    const redirectMonthly = (cadenceType === 'weekly') ? rowRedirection * dayCount : rowRedirection;
+                    const totalMoContrib = totalMonthlyFromCadence + redirectMonthly + rowLumpsum;
                     cumulativeContribution += totalMoContrib;
 
                     let withdrawal = 0;
@@ -6532,7 +6541,11 @@
                         totalCadenceVal = Math.round((rowRate * dayCount) * 100) / 100;
                     }
 
-                    const combinedContribAndRedirects = totalCadenceVal + rowRedirection;
+                    // Redirect is in the contribution frequency: weekly plans redirect a weekly amount on each contribution day
+                    const redirectMonthly = (cadenceType === 'weekly')
+                        ? rowRedirection * countWeekdayInMonth(yr, m, targetWeekday)
+                        : rowRedirection;
+                    const combinedContribAndRedirects = totalCadenceVal + redirectMonthly;
 
                     const staticLumpsums = plannedLumpsums
                         .filter(l => l.year === yr && l.month === m)
@@ -6562,10 +6575,8 @@
 
                     const isCollege = yr >= collegeStartYear;
                     const phaseLabel = isCollege ? `Academic Year ${yr - collegeStartYear + 1}` : 'Accumulation Phase';
-                    // Weekly plans: weekly contribution + redirect converted to weekly (monthly redirect x 12 / 52), floored
-                    const weeklyRedirect = Math.floor((12 * debtBoostMonthly) / 52);
-                    const weeklyRedirectUsed = customObj.redirection !== undefined ? rowRedirection : weeklyRedirect;
-                    const weeklyTotal = Math.floor(rowRate + weeklyRedirectUsed);
+                    // Weekly plans: weekly contribution + weekly redirect (already in weekly units)
+                    const weeklyTotal = Math.floor(rowRate + rowRedirection);
 
                     monthRowsHTML += `
                         <tr class="border-b border-slate-800/80 hover:bg-slate-800/30 transition">
@@ -6611,7 +6622,7 @@
                                 <tr>
                                     <th class="py-2.5 px-3">Month</th>
                                     <th class="py-2.5 px-3">Phase / Status</th>
-                                    ${cadenceType === 'weekly' ? '<th class="py-2.5 px-3 text-right text-emerald-300" title="Weekly contribution plus redirect (monthly redirect x 12 / 52), rounded down">Weekly Contrib.</th>' : ''}
+                                    ${cadenceType === 'weekly' ? '<th class="py-2.5 px-3 text-right text-emerald-300" title="Weekly contribution plus weekly redirect">Weekly Contrib.</th>' : ''}
                                     <th class="py-2.5 px-3 text-right text-emerald-400">Contributions</th>
                                     <th class="py-2.5 px-3 text-right text-cyan-300">Planned Lump Sum</th>
                                     <th class="py-2.5 px-3 text-right text-rose-400">Tuition Withdrawal</th>
@@ -6842,7 +6853,11 @@
                         totalCadenceVal = Math.round((rowRate * dayCount) * 100) / 100;
                     }
 
-                    const combinedContribAndRedirects = totalCadenceVal + rowRedirection;
+                    // Redirect is in the contribution frequency: weekly plans redirect a weekly amount on each contribution day
+                    const redirectMonthly = (cadenceType === 'weekly')
+                        ? rowRedirection * countWeekdayInMonth(yr, m, targetWeekday)
+                        : rowRedirection;
+                    const combinedContribAndRedirects = totalCadenceVal + redirectMonthly;
 
                     const staticLumpsums = plannedLumpsums
                         .filter(l => l.year === yr && l.month === m)
@@ -7117,6 +7132,8 @@
                     lblAmount.textContent = "Base Monthly Contribution ($)";
                     document.getElementById('growth-contribution-amount').value = effectiveMonthlyCapacity;
                 }
+                // Redirect overrides are stored in the contribution frequency, so a frequency change resets them to the prefilled values
+                Object.keys(overridesMap).forEach(k => { if (overridesMap[k]) delete overridesMap[k].redirection; });
                 saveAllState();
                 renderGrowthProjectionsUI();
             });
