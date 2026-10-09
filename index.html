@@ -76,7 +76,7 @@
             -moz-appearance: textfield;
         }
         @media print {
-            header, button, #btn-share, #btn-bookmark, #btn-export-xlsx, #btn-print, #btn-suite-hub, .no-print {
+            header, button, #btn-first-page, #btn-share, #btn-bookmark, #btn-export-xlsx, #btn-print, #btn-suite-hub, .no-print {
                 display: none !important;
             }
             body {
@@ -95,7 +95,7 @@
 
     <!-- Header Navbar -->
     <header class="relative z-10 border-b border-slate-800 bg-[#090d16]/85 backdrop-blur-md sticky top-0">
-        <div class="max-w-5xl mx-auto px-4 py-2.5 flex items-center justify-between">
+        <div class="max-w-5xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2.5">
                 <div class="p-1.5 bg-slate-900 border border-slate-700/60 rounded-lg text-cyan-400">
                     <i data-lucide="graduation-cap" class="w-5 h-5"></i>
@@ -106,7 +106,12 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-2 font-mono text-xs">
+            <div class="flex flex-wrap items-center justify-end gap-2 font-mono text-xs">
+                <!-- Back to Page 1 (hidden on page 1 and on the summary pages) -->
+                <button type="button" id="btn-first-page" onclick="goToStep(1)" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-cyan-400 border border-slate-700/80 hover:bg-slate-800 transition hidden items-center gap-1.5 font-bold cursor-pointer" title="Go back to page 1 (Child Information)">
+                    <i data-lucide="chevrons-left" class="w-3.5 h-3.5"></i> Back to Page 1
+                </button>
+
                 <!-- Summary-Only Buttons -->
                 <button type="button" id="btn-export-xlsx" onclick="handleExportXLSX()" class="px-3 py-1.5 rounded-xl bg-slate-900/80 text-emerald-400 border border-slate-700/80 hover:bg-slate-800 transition hidden items-center gap-1.5 font-bold cursor-pointer" title="Export Summary to Excel (.xlsx)">
                     <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export to Excel
@@ -1201,8 +1206,8 @@
                 <div class="pt-3 border-t border-slate-800/80 space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                            <i data-lucide="circle-dollar-sign" class="w-4 h-4 text-emerald-400"></i> Planned One-Time Lumpsums
-                            <button type="button" id="btn-lumpsum-info" onclick="openLumpsumInfoModal()" class="text-slate-400 hover:text-cyan-300 transition p-0.5 rounded-full focus:outline-none focus:ring-1 focus:ring-cyan-400 cursor-pointer" title="What are one-time lumpsums?" aria-label="Lumpsum information">
+                            <i data-lucide="circle-dollar-sign" class="w-4 h-4 text-emerald-400"></i> Planned One-Time Lump Sums
+                            <button type="button" id="btn-lumpsum-info" onclick="openLumpsumInfoModal()" class="text-slate-400 hover:text-cyan-300 transition p-0.5 rounded-full focus:outline-none focus:ring-1 focus:ring-cyan-400 cursor-pointer" title="What are one-time lump sums?" aria-label="Lump sum information">
                                 <i data-lucide="info" class="w-4 h-4"></i>
                             </button>
                         </span>
@@ -1215,7 +1220,7 @@
                         <select id="lumpsum-year-input" class="px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white outline-none focus:border-cyan-400 select-text">
                         </select>
                         <button type="button" id="btn-add-lumpsum" class="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg transition flex items-center justify-center gap-1 cursor-pointer">
-                            <i data-lucide="plus" class="w-4 h-4"></i> Add Lumpsum
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add Lump Sum
                         </button>
                     </div>
 
@@ -1230,7 +1235,7 @@
                             </thead>
                             <tbody id="lumpsum-table-body">
                                 <tr>
-                                    <td colspan="3" class="py-2 px-3 text-slate-500 italic text-center">No lumpsums added yet.</td>
+                                    <td colspan="3" class="py-2 px-3 text-slate-500 italic text-center">No lump sums added yet.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1331,8 +1336,8 @@
                     </h3>
                     <span id="sum-college-count-badge" class="text-[10px] font-mono text-indigo-300 bg-indigo-950/60 border border-indigo-800/50 px-2 py-0.5 rounded">0 Selected</span>
                 </div>
-                <div id="sum-selected-colleges-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
-                    <div class="text-slate-500 italic text-xs font-mono col-span-2">No college categories selected yet.</div>
+                <div id="sum-selected-colleges-list" class="flex flex-wrap items-center gap-2 text-xs font-mono">
+                    <div class="text-slate-500 italic text-xs font-mono">No college categories selected yet.</div>
                 </div>
             </div>
 
@@ -1428,20 +1433,20 @@
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                 <div class="flex items-center gap-2.5 text-cyan-400 font-bold">
                     <i data-lucide="circle-dollar-sign" class="w-5 h-5"></i>
-                    <h3 class="text-base font-extrabold text-white">About One-Time Lumpsums</h3>
+                    <h3 class="text-base font-extrabold text-white">About One-Time Lump Sums</h3>
                 </div>
                 <button type="button" onclick="closeLumpsumInfoModal()" class="text-slate-400 hover:text-rose-400 transition font-bold text-lg leading-none px-1 cursor-pointer" aria-label="Close">&times;</button>
             </div>
 
             <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
-                <p>A one-time lumpsum is an extra, single contribution to the 529 account on top of your regular schedule. Examples:</p>
+                <p>A one-time lump sum is an extra, single contribution to the 529 account on top of your regular schedule. Examples:</p>
                 <ul class="space-y-2 list-disc pl-5">
                     <li><strong class="text-cyan-300">Birth anniversary gift:</strong> contribute to your child's 529 account on each of their birthdays.</li>
                     <li><strong class="text-cyan-300">Bonus:</strong> plan to keep aside a portion of your annual bonus.</li>
                     <li><strong class="text-cyan-300">Tax refund:</strong> plan to direct a portion of your tax refund check into the 529.</li>
                 </ul>
                 <p class="p-3 bg-slate-900/80 border border-slate-800 rounded-lg">
-                    <strong class="text-emerald-400">Tip:</strong> After adding a lumpsum, click the <span class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 border border-slate-700 rounded text-[10px]">+1 Yr</span> button on its row to repeat it for the next year. Keep clicking to repeat it each year until your child graduates.
+                    <strong class="text-emerald-400">Tip:</strong> After adding a lump sum, click the <span class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 border border-slate-700 rounded text-[10px]">+1 Yr</span> button on its row to repeat it for the next year. Keep clicking to repeat it each year until your child graduates.
                 </p>
             </div>
 
@@ -1455,12 +1460,12 @@
         <div class="glass-panel border-rose-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
             <div class="flex items-center gap-2.5 text-rose-400 font-bold border-b border-slate-800 pb-3">
                 <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
-                <h3 class="text-base font-extrabold text-white">Reset Table Rates Confirmation</h3>
+                <h3 class="text-base font-extrabold text-white">Reset Table Overrides?</h3>
             </div>
 
             <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
                 <p>
-                    Are you sure you want to reset all custom monthly/weekly cell overrides and lump sum adjustments in the projection table back to their default baseline contribution values?
+                    Are you sure you want to reset all custom monthly/weekly cell overrides and lump sum adjustments in the projection table back to the default baseline contribution values?
                 </p>
             </div>
 
@@ -1531,7 +1536,7 @@
                 <div class="p-3 bg-cyan-950/30 border border-cyan-500/30 rounded-xl space-y-1">
                     <p class="font-bold text-cyan-400">2. Living with Parents Boarding Allowance ($4,000/yr base)</p>
                     <p class="text-[11px]">
-                        Even when living at home, the IRS permits students to withdraw tax-free 529 funds up to the institution's official COA room and board allowance for students living with parents (covering <strong>food, groceries, and housing costs</strong>). Parents can document reasonable housing/meal reimbursements provided to the student.
+                        Even when living at home, the IRS permits students to withdraw tax-free 529 funds up to the institution's official COA room and board allowance for students living with parents (covering <strong>food, groceries, and housing costs</strong>). Parents can document reasonable housing and meal reimbursements provided to the student.
                     </p>
                 </div>
             </div>
@@ -1552,7 +1557,7 @@
             
             <div class="flex items-center gap-2.5 text-emerald-400 font-bold border-b border-slate-800 pb-3">
                 <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                <h3 class="text-base font-extrabold text-white">Qualified 529 Covered Expenses</h3>
+                <h3 class="text-base font-extrabold text-white">Qualified 529 Expenses</h3>
             </div>
 
             <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
@@ -2217,13 +2222,13 @@
                         <li><strong class="text-cyan-300">Regular contributions</strong> are added up for the year and compared with the yearly exclusion: $19,000 for an individual, $38,000 for a married couple.</li>
                         <li><strong class="text-cyan-300">Lump sums</strong> (front loading) are compared with the five-year superfunding limit: $95,000 for an individual, $190,000 for a married couple. Using it requires electing five-year averaging on IRS Form 709.</li>
                     </ul>
-                    <p>Going over a limit is not prohibited. It generally means filing Form 709 and using part of your lifetime exemption. Planned lumpsums and redirected payments also count toward your yearly total but are not included in this check. Your state plan may also have its own maximum balance. This is general information, not tax advice.</p>`
+                    <p>Going over a limit is not prohibited. It generally means filing Form 709 and using part of your lifetime exemption. Planned lump sums and redirected payments also count toward your yearly total but are not included in this check. Your state plan may also have its own maximum balance. This is general information, not tax advice.</p>`
             },
             drawdownContrib: {
                 title: 'Contributing During College',
                 html: `<p>Choose <strong>Yes</strong> if you plan to keep making your regular contributions while your child is in college, when tuition withdrawals begin.</p>
                     <p>Choose <strong>No</strong> to stop your regular contributions once college starts.</p>
-                    <p>Planned lumpsums and redirected loan or sibling payments follow their own settings and are not affected by this choice.</p>`
+                    <p>Planned lump sums and redirected loan or sibling payments follow their own settings and are not affected by this choice.</p>`
             },
             strategies: {
                 title: 'Investment Strategies',
@@ -2234,7 +2239,7 @@
                         <li><strong class="text-violet-300">Hybrid, Age-Based (medium risk):</strong> a mix of stocks and bonds that becomes more conservative as college gets closer.</li>
                         <li><strong class="text-orange-300">Index ETF (high risk):</strong> stock-market index funds with the highest growth potential and the biggest swings.</li>
                     </ul>
-                    <p>These are assumed averages for comparison, not predictions or guarantees. Each strategy is applied for both the saving years and the college years, using your contributions, lumpsums, redirected payments and covered tuition withdrawals.</p>`
+                    <p>These are assumed averages for comparison, not predictions or guarantees. Each strategy is applied for both the saving years and the college years, using your contributions, lump sums, redirected payments and covered tuition withdrawals.</p>`
             },
             planStyle: {
                 title: 'Simple or Customize',
@@ -2441,7 +2446,7 @@
                     <ul class="list-disc pl-5 space-y-1.5">
                         <li><strong class="text-cyan-300">Monthly contribution:</strong> your regular contribution. You can edit any month.</li>
                         <li><strong class="text-cyan-300">Redirects:</strong> freed-up loan and sibling payments sent to the 529.</li>
-                        <li><strong class="text-cyan-300">Planned lumpsum:</strong> one-time contributions you added above.</li>
+                        <li><strong class="text-cyan-300">Planned lump sum:</strong> one-time contributions you added above.</li>
                         <li><strong class="text-cyan-300">Tuition withdrawal:</strong> covered costs paid from the 529 in July and December during college years.</li>
                         <li><strong class="text-cyan-300">Projected balance:</strong> your 529 balance after each month.</li>
                     </ul>
@@ -5592,7 +5597,7 @@
             tbody.innerHTML = '';
 
             if (plannedLumpsums.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="py-2 px-3 text-slate-500 italic text-center">No lumpsums added yet.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" class="py-2 px-3 text-slate-500 italic text-center">No lump sums added yet.</td></tr>';
                 return;
             }
 
@@ -5644,7 +5649,7 @@
             const endYear = collegeStartYear + (totalDegreeYears - 1);
 
             if (found.year >= endYear) {
-                alert(`Cannot repeat lumpsum past the graduating year (${endYear}).`);
+                alert(`Cannot repeat lump sum past the graduating year (${endYear}).`);
                 return;
             }
 
@@ -6466,23 +6471,9 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = `p-2.5 rounded-lg border ${cardBorderClass} space-y-1.5`;
+                card.className = `px-3 py-1.5 rounded-lg border ${cardBorderClass}`;
 
-                const itemsListHTML = cat.list.map(item => `
-                    <div class="text-[11px] text-slate-200 font-mono font-bold flex items-center justify-between">
-                        <span>• ${item.name} (${item.state})</span>
-                    </div>
-                `).join('');
-
-                card.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-1">
-                        <span class="font-extrabold ${titleColorClass} text-[11px] uppercase tracking-wider">${cat.title}</span>
-                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border font-bold ${badgeClass}">Selected</span>
-                    </div>
-                    <div class="space-y-0.5 pt-0.5">
-                        ${itemsListHTML}
-                    </div>
-                `;
+                card.innerHTML = `<span class="font-extrabold ${titleColorClass} text-[11px] uppercase tracking-wider whitespace-nowrap">${cat.title}</span>`;
                 collegesListContainer.appendChild(card);
             });
 
@@ -6606,7 +6597,7 @@
                         </div>
                         <div class="flex items-center gap-4 text-xs font-mono">
                             <span class="text-slate-400 font-normal">Contrib: <strong class="text-emerald-400">$${Math.round(yrTotalContrib).toLocaleString()}</strong></span>
-                            <span class="text-slate-400 font-normal">Lumpsums: <strong class="text-cyan-300">$${Math.round(yrTotalLumpsum).toLocaleString()}</strong></span>
+                            <span class="text-slate-400 font-normal">Lump Sums: <strong class="text-cyan-300">$${Math.round(yrTotalLumpsum).toLocaleString()}</strong></span>
                             <span class="text-slate-400 font-normal">Tuition: <strong class="text-rose-400">$${Math.round(yrTotalWithdrawal).toLocaleString()}</strong></span>
                             ${yrTotalFunding > 0.5 ? `<span class="text-slate-400 font-normal">Funded: <strong class="text-amber-300">$${Math.round(yrTotalFunding).toLocaleString()}</strong></span>` : ''}
                             <span class="${Math.round(runningBalance) < 0 ? 'text-rose-400' : 'text-emerald-400'} font-extrabold ml-1">End Bal: ${Math.round(runningBalance) < 0 ? '-' : ''}$${Math.abs(Math.round(runningBalance)).toLocaleString()}</span>
@@ -6622,7 +6613,7 @@
                                     <th class="py-2.5 px-3">Phase / Status</th>
                                     ${cadenceType === 'weekly' ? '<th class="py-2.5 px-3 text-right text-emerald-300" title="Weekly contribution plus redirect (monthly redirect x 12 / 52), rounded down">Weekly Contrib.</th>' : ''}
                                     <th class="py-2.5 px-3 text-right text-emerald-400">Contributions</th>
-                                    <th class="py-2.5 px-3 text-right text-cyan-300">Planned Lumpsum</th>
+                                    <th class="py-2.5 px-3 text-right text-cyan-300">Planned Lump Sum</th>
                                     <th class="py-2.5 px-3 text-right text-rose-400">Tuition Withdrawal</th>
                                     <th class="py-2.5 px-3 text-right text-amber-300">Funding</th>
                                     <th class="py-2.5 px-3 text-right text-cyan-400 font-bold">Projected Balance</th>
@@ -6650,11 +6641,32 @@
             }
         }
 
+        function getBookmarkTitle() {
+            const nameEl = document.getElementById('student-name');
+            const studentName = (nameEl && nameEl.value.trim()) || 'Child';
+            return `College Savings Plan - ${studentName} | Bharrys Financial Suite`;
+        }
+
+        function updateDocumentTitle() {
+            document.title = isSummaryStep() ? getBookmarkTitle() : 'College Savings Planner | Bharrys Financial Suite';
+        }
+
         function updateHeaderButtonsState() {
             const btnExportXLSX = document.getElementById('btn-export-xlsx');
             const btnShare = document.getElementById('btn-share');
             const btnBookmark = document.getElementById('btn-bookmark');
             const btnPrint = document.getElementById('btn-print');
+            const btnFirstPage = document.getElementById('btn-first-page');
+
+            // "Back to Page 1" shows on every page except page 1 and the summary pages
+            if (btnFirstPage) {
+                const showFirst = currentStep !== 1 && !isSummaryStep();
+                btnFirstPage.classList.toggle('hidden', !showFirst);
+                btnFirstPage.classList.toggle('flex', showFirst);
+            }
+
+            // Keep the tab title (used as the default bookmark name) in sync with the child's name
+            updateDocumentTitle();
 
             if (isSummaryStep()) {
                 btnExportXLSX.classList.remove('hidden');
@@ -6805,7 +6817,7 @@
             }
 
             dataRows.push([]);
-            dataRows.push(["Month", "Phase / Status", "Contributions ($)", "Planned Lumpsum ($)", "Tuition Withdrawal ($)", "Funding Amount ($)", "Funding Sources", "Projected Balance ($)"]);
+            dataRows.push(["Month", "Phase / Status", "Contributions ($)", "Planned Lump Sum ($)", "Tuition Withdrawal ($)", "Funding Amount ($)", "Funding Sources", "Projected Balance ($)"]);
 
             for (let yr = startYear; yr <= endYear; yr++) {
                 let yrCoveredCost = annualTuitionMap[yr] || 0;
@@ -6980,8 +6992,9 @@
             if (!isSummaryStep()) return;
 
             const shareUrl = await getFullShareUrl();
-            const studentName = document.getElementById('student-name').value.trim() || 'Child';
-            const bookmarkTitle = `College Savings Plan - ${studentName} | Bharrys Financial Suite`;
+            const bookmarkTitle = getBookmarkTitle();
+            // Browsers use the page title as the default bookmark name, so set it before bookmarking
+            document.title = bookmarkTitle;
             const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
             const keyShortcut = isMac ? 'Cmd + D' : 'Ctrl + D';
 
@@ -7003,7 +7016,7 @@
                         btnTextEl.textContent = 'Bookmark';
                     }, 3000);
                 }
-                alert(`To bookmark this summary page with your prefilled plan, press ${keyShortcut} or open your browser menu and select 'Bookmark page'.`);
+                alert(`To bookmark this summary page with your prefilled plan, press ${keyShortcut} or open your browser menu and select "Bookmark page". The bookmark will be named "${bookmarkTitle}".`);
             }
         }
 
@@ -7128,7 +7141,7 @@
                 const yr = parseInt(document.getElementById('lumpsum-year-input').value);
 
                 if (isNaN(amt) || amt <= 0) {
-                    alert('Please enter a valid lumpsum amount.');
+                    alert('Please enter a valid lump sum amount.');
                     return;
                 }
 
