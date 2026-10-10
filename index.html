@@ -184,6 +184,7 @@
                                 <option value="11">11th Grade (Junior)</option>
                                 <option value="12">12th Grade (Senior)</option>
                             </select>
+                            <p id="grade-hint" class="text-[10px] text-slate-500 mt-1 leading-snug font-sans"></p>
                         </div>
                     </div>
 
@@ -2477,6 +2478,127 @@
             if (m) m.classList.add('hidden');
         }
 
+        // ---------- Per-college-type result info (shortfall / left over) ----------
+        function catInfoBtn(catKey, source) {
+            return `<button type="button" onclick="event.stopPropagation();openCategoryInfoModal('${catKey}','${source}')" onkeydown="event.stopPropagation()" class="inline-flex items-center align-middle text-slate-400 hover:text-cyan-300 transition p-0.5 rounded-full focus:outline-none focus:ring-1 focus:ring-cyan-400 cursor-pointer shrink-0" title="What this result means" aria-label="What this result means">${INFO_ICON_SVG}</button>`;
+        }
+
+        function retirementProjectionInfoHTML(catKey) {
+            let out = '';
+            try {
+                const pr = projectRetirementBalances(catKey);
+                const hasBal = pr.ctx.parents.some(p => sumArr(Object.values(p.balNow)) > 0);
+                if (!hasBal) {
+                    return '<p class="text-amber-300">No retirement balances have been entered yet, so no projection can be shown. Add your 401(k) and IRA balances on the retirement page to see one.</p>';
+                }
+                const tot = r => r.b['401k'] + r.b['tradira'] + r.b['rothira'];
+                const startYr = getCollegeStartYear();
+                const today = pr.rows[0];
+                const atStart = pr.rows.find(r => r.label === String(startYr - 1));
+                const last = pr.rows[pr.rows.length - 1];
+                const line = (k, v) => `<div class="flex justify-between gap-3"><span class="text-slate-400">${k}</span><span class="font-bold text-white">${v}</span></div>`;
+                out = `<div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800 space-y-1">
+                    ${line('Retirement accounts today', fmtMoney(tot(today)))}
+                    ${atStart ? line(`Projected before college (end of ${atStart.label})`, fmtMoney(tot(atStart))) : ''}
+                    ${last && last !== today ? line(`Projected at end of ${last.label}`, fmtMoney(tot(last))) : ''}
+                    ${line('Funding options you chose', pr.lines.length ? String(pr.lines.length) : 'None yet')}
+                </div>`;
+            } catch (e) { out = ''; }
+            return out;
+        }
+
+        function categoryShortfallInfoHTML(catKey, bal, source) {
+            const proj = source === 'simple' ? retirementProjectionInfoHTML(catKey) : '';
+            return `
+                <p>The projected 529 balance runs out before the last tuition payment, leaving a shortfall of about <strong class="text-rose-300">${fmtMoney(Math.abs(bal))}</strong>. Families usually close a gap with a mix of the sources below.</p>
+                <p class="text-[10px] uppercase tracking-wider text-slate-400 pt-1">Funding it from retirement accounts</p>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li><strong class="text-cyan-300">401(k) loan:</strong> borrow the lesser of 50% of your vested balance or $50,000 (less loans still outstanding). Repaid within about 5 years, with the interest going back into your own account. If you leave your job, the unpaid balance can become taxable, plus a 10% penalty under age 59&frac12;. Not every plan offers loans.</li>
+                    <li><strong class="text-cyan-300">Roth IRA:</strong> contributions you made can come out tax-free and penalty-free. Earnings taken early can be taxed.</li>
+                    <li><strong class="text-cyan-300">Traditional / SEP IRA:</strong> taxed as income, but the 10% early-withdrawal penalty is waived for qualified college costs.</li>
+                    <li><strong class="text-cyan-300">401(k) / 403(b) withdrawal:</strong> taxed as income plus a 10% penalty before age 59&frac12; (no tuition exception), and many plans allow it only for hardship.</li>
+                </ul>
+                <p>Loans are repaid, so retirement stays whole. Withdrawals are never repaid and permanently shrink your retirement savings.</p>
+                <p class="text-[10px] uppercase tracking-wider text-slate-400 pt-1">How the calculator estimates your retirement accounts</p>
+                <p>It starts from the 401(k), Traditional IRA and Roth IRA balances you entered (for both spouses if married) and grows them at about ${(RET_MONTHLY * 100).toFixed(3)}% per month (roughly 10% a year), plus any yearly retirement contributions you entered. The projection then reflects your selections: the loans and withdrawals you planned, and the funding options you choose for this college type. A loan or withdrawal comes out at its scheduled date, and loan payments, including interest, go back into the 401(k). Taxes and penalties use approximate federal brackets and ignore state tax. Change a selection and the projection updates.</p>
+                ${proj}
+                <div class="p-3 rounded-lg bg-amber-950/30 border border-amber-500/40 space-y-1.5">
+                    <p class="font-bold text-amber-300">Note on federal student loan eligibility</p>
+                    <p>Federal loans are not a retirement source, but they usually cost less than private loans and are listed before retirement withdrawals. To qualify, the student generally must:</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>file the FAFSA every year,</li>
+                        <li>be a U.S. citizen or eligible noncitizen,</li>
+                        <li>be enrolled at least half-time in an eligible degree or certificate program at an eligible school,</li>
+                        <li>keep satisfactory academic progress and not be in default on a prior federal loan.</li>
+                    </ul>
+                    <p>Subsidized Direct Loans are need-based. Unsubsidized Direct Loans are not, so higher family income usually does not rule them out. Amounts are capped by year in school and dependency status (about $31,000 total for a dependent undergraduate). Parent PLUS loans are in the parent's name, require no adverse credit history, and are capped at $20,000 a year. The calculator uses these as estimates only; your school's financial aid office decides the actual eligibility and amounts.</p>
+                </div>`;
+        }
+
+        function categoryLeftoverInfoHTML(bal) {
+            const left = Math.max(0, bal);
+            const yrs = Math.max(1, Math.ceil(Math.min(left, 35000) / 7500));
+            return `
+                <p>You are projected to have about <strong class="text-emerald-300">${fmtMoney(left)}</strong> left in the 529 after the last tuition payment. Unused 529 money is not lost, and there are several ways to use it.</p>
+
+                <p class="text-[10px] uppercase tracking-wider text-slate-400 pt-1">1. Keep it for more education</p>
+                <p>Leave it invested for graduate or professional school, extra semesters, or a change of plans. There is no federal deadline to use a 529 (plans may set their own rules).</p>
+
+                <p class="text-[10px] uppercase tracking-wider text-slate-400 pt-1">2. Change the beneficiary, including to a grandchild</p>
+                <p>You can switch the beneficiary to another qualifying family member with no income tax or penalty: a sibling, the beneficiary's own child (your grandchild), a parent, a cousin, or a spouse. Keeping the money in a 529 for a future grandchild lets it keep growing tax-deferred for decades.</p>
+                <p>Moving the account to someone in a younger generation than the old beneficiary is treated as a gift from the old beneficiary to the new one. It may use the annual gift exclusion or need a gift tax return, and large amounts can raise generation-skipping tax questions. Ask a tax professional before you do it.</p>
+
+                <p class="text-[10px] uppercase tracking-wider text-slate-400 pt-1">3. Transfer ownership to the child, such as at 21</p>
+                <p>Contributions to a 529 are treated as completed gifts, so the account is generally outside your taxable estate. The exception is the 5-year gift election: if you die within those 5 years, part of the amount is pulled back in. Many plans let you transfer ownership to the beneficiary, for example once they turn 21 and are an adult. The transfer itself is generally not a taxable event, with no income tax and no new gift, because the contributions were already gifts. After the transfer, the child controls the account and it counts as their asset, not yours.</p>
+                <p class="text-slate-400">Age 21 is a planning choice, not a tax rule. The age of majority is 18 to 21 depending on the state, and each plan has its own owner-change rules and forms. Confirm with the plan administrator and an estate attorney.</p>
+
+                <p class="text-[10px] uppercase tracking-wider text-slate-400 pt-1">4. Roll it over to the child's Roth IRA</p>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li><strong class="text-cyan-300">Lifetime limit:</strong> up to $35,000 per beneficiary, moved directly from the 529 to a Roth IRA in the beneficiary's name.</li>
+                    <li><strong class="text-cyan-300">Annual limit:</strong> each year's rollover is capped at the IRA contribution limit ($7,500 for 2026), reduced by any other IRA contributions that year. At that pace, rolling ${fmtMoney(Math.min(left, 35000))} takes about ${yrs} year${yrs > 1 ? 's' : ''}.</li>
+                    <li><strong class="text-cyan-300">Earned income:</strong> the beneficiary needs earned income at least equal to the amount rolled over that year. Roth income limits do not apply.</li>
+                    <li><strong class="text-cyan-300">15-year rule:</strong> the 529 must have been open for at least 15 years. Contributions made in the last 5 years (and their earnings) cannot be rolled over.</li>
+                    <li><strong class="text-cyan-300">Benefit:</strong> it turns leftover college money into tax-free retirement savings that start growing early. The child owns the Roth IRA, not you.</li>
+                    <li><strong class="text-cyan-300">Check first:</strong> some states do not treat the rollover as tax-free at the state level, and plans have their own procedures.</li>
+                </ul>
+
+                <p class="text-[10px] uppercase tracking-wider text-slate-400 pt-1">5. Other uses</p>
+                <ul class="list-disc pl-5 space-y-1.5">
+                    <li>Repay up to $10,000 of the beneficiary's student loans (and $10,000 for each sibling), as a lifetime limit.</li>
+                    <li>Withdraw it for any other reason. Contributions come back tax-free, but earnings are taxed as income plus a 10% penalty. The penalty is waived up to the amount of any scholarship the beneficiary received.</li>
+                </ul>
+                <p class="text-slate-500">Rules and limits change, and states differ. This is general information, not tax or legal advice.</p>`;
+        }
+
+        function openCategoryInfoModal(catKey, source) {
+            const cat = getSelectedCategoriesData().find(c => c.key === catKey);
+            if (!cat) return;
+            const startYr = getCollegeStartYear();
+            let bal;
+            if (source === 'strategy') {
+                const st = INVESTMENT_STRATEGIES.find(x => x.key === strategyKey) || INVESTMENT_STRATEGIES[0];
+                bal = Math.round(simulateCategoryCostAndAffordability(catKey, startYr, st.rate).projectedFund);
+            } else {
+                bal = Math.round(simulateSimplePlan(catKey, startYr).balance);
+            }
+            const short = bal < 0;
+            const shortHTML = categoryShortfallInfoHTML(catKey, bal, source);
+            const leftHTML = categoryLeftoverInfoHTML(short ? 0 : bal);
+            const wrap = (title, html, open) => `<details ${open ? 'open' : ''} class="rounded-lg border border-slate-800 bg-slate-950/40 p-3 space-y-2"><summary class="cursor-pointer font-bold text-cyan-300">${title}</summary><div class="space-y-3 pt-2">${html}</div></details>`;
+            let body;
+            if (short) {
+                body = shortHTML + wrap('If you end up with money left over', categoryLeftoverInfoHTML(1), false)
+                    .replace(/about <strong class="text-emerald-300">\$1<\/strong> left in the 529 after the last tuition payment\./, 'something left in the 529 after the last tuition payment.');
+            } else {
+                body = leftHTML + wrap('If you fall short instead', categoryShortfallInfoHTML(catKey, -1, source).replace(/leaving a shortfall of about <strong class="text-rose-300">\$1<\/strong>/, 'leaving a shortfall'), false);
+            }
+            document.getElementById('modal-info-title').textContent = `${simpleCatTitle(cat)}: ${short ? 'Shortfall' : 'Left Over'}`;
+            document.getElementById('modal-info-body').innerHTML = body;
+            const m = document.getElementById('modal-info');
+            m.classList.remove('hidden');
+            const dlg = m.firstElementChild; if (dlg) dlg.scrollTop = 0;
+        }
+
         function openLumpsumInfoModal() {
             const m = document.getElementById('modal-lumpsum-info');
             if (m) m.classList.remove('hidden');
@@ -2882,7 +3004,7 @@
             container.innerHTML = `
                 <div class="rounded-xl border p-4 font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${as.card}">
                     <div class="space-y-1.5 min-w-0">
-                        <div class="font-extrabold text-white text-sm">${catTitle(cat)} <span class="text-slate-400 font-bold">&middot; ${st.name}</span></div>
+                        <div class="font-extrabold text-white text-sm flex items-center gap-1.5 flex-wrap">${catTitle(cat)} <span class="text-slate-400 font-bold">&middot; ${st.name}</span>${catInfoBtn(cat.key, 'strategy')}</div>
                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[10px] font-bold ${as.badge}"><span class="w-1.5 h-1.5 rounded-full ${as.dot}"></span>${as.label}</span>
                     </div>
                     <div class="sm:text-right shrink-0">
@@ -3245,7 +3367,7 @@
                 return `
                     <div ${r.status !== 'affordable' ? `role="button" tabindex="0" onclick="openFundingModal('${cat.key}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openFundingModal('${cat.key}')}"` : ''} class="rounded-xl border p-3 font-mono flex items-center justify-between gap-3 ${as.card} ${r.status !== 'affordable' ? 'cursor-pointer hover:brightness-125 transition' : ''}">
                         <div class="space-y-1.5 min-w-0">
-                            <div class="font-extrabold text-white text-xs">${simpleCatTitle(cat)}</div>
+                            <div class="font-extrabold text-white text-xs flex items-center gap-1">${simpleCatTitle(cat)}${catInfoBtn(cat.key, 'simple')}</div>
                             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded border text-[10px] font-bold ${as.badge}"><span class="w-1.5 h-1.5 rounded-full ${as.dot}"></span>${as.label}</span>
                         </div>
                         <div class="text-right shrink-0">
@@ -4416,6 +4538,7 @@
                 studentName: document.getElementById('student-name').value,
                 studentDob: document.getElementById('student-dob').value,
                 childGrade: document.getElementById('child-grade-select').value,
+                gradeOverride: gradeManuallySet,
                 targetDegree: document.getElementById('target-degree-select')?.value || '',
                 selectedCategories: getSelectedCollegeCategories(),
                 has529Plan: has529PlanState,
@@ -4516,6 +4639,7 @@
                 if (degSelect) degSelect.value = s.targetDegree;
             }
 
+            gradeManuallySet = !!s.gradeOverride;
             if (s.childGrade !== undefined && s.childGrade !== null && s.childGrade !== '') {
                 document.getElementById('child-grade-select').value = s.childGrade;
             }
@@ -5113,20 +5237,55 @@
             return selectedKeys.map(k => categoriesMap[k]).filter(Boolean);
         }
 
+        // Grade is auto-filled from the birth date, but the person can override it.
+        // Once overridden, the chosen grade drives the college start year in every planner.
+        let gradeManuallySet = false;
+
+        function gradeOptionText(g) {
+            const sel = document.getElementById('child-grade-select');
+            const opt = sel ? Array.from(sel.options).find(o => parseInt(o.value) === g) : null;
+            return opt ? opt.text : '';
+        }
+
+        function updateGradeHint(autoGrade) {
+            const el = document.getElementById('grade-hint');
+            if (!el) return;
+            if (autoGrade === null || autoGrade === undefined) {
+                el.innerHTML = gradeManuallySet ? 'Grade chosen by you.' : 'Pick a grade, or enter a birth date to auto-fill it.';
+            } else if (gradeManuallySet && parseInt(document.getElementById('child-grade-select').value) !== autoGrade) {
+                el.innerHTML = `Your selection is used for planning. Birth date suggests ${gradeOptionText(autoGrade)}. <button type="button" onclick="resetGradeToBirthDate()" class="underline text-cyan-300 hover:text-cyan-200 cursor-pointer">Use birth date grade</button>`;
+            } else {
+                el.innerHTML = 'Auto-filled from birth date. Change it to override.';
+            }
+        }
+
+        function resetGradeToBirthDate() {
+            gradeManuallySet = false;
+            updateCollegeStartYearDOM();
+            renderPersonalLoansUI();
+            renderCarLoansUI();
+            renderMortgageLoansUI();
+            saveAllState();
+            renderExpenseTabsAndContent();
+        }
+
         function updateCollegeStartYearDOM() {
             const studentDob = document.getElementById('student-dob').value;
+            const gradeSelect = document.getElementById('child-grade-select');
+            let autoGrade = null;
             if (studentDob) {
-                const { age, grade } = calculateAgeAndGrade(studentDob);
-                document.getElementById('res-child-age').textContent = `${age} Yrs Old`;
-
-                const gradeSelect = document.getElementById('child-grade-select');
-                if (gradeSelect) {
-                    gradeSelect.value = grade;
-                }
-
-                const computedCollegeYear = new Date().getFullYear() + (13 - grade);
-                document.getElementById('res-college-start-year').textContent = computedCollegeYear;
+                const calc = calculateAgeAndGrade(studentDob);
+                autoGrade = calc.grade;
+                document.getElementById('res-child-age').textContent = `${calc.age} Yrs Old`;
+                if (gradeSelect && !gradeManuallySet) gradeSelect.value = autoGrade;
             }
+            if (gradeSelect && (studentDob || gradeManuallySet)) {
+                const grade = parseInt(gradeSelect.value);
+                if (!isNaN(grade)) {
+                    document.getElementById('res-college-start-year').textContent = new Date().getFullYear() + (13 - grade);
+                }
+            }
+            updateGradeHint(autoGrade);
         }
 
         function getCollegeStartYear() {
@@ -7241,10 +7400,8 @@
             });
 
             document.getElementById('child-grade-select').addEventListener('change', (e) => {
-                const currentYear = new Date().getFullYear();
-                const gradeVal = parseInt(e.target.value);
-                const computedCollegeYear = currentYear + (13 - gradeVal);
-                document.getElementById('res-college-start-year').textContent = computedCollegeYear;
+                gradeManuallySet = true;
+                updateCollegeStartYearDOM();
                 renderPersonalLoansUI();
                 renderCarLoansUI();
                 renderMortgageLoansUI();
